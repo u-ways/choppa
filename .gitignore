@@ -44,3 +44,11 @@ log/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# VUE Ignores #
+################
+node_modules
+dist
+.env.local
+.env.*.local
+npm-debug.log*

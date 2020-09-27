@@ -1,0 +1,22 @@
+{
+  "id-lead": {
+    "_id": "id-lead",
+    "role": "LEAD"
+  },
+  "id-ba": {
+    "_id": "id-ba",
+    "role": "BA"
+  },
+  "id-tester": {
+    "_id": "id-tester",
+    "role": "TESTER"
+  },
+  "id-dev": {
+    "_id": "id-dev",
+    "role": "DEV"
+  },
+  "id-intern": {
+    "_id": "id-intern",
+    "role": "INTERN"
+  }
+}

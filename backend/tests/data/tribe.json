@@ -1,0 +1,10 @@
+{
+  "id-alpha": {
+    "_id": "id-alpha",
+    "name": "Tribe Alpha"
+  },
+  "id-beta": {
+    "_id": "id-beta",
+    "name": "Tribe Beta"
+  }
+}

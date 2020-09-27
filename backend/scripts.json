@@ -1,0 +1,46 @@
+{
+  "$schema": "https://deno.land/x/denon/schema.json",
+  "allow": [
+    "run",
+    "env",
+    "net",
+    "write",
+    "read",
+    "plugin"
+  ],
+  "scripts": {
+    "startDev": {
+      "cmd": "deno run -c ./tsconfig.json ./src/app.ts",
+      "desc": "Start Chopper Server (development)",
+      "env": {
+        "ENVIRONMENT": "development"
+      },
+      "log": "info",
+      "watch": true,
+      "unstable": true
+    },
+    "startProd": {
+      "cmd": "deno run ./src/app.ts",
+      "desc": "Run Chopper Backend (production)",
+      "env": {
+        "ENVIRONMENT": "production",
+        "CHOPPER_HOSTNAME": "CHANGEME",
+        "CHOPPER_PORT": "CHANGEME",
+        "DB_NAME": "CHANGEME",
+        "DB_HOST_URL": "CHANGEME",
+        "DB_PORT": "CHANGEME",
+        "DB_USERNAME": "CHANGEME",
+        "DB_PASSWORD": "CHANGEME"
+      },
+      "watch": false,
+      "unstable": true
+    },
+    "watcher": {
+      "interval": 350,
+      "exts": ["ts", "json"],
+      "match": ["./*.*", "./config/*", "./src/*"],
+      "skip": ["*/.git/*"],
+      "legacy": false
+    }
+  }
+}

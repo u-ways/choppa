@@ -52,3 +52,7 @@ dist
 .env.local
 .env.*.local
 npm-debug.log*
+
+# Deno Ignores #
+################
+/backend/.deno_plugins/

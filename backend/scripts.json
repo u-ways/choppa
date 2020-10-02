@@ -10,27 +10,24 @@
   ],
   "scripts": {
     "startDev": {
-      "cmd": "deno run -c ./tsconfig.json ./src/app.ts",
+      "cmd": "deno run ./backend/src/app.ts",
       "desc": "Start Chopper Server (development)",
       "env": {
-        "ENVIRONMENT": "development"
+        "ENVIRONMENT": "development",
+        "PORT": "8080",
+        "DB_NAME": "chopper_db",
+        "DB_HOST_URL": "mongodb+srv://chopper-dev:password@cluster0.pyqbx.mongodb.net"
       },
       "log": "info",
       "watch": true,
       "unstable": true
     },
     "startProd": {
-      "cmd": "deno run ./src/app.ts",
+      "cmd": "deno run ./backend/src/app.ts",
       "desc": "Run Chopper Backend (production)",
       "env": {
         "ENVIRONMENT": "production",
-        "CHOPPER_HOSTNAME": "CHANGEME",
-        "CHOPPER_PORT": "CHANGEME",
-        "DB_NAME": "CHANGEME",
-        "DB_HOST_URL": "CHANGEME",
-        "DB_PORT": "CHANGEME",
-        "DB_USERNAME": "CHANGEME",
-        "DB_PASSWORD": "CHANGEME"
+        "_comment": "Some environment variable are provided by the runtime environment"
       },
       "watch": false,
       "unstable": true
@@ -38,7 +35,7 @@
     "watcher": {
       "interval": 350,
       "exts": ["ts", "json"],
-      "match": ["./*.*", "./config/*", "./src/*"],
+      "match": ["./*.*"],
       "skip": ["*/.git/*"],
       "legacy": false
     }

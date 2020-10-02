@@ -1,4 +1,4 @@
-import {Application} from "../deps.ts";
+import {Application, green} from "../deps.ts";
 
 import tribeRouter from "./routes/controllers/tribe_controller.ts";
 import {httpLogger} from "./routes/middlewares/http_logger.ts";
@@ -15,7 +15,10 @@ app.use(tribeRouter.routes());
 
 app.use(staticServer);
 
+app.addEventListener("listen", ({ hostname, port }) =>
+    console.log(green(`Server started listening at ${hostname}:${port}`))
+);
+
 await app.listen({
-    hostname: Deno.env.get("CHOPPER_HOSTNAME") || "localhost",
-    port: parseInt(Deno.env.get("CHOPPER_PORT") || "8888")
+    port: parseInt(Deno.env.get("PORT") || "8080")
 });

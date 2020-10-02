@@ -1,16 +1,16 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
-  <example msg="Chopper's Vue.js component!" />
+  <Example msg="Chopper coming soon." />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import example from "./components/example.vue";
+import Example from "./components/Example.vue";
 
 export default defineComponent({
   name: "App",
   components: {
-    example
+    Example
   }
 });
 </script>

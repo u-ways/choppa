@@ -1,0 +1,82 @@
+{
+  "$schema": "https://deno.land/x/denon/schema.json",
+  "scripts": {
+    "migrate": {
+      "allow": [
+        "env",
+        "net",
+        "read"
+      ],
+      "cmd": "deno run https://raw.githubusercontent.com/halvardssm/deno-nessie/master/cli.ts migrate -d -c ./config/nessie.config.ts",
+      "watch": false
+    },
+    "seed": {
+      "allow": [
+        "env",
+        "net",
+        "read"
+      ],
+      "cmd": "deno run https://raw.githubusercontent.com/halvardssm/deno-nessie/master/cli.ts seed -d -c ./config/nessie.config.ts",
+      "watch": false
+    },
+    "lint": {
+      "cmd": "deno lint ./src",
+      "watch": false,
+      "unstable": true
+    },
+    "startDev": {
+      "allow": [
+        "run",
+        "env",
+        "net",
+        "write",
+        "read"
+      ],
+      "cmd": "deno run -c ./tsconfig.json ./src/app.ts",
+      "desc": "Start Chopper Server (development)",
+      "env": {
+        "ENVIRONMENT": "development"
+      },
+      "log": "info",
+      "watch": true,
+      "lock": "./chopper.lock.json"
+    },
+    "startProd": {
+      "allow": [
+        "run",
+        "env",
+        "net",
+        "write",
+        "read"
+      ],
+      "cmd": "deno run ./src/app.ts",
+      "desc": "Run Chopper Backend (production)",
+      "env": {
+        "ENVIRONMENT": "production",
+        "CHOPPER_HOSTNAME": "CHANGEME",
+        "CHOPPER_PORT": "CHANGEME",
+        "DB_NAME": "CHANGEME",
+        "DB_HOST_URL": "CHANGEME",
+        "DB_PORT": "CHANGEME",
+        "DB_USERNAME": "CHANGEME",
+        "DB_PASSWORD": "CHANGEME",
+        "DB_POOL_CONNECTIONS": "CHANGEME"
+      },
+      "watch": false,
+      "lock": "./chopper.lock.json"
+    }
+  },
+  "watcher": {
+    "interval": 350,
+    "exts": [
+      "ts",
+      "json"
+    ],
+    "match": [
+      "./*.*"
+    ],
+    "skip": [
+      "*/.git/*"
+    ]
+  }
+}

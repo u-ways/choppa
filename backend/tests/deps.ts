@@ -1,10 +1,12 @@
 /** Backend test dependencies */
-import { Rhum } from "https://deno.land/x/rhum@v1.1.2/mod.ts";
+import {Rhum} from "https://deno.land/x/rhum@v1.1.2/mod.ts";
 
-const plan = (a: string, b: Function) => Rhum.testPlan(a, b)
-const suite = (a: string, b: Function) => Rhum.testSuite(a, b)
-const scenario = (a: string, b: Function) => Rhum.testCase(a, b)
-const assertEquals = (a: any, b: any) => Rhum.asserts.assertEquals(a, b)
+const stubbed = (ToBeStubbed: any) => Rhum.stubbed(ToBeStubbed)
+const mock = (ToBeMocked: any) => Rhum.mock(ToBeMocked)
+const plan = (name: string, testFn: Function) => Rhum.testPlan(name, testFn)
+const suite = (name: string, testFn: Function) => Rhum.testSuite(name, testFn)
+const scenario = (name: string, testFn: Function) => Rhum.testCase(name, testFn)
+const assertEquals = (expected: any, actual: any) => Rhum.asserts.assertEquals(expected, actual)
 const runTests = () => Rhum.run()
 
-export { plan, suite, scenario, assertEquals, runTests }
+export {stubbed, mock, plan, suite, scenario, assertEquals, runTests}

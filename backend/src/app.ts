@@ -1,6 +1,6 @@
 import {Application, blue, gray, green, red, yellow} from "../deps.ts";
 
-import {hostname, port} from "../config/chopper.config.ts";
+import {port} from "../config/chopper.config.ts";
 import {GraphQLAllowedMethods, GraphQLRoutes} from "./graphql/entrypoint.graphql.ts";
 
 import {httpLogger} from "./middlewares/http_logger.ts";
@@ -19,11 +19,11 @@ app.use(httpLogger);
 
 app.use(GraphQLRoutes, GraphQLAllowedMethods);
 
-app.use(staticRestServer);
+app.use(staticRestServer());
 
-console.info(gray("[Chopper] ") + green("Binding server to listen at ") + blue(`${hostname}:${port}`))
+console.info(gray("[Chopper] ") + green("Binding server to listen on port ") + blue(`${port}`))
 
-await app.listen({hostname, port}).catch(error => {
+await app.listen({port}).catch(error => {
     console.error(gray("[Chopper] ") + red(`Error - ${error}`))
     throw error;
 })

@@ -2,10 +2,9 @@
 
 import type {Context} from "../../deps.ts";
 
-export const staticRestServer = async (ctx: Context, next: Function) => {
-    await ctx.send({
-        root: `../frontend/dist`,
-        index: "index.html",
-    });
-    await next();
+export function staticRestServer(root: string = `../frontend/dist`, index: string = "index.html") {
+    return async (ctx: Context, next: Function) => {
+        await ctx.send({ root: root, index: index });
+        await next();
+    };
 }

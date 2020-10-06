@@ -1,12 +1,10 @@
-import {plan, suite, scenario, assertEquals, runTests} from "../deps.ts";
+import {assertEquals, plan, runTests, scenario, suite} from "../deps.ts";
 import {Application, Context} from "../../deps.ts";
 import {port} from "../../config/chopper.config.ts";
-import {staticRestServer} from "../../src/middlewares/static_server.ts";
+import {generateAbortController, HOSTNAME} from "../utils/http_utils.ts";
 
 plan("http_module.ts", () => {
-    suite("Oak",  () => {
-        const HOST_NAME = "127.0.0.1";
-
+    suite("Oak()", () => {
         scenario("Can bind to Choppa port config", async () => {
             let bindedPort = 0;
             const app = new Application();
@@ -19,17 +17,10 @@ plan("http_module.ts", () => {
 
             app.use(async (ctx: Context, next: Function) => await next())
 
-            await app.listen({hostname: HOST_NAME, port, signal: ac.signal})
+            await app.listen({hostname: HOSTNAME, port, signal: ac.signal})
             assertEquals(bindedPort, port);
         });
     });
 });
 
-function generateAbortController () {
-    const controller = new AbortController();
-    const { signal } = controller;
-    return { controller, signal }
-}
-
 runTests();
-

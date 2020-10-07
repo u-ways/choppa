@@ -1,6 +1,6 @@
 import {assertEquals, plan, runTests, scenario, suite} from "../deps.ts";
 import {Application, Context} from "../../deps.ts";
-import {port} from "../../config/chopper.config.ts";
+import {port} from "../../config/choppa.config.ts";
 import {generateAbortController, HOSTNAME} from "../utils/http_utils.ts";
 
 plan("http_module.ts", () => {

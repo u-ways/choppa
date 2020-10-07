@@ -1,7 +1,7 @@
-Chopper Backend:
+Choppa Backend:
 ===
 
-Chopper Backend module. It is built using [deno.land][1]. 
+Choppa Backend module. It is built using [deno.land][1]. 
 (A secure runtime for JavaScript and TypeScript.)
 
 #### Available Commands/Tasks:
@@ -40,7 +40,7 @@ We use [deno-nessie ][5] for our database migrations.
 **Example of a migration file:** 
 
 A migration file should be named as follows: `[TIMESTAMP]-[DESCRIPTION].ts` 
-and are located in `chopper-backend/config/db/migrations`
+and are located in `choppa/config/db/migrations`
 
 **Note:** Migration files are ordered and _recognised_ by the timestamp (Epoch)
  at the start of file name.
@@ -68,7 +68,7 @@ export const down: Migration = () => {
 **Example of a seed file:** 
 
 A seed file can be named as follows: `[DESCRIPTION].ts` 
-and are located in `chopper-backend/config/db/seeds`
+and are located in `choppa/config/db/seeds`
 
 ```ts
 // Filename example_squad.ts

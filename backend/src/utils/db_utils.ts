@@ -10,7 +10,7 @@ const dbPool: Pool = new Pool({
 }, connectionOptions.poolSize);
 
 /**
- * Query to connect to Chopper's database client to verify connectivity
+ * Query to connect to Choppa's database client to verify connectivity
  */
 export async function runQuery(query: string) {
     const client = await dbPool.connect();
@@ -20,14 +20,14 @@ export async function runQuery(query: string) {
 }
 
 /**
- * Attempt to connect to Chopper's database client to verify connectivity
+ * Attempt to connect to Choppa's database client to verify connectivity
  */
 export async function dbConnection() {
     console.info(yellow(`${gray("[Database]")} Connecting to the database`))
     const client = await dbPool
         .connect()
         .catch(error => {
-            console.error(bold(red(`Failed to connect to Chopper's Database: ${error.message}`)));
+            console.error(bold(red(`Failed to connect to Choppa's Database: ${error.message}`)));
             throw error;
         });
     console.info(green(`${gray("[Database]")} Successfully connected to the database!`))

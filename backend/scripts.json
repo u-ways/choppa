@@ -32,14 +32,15 @@
         "write",
         "read"
       ],
-      "cmd": "deno run -c ./tsconfig.json ./src/app.ts",
-      "desc": "Start Chopper Server (development)",
+      "cmd": "deno run ./src/app.ts",
+      "desc": "Start Choppa Server (development)",
       "env": {
         "ENVIRONMENT": "development"
       },
+      "lock": "./choppa.lock.json",
       "log": "info",
-      "watch": true,
-      "lock": "./chopper.lock.json"
+      "tsconfig": "./tsconfig.json",
+      "watch": true
     },
     "startProd": {
       "allow": [
@@ -50,20 +51,13 @@
         "read"
       ],
       "cmd": "deno run ./src/app.ts",
-      "desc": "Run Chopper Backend (production)",
+      "desc": "Run Choppa Backend (production)",
       "env": {
-        "ENVIRONMENT": "production",
-        "CHOPPER_HOSTNAME": "CHANGEME",
-        "CHOPPER_PORT": "CHANGEME",
-        "DB_NAME": "CHANGEME",
-        "DB_HOST_URL": "CHANGEME",
-        "DB_PORT": "CHANGEME",
-        "DB_USERNAME": "CHANGEME",
-        "DB_PASSWORD": "CHANGEME",
-        "DB_POOL_CONNECTIONS": "CHANGEME"
+        "_comment": "Environment variables are set by the production environment"
       },
-      "watch": false,
-      "lock": "./chopper.lock.json"
+      "lock": "./choppa.lock.json",
+      "tsconfig": "./tsconfig.json",
+      "watch": false
     }
   },
   "watcher": {

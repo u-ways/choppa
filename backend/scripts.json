@@ -1,0 +1,76 @@
+{
+  "$schema": "https://deno.land/x/denon/schema.json",
+  "scripts": {
+    "migrate": {
+      "allow": [
+        "env",
+        "net",
+        "read"
+      ],
+      "cmd": "deno run https://raw.githubusercontent.com/halvardssm/deno-nessie/master/cli.ts migrate -d -c ./config/nessie.config.ts",
+      "watch": false
+    },
+    "seed": {
+      "allow": [
+        "env",
+        "net",
+        "read"
+      ],
+      "cmd": "deno run https://raw.githubusercontent.com/halvardssm/deno-nessie/master/cli.ts seed -d -c ./config/nessie.config.ts",
+      "watch": false
+    },
+    "lint": {
+      "cmd": "deno lint ./src",
+      "watch": false,
+      "unstable": true
+    },
+    "startDev": {
+      "allow": [
+        "run",
+        "env",
+        "net",
+        "write",
+        "read"
+      ],
+      "cmd": "deno run ./src/app.ts",
+      "desc": "Start Choppa Server (development)",
+      "env": {
+        "ENVIRONMENT": "development"
+      },
+      "lock": "./choppa.lock.json",
+      "log": "info",
+      "tsconfig": "./tsconfig.json",
+      "watch": true
+    },
+    "startProd": {
+      "allow": [
+        "run",
+        "env",
+        "net",
+        "write",
+        "read"
+      ],
+      "cmd": "deno run ./src/app.ts",
+      "desc": "Run Choppa Backend (production)",
+      "env": {
+        "_comment": "Environment variables are set by the production environment"
+      },
+      "lock": "./choppa.lock.json",
+      "tsconfig": "./tsconfig.json",
+      "watch": false
+    }
+  },
+  "watcher": {
+    "interval": 350,
+    "exts": [
+      "ts",
+      "json"
+    ],
+    "match": [
+      "./*.*"
+    ],
+    "skip": [
+      "*/.git/*"
+    ]
+  }
+}

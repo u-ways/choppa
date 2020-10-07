@@ -11,6 +11,7 @@ local.properties
 ##################
 .vscode/*
 *.code-workspace
+/backend/.vscode/
 
 # Local History for Visual Studio Code
 .history/

@@ -13,3 +13,6 @@ export default {
 };
 
 export const dex = Dex({client: "postgres"});
+
+export { Migration } from "https://raw.githubusercontent.com/halvardssm/deno-nessie/master/mod.ts";
+

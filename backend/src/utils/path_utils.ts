@@ -24,7 +24,7 @@ export function rwd(meta: ImportMeta): string {
  * // => ...choppa/backend/src/utils/path_utils.ts
  * ```
  *
- * @param url import.meta.url
+ * @param meta
  */
 export function rfn(meta: ImportMeta): string {
     return fromFileUrl(meta.url);

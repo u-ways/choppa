@@ -37,7 +37,7 @@
       "env": {
         "ENVIRONMENT": "development"
       },
-      "lock": "./choppa.lock.json",
+      "lock": "./deps.lock.json",
       "log": "info",
       "tsconfig": "./tsconfig.json",
       "watch": true
@@ -55,8 +55,14 @@
       "env": {
         "_comment": "Environment variables are set by the production environment"
       },
-      "lock": "./choppa.lock.json",
+      "lock": "./deps.lock.json",
       "tsconfig": "./tsconfig.json",
+      "watch": false
+    },
+    "test": {
+      "cmd": "deno test --allow-all tests/acceptance",
+      "tsconfig": "./tsconfig.json",
+      "desc": "Run Choppa backend acceptance tests",
       "watch": false
     }
   },

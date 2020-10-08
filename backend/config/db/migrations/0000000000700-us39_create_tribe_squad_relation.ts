@@ -9,5 +9,3 @@ export const up: Migration = () => {
         table.foreign("squad_id").references("squad_id").inTable("squad");
     }).toString();
 };
-
-

@@ -4,3 +4,4 @@ export {Application, Context, Router, RouterContext, helpers, HttpError, Status}
 export {Pool} from "https://deno.land/x/postgres@v0.4.5/mod.ts";
 export {PoolClient} from "https://deno.land/x/postgres@v0.4.5/client.ts";
 export {applyGraphQL, gql, GQLError, ResolversProps} from "https://deno.land/x/oak_graphql@0.6.2/mod.ts"
+export {resolve, dirname, fromFileUrl} from "https://deno.land/std@0.73.0/path/mod.ts";

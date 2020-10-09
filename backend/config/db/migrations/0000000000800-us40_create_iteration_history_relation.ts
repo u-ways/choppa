@@ -1,7 +1,8 @@
-import {dex, Migration} from "../../nessie.config.ts";
+import {Migration} from "../../nessie.config.ts";
+import {createTable, dropTable} from "../../../src/utils/db_utils.ts";
 
 export const up: Migration = () => {
-    return dex.schema.createTable("iteration_history", (table: any) => {
+    return createTable("iteration_history", (table: any) => {
         table.integer("iter_id");
         table.integer("tribe_id");
         table.integer("squad_id");
@@ -11,5 +12,9 @@ export const up: Migration = () => {
         table.foreign("tribe_id").references("tribe_id").inTable("tribe");
         table.foreign("squad_id").references("squad_id").inTable("squad");
         table.foreign("mem_id").references("mem_id").inTable("member");
-    }).toString();
+    });
 }
+
+export const down: Migration = () => {
+    return dropTable("iteration_history");
+};

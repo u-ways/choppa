@@ -22,3 +22,7 @@ export const connectionOptions: ConnectionOptions = {
     poolSize: parseInt(Deno.env.get("DB_POOL_CONNECTIONS") || "15")
 };
 
+/**
+ * Database default SQL dialect
+ */
+export const dialect: string = "postgres"

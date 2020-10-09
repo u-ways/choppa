@@ -1,13 +1,20 @@
 {
   "$schema": "https://deno.land/x/denon/schema.json",
   "scripts": {
+    "lint": {
+      "cmd": "deno lint ./src",
+      "desc": "scan Choppa source (./src) for common issues and errors.",
+      "unstable": true,
+      "watch": false
+    },
     "migrate": {
       "allow": [
         "env",
         "net",
         "read"
       ],
-      "cmd": "deno run https://raw.githubusercontent.com/halvardssm/deno-nessie/master/cli.ts migrate -d -c ./config/nessie.config.ts",
+      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts -d -c ./config/nessie.config.ts migrate",
+      "desc": "run migration - will migrate your migrations in your migration folder (sorted by timestamp).",
       "watch": false
     },
     "rollback": {
@@ -17,7 +24,7 @@
         "read"
       ],
       "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts -d -c ./config/nessie.config.ts rollback",
-      "desc": "rollback [amount|all] - rollback your migrations by the amount amount defined of how many migrations, defaults to 1 if not set.",
+      "desc": "rollback [amount|all] - rollback your migrations by the amount defined of how many migrations, defaults to 1 if not set.",
       "watch": false
     },
     "seed": {
@@ -26,13 +33,9 @@
         "net",
         "read"
       ],
-      "cmd": "deno run https://raw.githubusercontent.com/halvardssm/deno-nessie/master/cli.ts seed -d -c ./config/nessie.config.ts",
+      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts -d -c ./config/nessie.config.ts seed",
+      "desc": "seed [name] - will seed your database using the seed folder. Seed takes an optional matcher as input. Matcher can be regex or string.",
       "watch": false
-    },
-    "lint": {
-      "cmd": "deno lint ./src",
-      "watch": false,
-      "unstable": true
     },
     "format": {
       "cmd": "deno fmt --check",
@@ -47,7 +50,7 @@
         "read"
       ],
       "cmd": "deno run ./src/app.ts",
-      "desc": "Start Choppa Server (development)",
+      "desc": "start Choppa server (development)",
       "env": {
         "ENVIRONMENT": "development"
       },
@@ -65,7 +68,7 @@
         "read"
       ],
       "cmd": "deno run ./src/app.ts",
-      "desc": "Run Choppa Backend (production)",
+      "desc": "start Choppa server (production)",
       "env": {
         "_comment": "Environment variables are set by the production environment"
       },
@@ -75,8 +78,8 @@
     },
     "test": {
       "cmd": "deno test --allow-all tests/acceptance",
+      "desc": "run Choppa backend acceptance tests",
       "tsconfig": "./tsconfig.json",
-      "desc": "Run Choppa backend acceptance tests",
       "watch": false
     }
   },

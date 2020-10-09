@@ -1,6 +1,5 @@
-import { ClientPostgreSQL } from "https://raw.githubusercontent.com/halvardssm/deno-nessie/master/mod.ts";
-import Dex from "https://raw.githubusercontent.com/denjucks/dex/master/mod.ts";
-import { connectionOptions } from "./database.config.ts";
+import {ClientPostgreSQL} from "../deps.ts";
+import {connectionOptions} from "./database.config.ts";
 
 const nessieOptions = {
     migrationFolder: `${Deno.cwd()}/config/db/migrations`,
@@ -12,7 +11,4 @@ export default {
     exposeQueryBuilder: false,
 };
 
-export const dex = Dex({client: "postgres"});
-
-export { Migration } from "https://raw.githubusercontent.com/halvardssm/deno-nessie/master/mod.ts";
-
+export {Migration} from "../deps.ts";

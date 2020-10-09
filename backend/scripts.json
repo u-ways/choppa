@@ -10,6 +10,16 @@
       "cmd": "deno run https://raw.githubusercontent.com/halvardssm/deno-nessie/master/cli.ts migrate -d -c ./config/nessie.config.ts",
       "watch": false
     },
+    "rollback": {
+      "allow": [
+        "env",
+        "net",
+        "read"
+      ],
+      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts -d -c ./config/nessie.config.ts rollback",
+      "desc": "rollback [amount|all] - rollback your migrations by the amount amount defined of how many migrations, defaults to 1 if not set.",
+      "watch": false
+    },
     "seed": {
       "allow": [
         "env",

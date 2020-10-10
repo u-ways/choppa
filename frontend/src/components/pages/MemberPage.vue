@@ -5,9 +5,9 @@
 </template>
 
 <script lang="ts">
-  import {Options, Vue} from "vue-class-component";
-  import MemberMolecule from "@/components/molecules/MemberMolecule.vue";
-  import {Member} from "@/data/types/Member";
+  import { Options, Vue } from "vue-class-component";
+  import MemberMolecule from "../molecules/MemberMolecule.vue";
+  import { Member } from "../../data/types/Member";
 
   @Options({
     components: {

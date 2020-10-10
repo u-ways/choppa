@@ -6,24 +6,33 @@
   "extends": [
     "plugin:vue/vue3-essential",
     "eslint:recommended",
-    "@vue/typescript"
+    "@vue/typescript",
+    "prettier",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:jest/style"
   ],
   "parserOptions": {
     "parser": "@typescript-eslint/parser"
   },
   "plugins": [
-    "html",
     "prettier"
   ],
   "rules": {
     "semi": "error",
     "strict": "error",
-    "quotes": [
-      "error",
-      "double",
-      {
-        "allowTemplateLiterals": true
+    "quotes": ["error", "double", { "allowTemplateLiterals": true }],
+    "object-curly-spacing": ["error", "always"],
+    "brace-style": ["error", "1tbs"],
+    "curly": ["error", "all"]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".vue"]
       }
-    ]
+    }
   }
 }

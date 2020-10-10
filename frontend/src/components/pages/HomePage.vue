@@ -11,8 +11,8 @@
 </template>
 
 <script lang="ts">
-  import {Options, Vue} from "vue-class-component";
-  import ChoppaLogoAtom from "@/components/atoms/ChoppaLogoAtom.vue";
+  import { Options, Vue } from "vue-class-component";
+  import ChoppaLogoAtom from "../atoms/ChoppaLogoAtom.vue";
 
   @Options({
     components: {

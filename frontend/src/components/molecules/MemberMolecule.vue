@@ -12,9 +12,9 @@
 
 <script lang="ts">
   import { Options, Vue } from "vue-class-component";
-  import { Member } from "@/data/types/Member";
+  import { Member } from "../../data/types/Member";
   import LabelAtom from "../atoms/LabelAtom.vue";
-  import {LabelType} from "@/data/enumerations/LabelType";
+  import { LabelType } from "../../data/enumerations/LabelType";
 
   @Options({
     components: {

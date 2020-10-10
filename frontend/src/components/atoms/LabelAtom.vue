@@ -8,7 +8,7 @@
 
 <script lang="ts">
   import { Options, Vue } from "vue-class-component";
-  import { LabelType } from "@/data/enumerations/LabelType";
+  import { LabelType } from "../../data/enumerations/LabelType";
 
   @Options({
     props: {

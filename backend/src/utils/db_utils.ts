@@ -1,37 +1,36 @@
-import {bold, Dex, gray, green, Pool, red, yellow} from "../../deps.ts";
-import {connectionOptions, dialect} from "../../config/database.config.ts";
+import { Dex, Pool } from "../../deps.ts";
+import { connectionOptions, dialect } from "../../config/database.config.ts";
+import { log } from "./logger_utils.ts";
 
 const dbPool: Pool = new Pool({
-    user: connectionOptions.user,
-    password: connectionOptions.password,
-    database: connectionOptions.database,
-    hostname: connectionOptions.hostname,
-    port: connectionOptions.port
+  user: connectionOptions.user,
+  password: connectionOptions.password,
+  database: connectionOptions.database,
+  hostname: connectionOptions.hostname,
+  port: connectionOptions.port,
 }, connectionOptions.poolSize);
 
 /**
  * Query to connect to Choppa's database client to verify connectivity
  */
 export async function runQuery(query: string) {
-    const client = await dbPool.connect();
-    const dbResult = await client.query(query);
-    client.release();
-    return dbResult
+  const client = await dbPool.connect();
+  const dbResult = await client.query(query);
+  client.release();
+  return dbResult;
 }
 
 /**
  * Attempt to connect to Choppa's database client to verify connectivity
  */
 export async function dbConnection() {
-    console.info(yellow(`${gray("[Database]")} Connecting to the database`))
-    const client = await dbPool
-        .connect()
-        .catch(error => {
-            console.error(bold(gray("[Database]") + red(`Failed to connect to Choppa's Database: ${error.message}`)));
-            throw error;
-        });
-    console.info(green(`${gray("[Database]")} Successfully connected to the database!`))
-    client.release();
+  log.warn("Database", "Connecting to the database");
+  const client = await dbPool.connect().catch((error) => {
+    log.error("Database", error);
+    throw error;
+  });
+  log.success("Database", "Successfully connected to the database!");
+  client.release();
 }
 
 /**
@@ -43,8 +42,8 @@ export async function dbConnection() {
  * @param name table name to create
  * @param table
  */
-export function createTable(name: string, table: (table: any) => any) {
-    return Dex.default({client: dialect}).schema.createTable(name, table).toString();
+export function createTable(name: string, table: (table: unknown) => unknown) {
+  return `${Dex.default({ client: dialect }).schema.createTable(name, table)}`;
 }
 
 /**
@@ -53,5 +52,5 @@ export function createTable(name: string, table: (table: any) => any) {
  * @param name table name to drop
  */
 export function dropTable(name: string) {
-    return Dex.default({client: dialect}).schema.dropTable(name).toString();
+  return `${Dex.default({ client: dialect }).schema.dropTable(name)}`;
 }

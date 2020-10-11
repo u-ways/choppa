@@ -1,4 +1,4 @@
-import {gql} from "../../deps.ts";
+import { gql } from "../../deps.ts";
 
 export const typeDefinitions = gql`
     ############################################################
@@ -61,4 +61,4 @@ export const typeDefinitions = gql`
         # Squad Mutations
         CreateSquad(name: String!): ID
     }
-`
+`;

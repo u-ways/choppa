@@ -1,34 +1,41 @@
 /** GraphQL Query Resolvers ******************************/
-const Query = {
-    // Members Query Resolvers ///////////////////////////////////////////
-    FindMemberById: (parent: any, {id}: any, context: any, info: any) => ({
-        "id": id,
-        "name": `member-${id}`
-    }),
+import Member from "../core/domain/Member.ts";
+import Squad from "../core/domain/Squad.ts";
+import Tribe from "../core/domain/Tribe.ts";
 
-    // Squad Query Resolvers /////////////////////////////////////////////
-    FindSquadById: (parent: any, {id}: any, context: any, info: any) => ({
-        "id": id,
-        "name": `squad-${id}`,
-        "members": [{"id": "mem_id", "name": "member-1"}, {"id": "mem_id", "name": "member-2"}]
-    }),
-}
+const Query = {
+  // Members Query Resolvers ///////////////////////////////////////////
+  FindMemberById: (parent: Squad, { id }: Member) => ({
+    "id": id,
+    "name": `member-${id}`,
+  }),
+
+  // Squad Query Resolvers /////////////////////////////////////////////
+  FindSquadById: (parent: Tribe, { id }: Squad) => ({
+    "id": id,
+    "name": `squad-${id}`,
+    "members": [
+      { "id": "mem_id", "name": "member-1" },
+      { "id": "mem_id", "name": "member-2" },
+    ],
+  }),
+};
 
 /** GraphQL Mutation Resolvers ***************************/
 const Mutation = {
-    // Members Mutation Resolvers ////////////////////////////////////////
-    CreateMember: (parent: any, {name}: any, context: any, info: any) => (
-        `id-of-${name}`
-    ),
+  // Members Mutation Resolvers ////////////////////////////////////////
+  CreateMember: (parent: Squad, { name }: Member) => (
+    `id-of-${name}`
+  ),
 
-    // Squad Mutation Resolvers //////////////////////////////////////////
-    CreateSquad: (parent: any, {name}: any, context: any, info: any) => (
-        `id-of-${name}`
-    ),
-}
+  // Squad Mutation Resolvers //////////////////////////////////////////
+  CreateSquad: (parent: Tribe, { name }: Squad) => (
+    `id-of-${name}`
+  ),
+};
 
 /** GraphQL Query & Mutation Resolvers *******************/
 export const resolvers = {
-    Query: Query,
-    Mutation: Mutation
-}
+  Query: Query,
+  Mutation: Mutation,
+};

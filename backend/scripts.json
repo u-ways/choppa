@@ -1,11 +1,17 @@
 {
   "$schema": "https://deno.land/x/denon/schema.json",
   "scripts": {
+    "checkFormat": {
+      "cmd": "deno fmt --check",
+      "desc": "check code format against Deno's code formatting standard"
+    },
+    "format": {
+      "cmd": "deno fmt",
+      "desc": "format code using Deno's code formatting standard"
+    },
     "lint": {
       "cmd": "deno lint ./src",
-      "desc": "scan Choppa source (./src) for common issues and errors.",
-      "unstable": true,
-      "watch": false
+      "unstable": true
     },
     "migrate": {
       "allow": [
@@ -13,9 +19,8 @@
         "net",
         "read"
       ],
-      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts -d -c ./config/nessie.config.ts migrate",
-      "desc": "run migration - will migrate your migrations in your migration folder (sorted by timestamp).",
-      "watch": false
+      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts migrate -d -c ./config/nessie.config.ts",
+      "desc": "migrate [amount?|all] - migrate your migrations in your migration folder (sorted by timestamp), defaults to all if not set"
     },
     "rollback": {
       "allow": [
@@ -24,8 +29,7 @@
         "read"
       ],
       "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts -d -c ./config/nessie.config.ts rollback",
-      "desc": "rollback [amount|all] - rollback your migrations by the amount defined of how many migrations, defaults to 1 if not set.",
-      "watch": false
+      "desc": "rollback [amount|all] - rollback your migrations by the amount amount defined of how many migrations, defaults to 1 if not set."
     },
     "seed": {
       "allow": [
@@ -33,13 +37,8 @@
         "net",
         "read"
       ],
-      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts -d -c ./config/nessie.config.ts seed",
-      "desc": "seed [name] - will seed your database using the seed folder. Seed takes an optional matcher as input. Matcher can be regex or string.",
-      "watch": false
-    },
-    "format": {
-      "cmd": "deno fmt --check",
-      "watch": false
+      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts seed -d -c ./config/nessie.config.ts",
+      "desc": "seed [matcher?]: Seed - will seed your database. Optional matcher will match all files in your seed folder by string literal or RegExp"
     },
     "startDev": {
       "allow": [
@@ -68,21 +67,20 @@
         "read"
       ],
       "cmd": "deno run ./src/app.ts",
-      "desc": "start Choppa server (production)",
+      "desc": "run Choppa server (production)",
       "env": {
         "_comment": "Environment variables are set by the production environment"
       },
       "lock": "./deps.lock.json",
-      "tsconfig": "./tsconfig.json",
-      "watch": false
+      "tsconfig": "./tsconfig.json"
     },
     "test": {
       "cmd": "deno test --allow-all tests/acceptance",
-      "desc": "run Choppa backend acceptance tests",
       "tsconfig": "./tsconfig.json",
-      "watch": false
+      "desc": "run Choppa acceptance tests"
     }
   },
+  "watch": false,
   "watcher": {
     "interval": 350,
     "exts": [

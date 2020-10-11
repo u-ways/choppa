@@ -52,4 +52,4 @@ jobs:
 
       - name: Backend Formatter
         working-directory: ./backend
-        run: denon format
+        run: denon checkFormat

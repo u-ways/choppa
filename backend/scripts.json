@@ -24,6 +24,10 @@
       "watch": false,
       "unstable": true
     },
+    "format": {
+      "cmd": "deno fmt --check",
+      "watch": false
+    },
     "startDev": {
       "allow": [
         "run",

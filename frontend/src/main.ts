@@ -14,10 +14,16 @@ const app: App = createApp(ChoppaApp);
 
 // Loggers
 window.onerror = (error: Event | string) => {
-    Logger.error(`[Error] ${error}`);
-    return true;
+  Logger.error(`[Error] ${error}`);
+  return true;
 };
-app.config.warnHandler = (msg: string, instance: ComponentPublicInstance | null, trace: string) => Logger.warn(`[Vue Warn] ${msg} \n${trace}`);
+
+app.config.warnHandler = (
+  msg: string,
+  instance: ComponentPublicInstance | null,
+  trace: string
+) => Logger.warn(`[Vue Warn] ${msg} \n${trace}`);
+
 app.config.errorHandler = (err: unknown) => Logger.error(`[Vue Error] ${(err as Error).message} \n${(err as Error).stack}`);
 
 app.component("font-awesome", FontAwesomeIcon);

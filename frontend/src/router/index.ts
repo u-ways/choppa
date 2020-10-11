@@ -4,21 +4,21 @@ import HomePage from "../components/pages/HomePage.vue";
 import NotFoundPage from "../components/pages/NotFoundPage.vue";
 
 const router = createRouter({
-    history: createWebHashHistory(),
-    routes: [
-        {
-            path: "/",
-            component: HomePage
-        },
-        {
-            path: "/member",
-            component: MemberPage
-        },
-        {
-            path: "/:pathMatch(.*)*",
-            component: NotFoundPage
-        }
-    ]
+  history: createWebHashHistory(),
+  routes: [
+    {
+      path: "/",
+      component: HomePage
+    },
+    {
+      path: "/member",
+      component: MemberPage
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      component: NotFoundPage
+    }
+  ]
 });
 
 export default router;

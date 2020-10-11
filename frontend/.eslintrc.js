@@ -1,38 +1,42 @@
-{
-  "root": true,
-  "env": {
+module.exports = {
+  root: true,
+  env: {
     "node": true
   },
-  "extends": [
+  extends: [
     "plugin:vue/vue3-essential",
     "eslint:recommended",
     "@vue/typescript",
-    "prettier",
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
     "plugin:jest/style"
   ],
-  "parserOptions": {
+  parserOptions: {
     "parser": "@typescript-eslint/parser"
   },
-  "plugins": [
-    "prettier"
+  plugins: [
+    "@typescript-eslint"
   ],
-  "rules": {
+  rules: {
     "semi": "error",
     "strict": "error",
     "quotes": ["error", "double", { "allowTemplateLiterals": true }],
     "object-curly-spacing": ["error", "always"],
     "brace-style": ["error", "1tbs"],
-    "curly": ["error", "all"]
+    "curly": ["error", "all"],
+    "indent": "off",
+    "vue/script-indent": ["error", 2, { "baseIndent": 0 }],
+    "vue/html-indent": ["error", 2, { "baseIndent": 0 }],
+    "vue/require-explicit-emits": ["error", { "allowProps": false }],
+    "@typescript-eslint/explicit-function-return-type": ["error", { "allowExpressions": true }]
   },
-  "settings": {
+  settings: {
     "import/resolver": {
       "node": {
         "paths": ["src"],
-        "extensions": [".js", ".jsx", ".ts", ".tsx", ".vue"]
+        "extensions": [".js", ".ts", ".vue"]
       }
     }
   }
-}
+};

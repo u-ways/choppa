@@ -1,35 +1,37 @@
 <template>
-  <span class="label" :class="[ labelType.backgroundColourCss ]">
-    <span class="label__text" :class="[ labelType.textColourCss ]">
-      {{text}}
-    </span>
+<span class="label" :class="[labelType.backgroundColourCss]">
+  <span class="label__text" :class="[labelType.textColourCss]">
+    {{ text }}
   </span>
+</span>
 </template>
 
 <script lang="ts">
-  import { Options, Vue } from "vue-class-component";
-  import { LabelType } from "@/data/enumerations/LabelType";
+import { Options, Vue } from "vue-class-component";
+import { LabelType } from "../../data/enumerations/LabelType";
 
-  @Options({
-    props: {
-      text: String,
-      labelType: LabelType
-    }
-  })
-  export default class LabelAtom extends Vue {}
+@Options({
+  props: {
+    text: String,
+    labelType: LabelType
+  }
+})
+export default class LabelAtom extends Vue {
+  labelType!: LabelType;
+}
 </script>
 
 <style scoped lang="scss">
-  @import "../../assets/scss/colours";
-  @import "../../assets/scss/labels";
+@import "../../assets/scss/colours";
+@import "../../assets/scss/labels";
 
-  .label {
-    border-radius: 4px;
-    padding: 2px;
+.label {
+  border-radius: 4px;
+  padding: 2px;
 
-    &__text {
-      font-weight: bold;
-      font-size: x-small;
-    }
+  &__text {
+    font-weight: bold;
+    font-size: x-small;
   }
+}
 </style>

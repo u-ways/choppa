@@ -1,18 +1,12 @@
 <template>
-  <font-awesome icon="helicopter" :class="[ this.css ]" />
+<font-awesome icon="helicopter" :class="[ this.css ]" />
 </template>
 
-<script lang="ts">
-  import { Options, Vue } from "vue-class-component";
-
-  @Options({
-    props: {
-      css: String
-    }
-  })
-  export default class ChoppaLogoAtom extends Vue {}
+<script setup="props" lang="ts">
+declare const props: { //eslint-disable-line no-unused-vars
+  css: string
+};
 </script>
 
 <style scoped lang="scss">
-
 </style>

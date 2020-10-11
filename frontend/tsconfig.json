@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es6",
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
@@ -12,8 +12,13 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "src",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
     "types": [
+      "jest",
+      "jest-dom",
       "webpack-env"
     ],
     "paths": {
@@ -32,8 +37,8 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "src/tests/**/*.ts",
+    "src/tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules"

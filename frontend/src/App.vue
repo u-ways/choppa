@@ -1,17 +1,12 @@
 <template>
-  <router-view />
+<router-view />
 </template>
 
 <script lang="ts">
-  import { Options, Vue } from "vue-class-component";
-  import MemberMolecule from "@/components/molecules/MemberMolecule.vue";
+import { Options, Vue } from "vue-class-component";
 
-  @Options({
-    components: {
-      MemberMolecule
-    }
-  })
-  export default class App extends Vue {}
+@Options({})
+export default class App extends Vue {}
 </script>
 
 <style lang="scss">

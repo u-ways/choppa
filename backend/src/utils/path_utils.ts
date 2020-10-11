@@ -1,4 +1,4 @@
-import {dirname, fromFileUrl} from "../../deps.ts";
+import { dirname, fromFileUrl } from "../../deps.ts";
 
 /**
  * Get the relative (to file) working directory path from import meta.
@@ -12,7 +12,7 @@ import {dirname, fromFileUrl} from "../../deps.ts";
  * @param meta
  */
 export function rwd(meta: ImportMeta): string {
-    return dirname(fromFileUrl(meta.url));
+  return dirname(fromFileUrl(meta.url));
 }
 
 /**
@@ -27,5 +27,5 @@ export function rwd(meta: ImportMeta): string {
  * @param meta
  */
 export function rfn(meta: ImportMeta): string {
-    return fromFileUrl(meta.url);
+  return fromFileUrl(meta.url);
 }

@@ -11,6 +11,7 @@
     },
     "lint": {
       "cmd": "deno lint ./src",
+      "desc": "lint source (`./src`) using Deno's linting standard",
       "unstable": true
     },
     "migrate": {
@@ -19,7 +20,7 @@
         "net",
         "read"
       ],
-      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts migrate -d -c ./config/nessie.config.ts",
+      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts -d -c ./config/nessie.config.ts migrate",
       "desc": "migrate [amount?|all] - migrate your migrations in your migration folder (sorted by timestamp), defaults to all if not set"
     },
     "rollback": {
@@ -37,7 +38,7 @@
         "net",
         "read"
       ],
-      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts seed -d -c ./config/nessie.config.ts",
+      "cmd": "deno run https://deno.land/x/nessie@v1.1.2/cli.ts -d -c ./config/nessie.config.ts seed",
       "desc": "seed [matcher?]: Seed - will seed your database. Optional matcher will match all files in your seed folder by string literal or RegExp"
     },
     "startDev": {

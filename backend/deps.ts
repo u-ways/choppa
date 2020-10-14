@@ -1,15 +1,5 @@
 /** Backend dependencies */
 export {
-  red,
-  blue,
-  gray,
-  green,
-  cyan,
-  bold,
-  yellow,
-} from "https://deno.land/std@0.69.0/fmt/colors.ts";
-
-export {
   Application,
   Context,
   Router,

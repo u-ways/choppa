@@ -1,15 +1,24 @@
-import { assertEquals, plan, runTests, scenario, suite } from "../deps.ts";
+import {
+  assertEquals,
+  mock,
+  plan,
+  runTests,
+  scenario,
+  suite,
+} from "../deps.ts";
 import { Log, LogLevel } from "../../src/utils/logger_utils.ts";
-import { Rhum } from "https://deno.land/x/rhum@v1.1.4/mod.ts";
 
 plan("logger_utils.ts", () => {
   suite("log()", () => {
     scenario(
       "Setting LOG_LEVEL env variable to OFF will not produce any logs.",
       () => {
-        console = Rhum.mock(FakeConsole).create();
-        const logger = Rhum.mock(Log).withConstructorArgs(LogLevel.OFF)
+        // @ts-ignore
+        console = mock(FakeConsole).create();
+        const logger = mock(Log)
+          .withConstructorArgs(LogLevel.OFF)
           .create();
+
         logger.error("Test", "#1");
         logger.warn("Test", "#2");
         logger.info("Test", "#3");
@@ -26,10 +35,12 @@ plan("logger_utils.ts", () => {
     scenario(
       "Setting LOG_LEVEL env variable to ERROR will only produce error logs.",
       () => {
-        console = Rhum.mock(FakeConsole).create();
-
-        const logger = Rhum.mock(Log).withConstructorArgs(LogLevel.ERROR)
+        // @ts-ignore
+        console = mock(FakeConsole).create();
+        const logger = mock(Log)
+          .withConstructorArgs(LogLevel.ERROR)
           .create();
+
         logger.error("Test", "#1");
         logger.warn("Test", "#2");
         logger.info("Test", "#3");
@@ -46,10 +57,12 @@ plan("logger_utils.ts", () => {
     scenario(
       "Setting LOG_LEVEL env variable to WARN will only produce [error, warn] logs.",
       () => {
-        console = Rhum.mock(FakeConsole).create();
-
-        const logger = Rhum.mock(Log).withConstructorArgs(LogLevel.WARN)
+        // @ts-ignore
+        console = mock(FakeConsole).create();
+        const logger = mock(Log)
+          .withConstructorArgs(LogLevel.WARN)
           .create();
+
         logger.error("Test", "#1");
         logger.warn("Test", "#2");
         logger.info("Test", "#3");
@@ -66,10 +79,12 @@ plan("logger_utils.ts", () => {
     scenario(
       "Setting LOG_LEVEL env variable to INFO will only produce [error, warn, info] logs.",
       () => {
-        console = Rhum.mock(FakeConsole).create();
-
-        const logger = Rhum.mock(Log).withConstructorArgs(LogLevel.INFO)
+        // @ts-ignore
+        console = mock(FakeConsole).create();
+        const logger = mock(Log)
+          .withConstructorArgs(LogLevel.INFO)
           .create();
+
         logger.error("Test", "#1");
         logger.warn("Test", "#2");
         logger.info("Test", "#3");
@@ -86,10 +101,12 @@ plan("logger_utils.ts", () => {
     scenario(
       "Setting LOG_LEVEL env variable to ALL will produce all logs.",
       () => {
-        console = Rhum.mock(FakeConsole).create();
-
-        const logger = Rhum.mock(Log).withConstructorArgs(LogLevel.ALL)
+        // @ts-ignore
+        console = mock(FakeConsole).create();
+        const logger = mock(Log)
+          .withConstructorArgs(LogLevel.ALL)
           .create();
+
         logger.error("Test", "#1");
         logger.warn("Test", "#2");
         logger.info("Test", "#3");
@@ -107,6 +124,7 @@ plan("logger_utils.ts", () => {
 });
 runTests();
 
+// @ts-ignore
 class FakeConsole implements Console {
   memory: any;
 

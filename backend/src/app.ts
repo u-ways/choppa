@@ -1,4 +1,4 @@
-import { Application, blue } from "../deps.ts";
+import { Application } from "../deps.ts";
 
 import { port } from "../config/choppa.config.ts";
 import { gqlMethods, gqlRoutes } from "./graphql/entrypoint.graphql.ts";
@@ -23,7 +23,7 @@ app.use(gqlRoutes, gqlMethods);
 app.use(staticRestServer());
 
 log.warn("HTTP", `Starting HTTP server`);
-log.success("HTTP", `Server is listening on port ${blue(port.toString())}`);
+log.success("HTTP", `Server is listening on port: ${port.toString()}`);
 
 await app.listen({ port }).catch((error) => {
   log.error("Choppa", error);

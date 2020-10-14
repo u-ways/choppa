@@ -1,4 +1,5 @@
-import { LogLevelStrings } from "../../config/logger.config.ts";
+import { logLevel } from "../../config/logger.config.ts";
+import { Color } from "./color_utils.ts";
 
 export enum LogLevel {
   OFF,
@@ -10,7 +11,7 @@ export enum LogLevel {
 
 export class Log {
   private readonly level: LogLevel;
-  private fmt = (s: string) => {`[${s}]`};
+  private fmt = (s: string) => `[${s}]`;
 
   constructor(level: LogLevel) {
     this.level = level;
@@ -18,31 +19,47 @@ export class Log {
 
   info(source: string, data: string): void {
     if (this.level >= LogLevel.INFO) {
-      console.info(`%c${this.fmt(source)} %c${data}`, "color: gray;", "color: blue;");
+      console.info(
+        `%c${this.fmt(source)} %c${data}`,
+        Color.gray,
+        Color.blue,
+      );
     }
   }
 
   warn(source: string, data: string): void {
     if (this.level >= LogLevel.WARN) {
-      console.warn(`%c${this.fmt(source)} %c${data}`, "color: gray;", "color: yellow;");
+      console.warn(
+        `%c${this.fmt(source)} %c${data}`,
+        Color.gray,
+        Color.yellow,
+      );
     }
   }
 
   error(source: string, data: string): void {
     if (this.level >= LogLevel.ERROR) {
-      console.error(`%c${this.fmt(source)} %c${data}`, "color: gray;", "color: red;");
+      console.error(
+        `%c${this.fmt(source)} %c${data}`,
+        Color.gray,
+        Color.red,
+      );
     }
   }
 
   success(source: string, data: string): void {
     if (this.level >= LogLevel.ALL) {
-      console.info(`%c${this.fmt(source)} %c${data}`, "color: gray;", "color: green;");
+      console.info(
+        `%c${this.fmt(source)} %c${data}`,
+        Color.gray,
+        Color.green,
+      );
     }
   }
 
-  plain(source: string, data: string): void {
+  plain(...data: string[]): void {
     if (this.level >= LogLevel.INFO) {
-      console.info(`${this.fmt(source)} ${data}`);
+      console.info(...data);
     }
   }
 }
@@ -57,4 +74,4 @@ export class Log {
  * - `source`: Which service did the log came from. (i.e. Database, HTTP (Choppa), GraphQL...etc.)
  * - `data`:   The data you want to log.
  */
-export const log = new Log(LogLevelStrings);
+export const log = new Log(logLevel);

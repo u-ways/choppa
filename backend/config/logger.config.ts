@@ -23,6 +23,6 @@ function extractLogLevel(input: string): LogLevel {
  * - INFO
  * - ALL (DEFAULT)
  */
-export const LogLevelStrings: LogLevel = extractLogLevel(
+export const logLevel: LogLevel = extractLogLevel(
   Deno.env.get("LOG_LEVEL") || "ALL",
 );

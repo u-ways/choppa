@@ -1,43 +1,62 @@
 package choppaorg.choppa.service
 
-import choppaorg.choppa.exception.EntityNotFoundException
-import choppaorg.choppa.model.Member
 import choppaorg.choppa.model.Squad
-import choppaorg.choppa.model.SquadMember
-import choppaorg.choppa.repository.SquadMemberRepository
 import choppaorg.choppa.repository.SquadRepository
+import choppaorg.choppa.service.relations.IterationHistoryService
+import choppaorg.choppa.service.relations.SquadCurrentMembersService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.time.Clock
-import java.time.LocalDateTime
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class SquadService(
-    private val squadRepository: SquadRepository,
-    private val squadMemberRepository: SquadMemberRepository,
-    private val clock: Clock
+        @Autowired private val squadRepository: SquadRepository,
+        @Autowired private val squadCurrentMembersService: SquadCurrentMembersService,
+        @Autowired private val iterationHistoryService: IterationHistoryService
 ) {
-
-    fun create(name: String): Squad {
-        return squadRepository.save(Squad(name));
+    fun find(id: UUID): Squad? {
+        return squadRepository.findById(id).get()
     }
 
-    fun findById(id: Int): Squad {
-        return squadRepository
-            .findById(id)
-            .orElseThrow { EntityNotFoundException("No squad found with id $id") }
+    fun find(): List<Squad> {
+        return squadRepository.findAll()
     }
 
-    fun addMember(squad: Squad, member: Member) {
-        val memberAlreadyAdded = squad.members
-            .map { sm -> sm.member.id }
-            .contains(member.id)
+    fun find(ids: List<UUID>): List<Squad> {
+        return squadRepository.findAllById(ids)
+    }
 
-        if (memberAlreadyAdded) {
-            return
-        }
+    @Transactional
+    fun save(squad: Squad): Squad {
+        squadCurrentMembersService.save(squad.members)
+        iterationHistoryService.save(squad.iterations)
+        return squadRepository.save(squad)
+    }
 
-        val squadMember = SquadMember(squad, member, LocalDateTime.now(clock))
-        squadMemberRepository.save(squadMember)
-        squad.members = setOf(*squad.members.toTypedArray(), squadMember)
+    @Transactional
+    fun save(squads: List<Squad>): List<Squad> {
+        squads.forEach { squadCurrentMembersService.save(it.members) }
+        squads.forEach { iterationHistoryService.save(it.iterations) }
+        return squadRepository.saveAll(squads)
+    }
+
+    @Transactional
+    fun save(vararg squads: Squad): List<Squad> {
+        return save(squads.toMutableList())
+    }
+
+    fun delete(squad: Squad): Squad {
+        squadRepository.delete(squad)
+        return squad
+    }
+
+    fun delete(squads: List<Squad>): List<Squad> {
+        squadRepository.deleteAll(squads)
+        return squads
+    }
+
+    fun delete(vararg squads: Squad): List<Squad> {
+        return delete(squads.toMutableList())
     }
 }

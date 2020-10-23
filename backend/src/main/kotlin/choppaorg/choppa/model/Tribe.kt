@@ -17,7 +17,7 @@ data class Tribe @JsonCreator constructor(
         @JsonProperty("id")
         val id: UUID,
 
-        @Column(name = "tribe_name")
+        @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
         @JsonProperty("name")
         val name: String,
 

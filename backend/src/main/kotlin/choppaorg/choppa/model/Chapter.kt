@@ -11,18 +11,18 @@ import javax.persistence.*
 @Table(name = "chapter")
 data class Chapter @JsonCreator constructor(
         @Id
-        @Column(name = "chap_id", columnDefinition = "uuid")
+        @Column(name = "chapter_id", columnDefinition = "uuid")
         @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
         @JsonProperty("id")
         val id: UUID,
 
-        @Column(name = "chap_role")
-        @JsonProperty("role")
-        val role: String,
+        @Column(name = "name", columnDefinition = "VARCHAR(100)", unique = true, nullable = false)
+        @JsonProperty("name")
+        val name: String,
 
         @OneToMany(mappedBy = "chapter")
         @JsonIgnore
         val member: List<Member>
 ) {
-        override fun toString() = "Chapter(id=$id, role=$role)"
+        override fun toString() = "Chapter(id=$id, name=$name)"
 }

@@ -13,18 +13,18 @@ import javax.persistence.*
 @Table(name = "member")
 data class Member @JsonCreator constructor(
         @Id
-        @Column(name = "mem_id", columnDefinition = "uuid")
+        @Column(name = "member_id", columnDefinition = "uuid")
         @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
         @JsonProperty("id")
         val id: UUID,
 
-        @Column(name = "mem_name")
+        @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
         @JsonProperty("name")
         val name: String,
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JsonProperty("chapter")
-        @JoinColumn(name = "mem_chap", referencedColumnName = "chap_id")
+        @JoinColumn(name = "chapter", referencedColumnName = "chapter_id")
         val chapter: Chapter,
 
         @OneToMany(mappedBy = "member")

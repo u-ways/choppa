@@ -15,7 +15,7 @@ import javax.persistence.*
 data class IterationHistory(
         @Id
         @ManyToOne
-        @JoinColumn(name = "iter_id", referencedColumnName = "iter_id", columnDefinition = "uuid")
+        @JoinColumn(name = "iteration_id", referencedColumnName = "iteration_id", columnDefinition = "uuid")
         @JsonProperty("iteration")
         val iteration: Iteration,
 
@@ -33,7 +33,7 @@ data class IterationHistory(
 
         @Id
         @ManyToOne
-        @JoinColumn(name = "mem_id", referencedColumnName = "mem_id", columnDefinition = "uuid")
+        @JoinColumn(name = "member_id", referencedColumnName = "member_id", columnDefinition = "uuid")
         @JsonProperty("member")
         val member: Member
 ) {

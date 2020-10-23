@@ -14,20 +14,20 @@ import javax.persistence.Table
 @Table(name = "iteration")
 data class Iteration @JsonCreator constructor(
         @Id
-        @Column(name = "iter_id", columnDefinition = "uuid")
+        @Column(name = "iteration_id", columnDefinition = "uuid")
         @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
         @JsonProperty("id")
         val id: UUID,
 
-        @Column(name = "iter_no")
+        @Column(name = "number", columnDefinition = "INTEGER", nullable = false)
         @JsonProperty("number")
         val number: Int,
 
-        @Column(name = "iter_timebox")
+        @Column(name = "timebox", columnDefinition = "INTEGER", nullable = false)
         @JsonProperty("timebox")
         val timebox: Int,
 
-        @Column(name = "iter_date")
+        @Column(name = "date", columnDefinition = "TIMESTAMP", nullable = false)
         @JsonProperty("date")
         val date: Timestamp
 ) {

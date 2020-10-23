@@ -1,6 +1,7 @@
-CREATE TABLE chapter (
-    id   SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+CREATE TABLE chapter
+(
+    chapter_id UUID PRIMARY KEY,
+    name       VARCHAR(100) NOT NULL,
 
-    CONSTRAINT chapter_unique_1 UNIQUE (name)
+    CONSTRAINT chapter_u1 UNIQUE (name)
 );

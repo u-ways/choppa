@@ -22,15 +22,15 @@ data class SquadCurrentMembers(
 
         @Id
         @ManyToOne
-        @JoinColumn(name = "mem_id", referencedColumnName = "mem_id", columnDefinition = "uuid")
+        @JoinColumn(name = "member_id", referencedColumnName = "member_id", columnDefinition = "uuid")
         @JsonProperty("member")
         val member: Member,
 
-        @Column(name = "rotation_date")
+        @Column(name = "rotation_date", columnDefinition = "TIMESTAMP", nullable = false)
         @JsonProperty("rotationDate")
         val rotationDate: Timestamp = from(now())
 ) {
-        override fun toString() = "SquadCurrentMembers(squad=$squad, member=$member)"
+        override fun toString() = "SquadCurrentMembers(squad=$squad, member=$member, rotationDate=$rotationDate)"
 }
 
 class SquadCurrentMembersId(

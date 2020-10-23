@@ -18,7 +18,7 @@ data class Squad @JsonCreator constructor(
         @JsonProperty("id")
         val id: UUID,
 
-        @Column(name = "squad_name")
+        @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
         @JsonProperty("name")
         val name: String,
 
@@ -28,7 +28,7 @@ data class Squad @JsonCreator constructor(
 
         @ManyToOne
         @JsonIgnore
-        @JoinColumn(name = "squad_tribe", referencedColumnName = "tribe_id")
+        @JoinColumn(name = "tribe", referencedColumnName = "tribe_id")
         var tribe: Tribe?,
 
         @OneToMany(mappedBy = "squad")

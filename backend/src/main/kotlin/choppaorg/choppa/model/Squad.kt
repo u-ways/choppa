@@ -1,20 +1,39 @@
 package choppaorg.choppa.model
 
+import choppaorg.choppa.model.relations.IterationHistory
+import choppaorg.choppa.model.relations.SquadCurrentMembers
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.hibernate.annotations.GenericGenerator
+import java.util.*
 import javax.persistence.*
 
 @Entity
-class Squad(
+@Table(name = "squad")
+data class Squad @JsonCreator constructor(
+        @Id
+        @Column(name = "squad_id", columnDefinition = "uuid")
+        @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+        @JsonProperty("id")
+        val id: UUID,
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int?,
+        @Column(name = "squad_name")
+        @JsonProperty("name")
+        val name: String,
 
-    var name: String,
+        @OneToMany(mappedBy = "squad")
+        @JsonIgnore
+        var members: MutableList<SquadCurrentMembers> = mutableListOf(),
 
-    @OneToMany(cascade = [ CascadeType.ALL ], mappedBy = "squad")
-    var members: Set<SquadMember>
+        @ManyToOne
+        @JsonIgnore
+        @JoinColumn(name = "squad_tribe", referencedColumnName = "tribe_id")
+        var tribe: Tribe?,
 
+        @OneToMany(mappedBy = "squad")
+        @JsonIgnore
+        var iterations: MutableList<IterationHistory> = mutableListOf()
 ) {
-    constructor(name: String): this(null, name, emptySet())
+        override fun toString() = "Squad(id=$id, name=$name)"
 }
-

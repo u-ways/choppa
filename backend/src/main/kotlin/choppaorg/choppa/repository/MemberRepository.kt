@@ -1,8 +1,9 @@
 package choppaorg.choppa.repository
 
 import choppaorg.choppa.model.Member
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
-interface MemberRepository : CrudRepository<Member, Int>
+interface MemberRepository : JpaRepository<Member, UUID>

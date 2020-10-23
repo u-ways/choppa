@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ChoppaApplication
+class Application
 
 fun main(args: Array<String>) {
-	runApplication<ChoppaApplication>(*args)
+	runApplication<Application>(*args)
 }

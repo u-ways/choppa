@@ -1,17 +1,28 @@
 package choppaorg.choppa.model
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.hibernate.annotations.GenericGenerator
+import java.util.*
+import javax.persistence.*
 
 @Entity
-class Chapter(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int?,
+@Table(name = "chapter")
+data class Chapter @JsonCreator constructor(
+        @Id
+        @Column(name = "chap_id", columnDefinition = "uuid")
+        @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+        @JsonProperty("id")
+        val id: UUID,
 
-    var name: String
+        @Column(name = "chap_role")
+        @JsonProperty("role")
+        val role: String,
+
+        @OneToMany(mappedBy = "chapter")
+        @JsonIgnore
+        val member: List<Member>
 ) {
-    constructor(name: String): this(null, name)
+        override fun toString() = "Chapter(id=$id, role=$role)"
 }

@@ -21,11 +21,7 @@ data class Tribe @JsonCreator constructor(
         @JsonProperty("name")
         val name: String,
 
-        @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
-        @JoinTable(
-                name = "tribe_current_squads",
-                joinColumns = [JoinColumn(name = "tribe_id")],
-                inverseJoinColumns = [JoinColumn(name = "squad_id")])
+        @OneToMany(mappedBy = "tribe")
         @JsonIgnore
         var squads: MutableList<Squad> = mutableListOf(),
 

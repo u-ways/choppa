@@ -1,0 +1,36 @@
+#### Standard Kotlin Rules: (Enabled)
+#
+# - Indentation formatting - respects `.editorconfig` `indent_size` with no continuation indent (see [EditorConfig](#editorconfig) section for more) (id: `indent`)
+# - No semicolons (unless used to separate multiple statements on the same line) (id: `no-semi`)
+# - No unused `import`s (id: `no-unused-imports`)
+# - No consecutive blank lines (id: `no-consecutive-blank-lines`)
+# - No blank lines before `}` (id: `no-blank-line-before-rbrace`)
+# - No trailing whitespaces (id: `no-trailing-spaces`)
+# - No `Unit` returns (`fun fn {}` instead of `fun fn: Unit {}`) (id: `no-unit-return`)
+# - No empty (`{}`) class bodies (id: `no-empty-class-body`)
+# - When wrapping chained calls `.`, `?.` and `?:` should be placed on the next line (id: `chain-wrapping`)
+# - When a line is broken at an assignment (`=`) operator the break comes after the symbol (id: `no-line-break-before-assignment`)
+# - When class/function signature doesn't fit on a single line, each parameter must be on a separate line
+# - Consistent string templates (`$v` instead of `${v}`, `${p.v}` instead of `${p.v.toString()}`) (id: `string-template`)
+# - Consistent order of modifiers (id: `modifier-order`)
+# - Consistent spacing after keywords, commas; around colons, curly braces, parens, infix operators, comments, range operators, etc (ids: `colon-spacing`, `comma-spacing`, `curly-spacing`, `dot-spacing`, `double-colon-spacing`, `keyword-spacing`, `op-spacing`, `paren-spacing`, `range-spacing`)
+# - Newline at the end of each file (enabled by default)
+# - Imports ordered consistently (see [Custom ktlint EditorConfig properties](#custom-ktlint-specific-editorconfig-properties) for more) (id: `import-ordering`)
+#
+#### Additional helper tasks:
+#
+# If you want to fix your setting in IntelliJ IDE match Kotlin StyleGuide:
+# 1. Open the project from `backend` as the root directory (i.e. not from Choppa)
+# 2. run: `./gradlew ktlintApplyToIdeaGlobally`
+# 3. Restart your IDE
+#
+# If you want to add a git `pre-commit` hook that will format that code for you on staged files:
+# 1. Open the project from `backend` as the root directory (i.e. not from Choppa)
+# 2. run: `./gradlew addKtlintCheckGitPreCommitHook`
+#
+# noinspection EditorConfigKeyCorrectness
+[*.{kt, kts}]
+indent_size = 4
+insert_final_newline = true
+max_line_length = off
+disabled_rules = no-wildcard-imports

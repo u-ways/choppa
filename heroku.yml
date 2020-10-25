@@ -2,4 +2,4 @@ build:
   docker:
     web: Dockerfile
 run:
-  web: denon --config ./scripts.json startProd
+  web: java -Xmx300m -Xss512k -XX:CICompilerCount=2 -jar build/libs/choppa-0.0.1-SNAPSHOT.jar

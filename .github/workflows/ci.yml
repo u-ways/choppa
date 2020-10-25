@@ -13,43 +13,32 @@ jobs:
           node-version: "12.x"
 
       - name: Install Frontend Dependencies
-        working-directory: ./frontend
+        working-directory: ./src/frontend/
         run: npm install
 
-      - name: Frontend Tests
-        working-directory: ./frontend
-        run: npm run tests
-
       - name: Frontend Lint
-        working-directory: ./frontend
+        working-directory: ./src/frontend/
         run: npm run lint
+
+      - name: Frontend Tests
+        working-directory: ./src/frontend/
+        run: npm run tests
 
   Backend:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      - uses: denolib/setup-deno@c7d7968ad4a59c159a777f79adddad6872ee8d96
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
         with:
-          deno-version: "v1.4.2"
-
-      - name: Install Denon
-        working-directory: ./backend
-        run: |
-          deno install --unstable -qAf https://deno.land/x/denon@2.4.0/denon.ts
-          echo "/home/runner/.deno/bin" >> $GITHUB_PATH
-      - name: Install Backend Dependencies
-        working-directory: ./backend
-        run: deno cache ./src/app.ts
-
-      - name: Backend Tests
-        working-directory: ./backend
-        run: denon test
+          java-version: 11
 
       - name: Backend Lint
-        working-directory: ./backend
-        run: denon lint
+        run: ./gradlew ktlintCheck
 
-      - name: Backend Formatter
-        working-directory: ./backend
-        run: denon checkFormat
+      - name: Backend Unit Tests
+        run: ./gradlew unit
+
+      - name: Backend Acceptance Tests
+        run: ./gradlew acceptance

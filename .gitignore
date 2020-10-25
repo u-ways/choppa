@@ -11,7 +11,6 @@ local.properties
 ##################
 .vscode/*
 *.code-workspace
-/backend/.vscode/
 
 # Local History for Visual Studio Code
 .history/
@@ -33,7 +32,6 @@ local.properties
 ######################
 log/
 *.log
-*.sql
 *.sqlite
 
 # OS generated files #
@@ -46,8 +44,9 @@ log/
 ehthumbs.db
 Thumbs.db
 
-# JAva               #
+# Java               #
 ######################
-build/
-.gradle/
+/build/
+/.gradle/
+/.idea/
 src/main/resources/public/

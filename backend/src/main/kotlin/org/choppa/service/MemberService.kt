@@ -15,7 +15,7 @@ class MemberService(
     @Autowired private val iterationHistoryService: IterationHistoryService
 ) {
     fun find(id: UUID): Member? {
-        return memberRepository.findById(id).get()
+        return memberRepository.findById(id).orElseGet { null }
     }
 
     fun find(): List<Member> {

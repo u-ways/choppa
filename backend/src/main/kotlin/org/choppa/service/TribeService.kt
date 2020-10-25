@@ -15,7 +15,7 @@ class TribeService(
     @Autowired private val iterationHistoryService: IterationHistoryService
 ) {
     fun find(id: UUID): Tribe? {
-        return tribeRepository.findById(id).get()
+        return tribeRepository.findById(id).orElseGet { null }
     }
 
     fun find(): List<Tribe> {

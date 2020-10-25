@@ -1,24 +1,24 @@
 package org.choppa.service.relations
 
 import org.choppa.model.relations.SquadCurrentMembers
+import org.choppa.model.relations.SquadCurrentMembersId
 import org.choppa.repository.relations.SquadCurrentMembersRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.UUID
 
 @Service
 class SquadCurrentMembersService(
-    @Autowired private val squadCurrentMembersRepository: SquadCurrentMembersRepository
+    @Autowired private val squadCurrentMembersRepository: SquadCurrentMembersRepository,
 ) {
-    fun find(id: UUID): SquadCurrentMembers? {
-        return squadCurrentMembersRepository.findById(id).get()
+    fun find(id: SquadCurrentMembersId): SquadCurrentMembers? {
+        return squadCurrentMembersRepository.findById(id).orElseGet { null }
     }
 
     fun find(): List<SquadCurrentMembers> {
         return squadCurrentMembersRepository.findAll()
     }
 
-    fun find(ids: List<UUID>): List<SquadCurrentMembers> {
+    fun find(ids: List<SquadCurrentMembersId>): List<SquadCurrentMembers> {
         return squadCurrentMembersRepository.findAllById(ids)
     }
 

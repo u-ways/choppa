@@ -7,7 +7,9 @@ import org.choppa.model.Squad
 import org.choppa.model.Tribe
 import java.io.Serializable
 import java.util.UUID
+import java.util.UUID.randomUUID
 import javax.persistence.Entity
+import javax.persistence.FetchType.EAGER
 import javax.persistence.Id
 import javax.persistence.IdClass
 import javax.persistence.JoinColumn
@@ -19,25 +21,25 @@ import javax.persistence.Table
 @Table(name = "iteration_history")
 data class IterationHistory(
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "iteration_id", referencedColumnName = "iteration_id", columnDefinition = "uuid")
     @JsonProperty("iteration")
     val iteration: Iteration,
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "tribe_id", referencedColumnName = "tribe_id", columnDefinition = "uuid")
     @JsonProperty("tribe")
     val tribe: Tribe,
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "squad_id", referencedColumnName = "squad_id", columnDefinition = "uuid")
     @JsonProperty("squad")
     val squad: Squad,
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "member_id", referencedColumnName = "member_id", columnDefinition = "uuid")
     @JsonProperty("member")
     val member: Member
@@ -46,8 +48,8 @@ data class IterationHistory(
 }
 
 class IterationHistoryId(
-    val iteration: UUID = UUID.randomUUID(),
-    val tribe: UUID = UUID.randomUUID(),
-    val squad: UUID = UUID.randomUUID(),
-    val member: UUID = UUID.randomUUID()
+    val iteration: UUID = randomUUID(),
+    val tribe: UUID = randomUUID(),
+    val squad: UUID = randomUUID(),
+    val member: UUID = randomUUID()
 ) : Serializable

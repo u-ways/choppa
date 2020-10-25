@@ -11,7 +11,7 @@ class IterationService(
     @Autowired private val iterationRepository: IterationRepository
 ) {
     fun find(id: UUID): Iteration? {
-        return iterationRepository.findById(id).get()
+        return iterationRepository.findById(id).orElseGet { null }
     }
 
     fun find(): List<Iteration> {

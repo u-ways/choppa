@@ -7,9 +7,11 @@ import org.choppa.model.relations.IterationHistory
 import org.choppa.model.relations.SquadCurrentMembers
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
+import java.util.UUID.randomUUID
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.FetchType
+import javax.persistence.FetchType.EAGER
+import javax.persistence.FetchType.LAZY
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
@@ -23,22 +25,22 @@ data class Member @JsonCreator constructor(
     @Column(name = "member_id", columnDefinition = "uuid")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JsonProperty("id")
-    val id: UUID,
+    val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
     @JsonProperty("name")
     val name: String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = EAGER)
     @JsonProperty("chapter")
     @JoinColumn(name = "chapter", referencedColumnName = "chapter_id")
     val chapter: Chapter,
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = EAGER)
     @JsonIgnore
     var squads: MutableList<SquadCurrentMembers> = mutableListOf(),
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = LAZY)
     @JsonIgnore
     var iterations: MutableList<IterationHistory> = mutableListOf()
 ) {

@@ -1,24 +1,24 @@
 package org.choppa.service.relations
 
 import org.choppa.model.relations.IterationHistory
+import org.choppa.model.relations.IterationHistoryId
 import org.choppa.repository.relations.IterationHistoryRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.UUID
 
 @Service
 class IterationHistoryService(
     @Autowired private val iterationHistoryRepository: IterationHistoryRepository
 ) {
-    fun find(id: UUID): IterationHistory? {
-        return iterationHistoryRepository.findById(id).get()
+    fun find(id: IterationHistoryId): IterationHistory? {
+        return iterationHistoryRepository.findById(id).orElseGet { null }
     }
 
     fun find(): List<IterationHistory> {
         return iterationHistoryRepository.findAll()
     }
 
-    fun find(ids: List<UUID>): List<IterationHistory> {
+    fun find(ids: List<IterationHistoryId>): List<IterationHistory> {
         return iterationHistoryRepository.findAllById(ids)
     }
 

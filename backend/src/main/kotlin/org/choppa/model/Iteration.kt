@@ -3,8 +3,10 @@ package org.choppa.model
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.GenericGenerator
-import java.sql.Timestamp
+import java.time.Instant
+import java.time.Instant.now
 import java.util.UUID
+import java.util.UUID.randomUUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -17,7 +19,7 @@ data class Iteration @JsonCreator constructor(
     @Column(name = "iteration_id", columnDefinition = "uuid")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JsonProperty("id")
-    val id: UUID,
+    val id: UUID = randomUUID(),
 
     @Column(name = "number", columnDefinition = "INTEGER", nullable = false)
     @JsonProperty("number")
@@ -29,7 +31,9 @@ data class Iteration @JsonCreator constructor(
 
     @Column(name = "date", columnDefinition = "TIMESTAMP", nullable = false)
     @JsonProperty("date")
-    val date: Timestamp
+    val date: Instant = now()
+
+    // TODO(u-ways) it might be better to couple the iteration history column in here instead of having relations? (with lazy fetch)
 ) {
     override fun toString() = "Iteration(id=$id, number=$number, timebox=$timebox, date=$date)"
 }

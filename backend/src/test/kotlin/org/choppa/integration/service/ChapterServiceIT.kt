@@ -1,0 +1,67 @@
+package org.choppa.integration.service
+
+import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeNull
+import org.choppa.model.Chapter
+import org.choppa.repository.ChapterRepository
+import org.choppa.service.ChapterService
+import org.choppa.support.flyway.FlywayMigrationConfig
+import org.choppa.support.testcontainers.TestDBContainer
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
+import org.springframework.test.context.ActiveProfiles
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import javax.transaction.Transactional
+
+private const val CHAPTER_NAME = "chapterName"
+
+@SpringBootTest
+@Testcontainers
+@Import(FlywayMigrationConfig::class)
+@ActiveProfiles("test")
+internal class ChapterServiceIT @Autowired constructor(
+    private val chapterRepository: ChapterRepository,
+    private val chapterService: ChapterService
+) {
+    @Container
+    private val testDBContainer: TestDBContainer = TestDBContainer.get()
+
+    @Test
+    fun givenNewEntity_WhenServiceSavesNewEntity_ThenServiceShouldReturnSameEntityWithGeneratedId() {
+        val entity = Chapter(name = CHAPTER_NAME)
+        val result = chapterService.save(entity)
+
+        result.id shouldBe entity.id
+        result.name shouldBe entity.name
+    }
+
+    @Test
+    @Transactional
+    fun givenExistingEntityInDb_WhenServiceFindsEntityById_ThenServiceShouldReturnCorrectEntity() {
+        val existingEntity = chapterService.save(Chapter(name = CHAPTER_NAME))
+        val result = chapterService.find(existingEntity.id)
+
+        result?.id shouldBe existingEntity.id
+        result?.name shouldBe existingEntity.name
+    }
+
+    @Test
+    @Transactional
+    fun givenExistingEntityInDb_WhenServiceDeletesEntity_ThenServiceShouldRemovesEntityFromDb() {
+        val existingEntity = chapterService.save(Chapter(name = CHAPTER_NAME))
+        val removedEntity = chapterService.delete(existingEntity)
+        val result = chapterService.find(removedEntity.id)
+
+        result?.shouldBeNull()
+    }
+
+    @AfterEach
+    internal fun tearDown() {
+        chapterRepository.deleteAll()
+        chapterRepository.deleteAll()
+    }
+}

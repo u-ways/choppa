@@ -16,7 +16,7 @@ class SquadService(
     @Autowired private val iterationHistoryService: IterationHistoryService
 ) {
     fun find(id: UUID): Squad? {
-        return squadRepository.findById(id).get()
+        return squadRepository.findById(id).orElseGet { null }
     }
 
     fun find(): List<Squad> {

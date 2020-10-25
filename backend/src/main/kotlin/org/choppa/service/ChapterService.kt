@@ -11,7 +11,7 @@ class ChapterService(
     @Autowired private val chapterRepository: ChapterRepository
 ) {
     fun find(id: UUID): Chapter? {
-        return chapterRepository.findById(id).get()
+        return chapterRepository.findById(id).orElseGet { null }
     }
 
     fun find(): List<Chapter> {

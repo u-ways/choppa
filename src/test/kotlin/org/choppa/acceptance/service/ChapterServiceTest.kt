@@ -27,7 +27,6 @@ internal class ChapterServiceTest {
         service = ChapterService(repository)
     }
 
-    // TODO(u-ways) convert tests names to look like this:
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
         val entity = Chapter(name = CHAPTER_NAME)

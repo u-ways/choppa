@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.SHORT
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
@@ -82,7 +83,36 @@ ktlint {
     }
 }
 
+tasks.register<Test>("unit") {
+    description = "Runs all unit tests."
+    maxParallelForks = 3
+    include("org/choppa/unit/**")
+}
+
+tasks.register<Test>("acceptance") {
+    description = "Runs all acceptance tests."
+    maxParallelForks = 3
+    include("org/choppa/acceptance/**")
+    filter {
+        includeTestsMatching("*Test")
+    }
+    failFast = true
+}
+
+tasks.register<Test>("integration") {
+    description = "Runs all integration tests."
+    include("org/choppa/integration/**")
+    filter {
+        includeTestsMatching("*IT")
+    }
+    failFast = true
+}
+
 tasks.withType<Test> {
+    group = "test"
+    reports.html.isEnabled = true
+    reports.junitXml.isEnabled = false
+    testLogging.exceptionFormat = SHORT
     useJUnitPlatform()
 }
 

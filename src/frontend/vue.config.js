@@ -1,5 +1,6 @@
 module.exports = {
   publicPath: "./",
+  outputDir: "../main/resources/public",
   devServer: {
     inline: true,
     hot: true,

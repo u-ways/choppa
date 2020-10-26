@@ -29,7 +29,7 @@ internal class IterationServiceTest {
     }
 
     @Test
-    fun givenNewEntity_WhenServiceSavesNewEntity_ThenServiceShouldSaveInRepositoryAndReturnTheSameEntity() {
+    fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
         val entity = Iteration(number = ITERATION_NUMBER, timebox = ITERATION_TIMEBOX)
 
         every { repository.save(entity) } returns entity
@@ -42,7 +42,7 @@ internal class IterationServiceTest {
     }
 
     @Test
-    fun givenExistingEntity_WhenServiceLooksForExistingEntityById_ThenServiceShouldFindUsingRepositoryAndReturnExistingEntity() {
+    fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
         val existingEntity = Iteration(id, ITERATION_NUMBER, ITERATION_TIMEBOX)
 
@@ -56,7 +56,7 @@ internal class IterationServiceTest {
     }
 
     @Test
-    fun givenExistingEntity_WhenServiceDeletesExistingEntity_ThenServiceShouldDeleteUsingRepository() {
+    fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
         val existingEntity = Iteration(randomUUID(), ITERATION_NUMBER, ITERATION_TIMEBOX)
 
         every { repository.delete(existingEntity) } returns Unit

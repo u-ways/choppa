@@ -37,7 +37,7 @@ internal class MemberServiceIT @Autowired constructor(
 
     @Test
     @Transactional
-    fun givenNewEntity_WhenServiceSavesNewEntity_ThenServiceShouldReturnSameEntityWithGeneratedId() {
+    fun `Given new entity, when service saves new entity, then service should return same entity with generated id`() {
         val entity = Member(name = MEMBER_NAME, chapter = CHAPTER)
         val result = memberService.save(entity)
 
@@ -49,7 +49,7 @@ internal class MemberServiceIT @Autowired constructor(
 
     @Test
     @Transactional
-    fun givenExistingEntityInDb_WhenServiceFindsEntityById_ThenServiceShouldReturnCorrectEntity() {
+    fun `Given existing entity in db, when service finds entity by id, then service should return correct entity`() {
         val existingEntity = memberService.save(Member(name = MEMBER_NAME, chapter = CHAPTER))
         val result = memberService.find(existingEntity.id)
 
@@ -61,7 +61,7 @@ internal class MemberServiceIT @Autowired constructor(
 
     @Test
     @Transactional
-    fun givenExistingEntityInDb_WhenServiceDeletesEntity_ThenServiceShouldRemovesEntityFromDb() {
+    fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
         val existingEntity = memberService.save(Member(name = MEMBER_NAME, chapter = CHAPTER))
         val removedEntity = memberService.delete(existingEntity)
         val result = memberService.find(removedEntity.id)

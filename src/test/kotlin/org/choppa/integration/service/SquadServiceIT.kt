@@ -32,7 +32,7 @@ internal class SquadServiceIT @Autowired constructor(
 
     @Test
     @Transactional
-    fun givenNewEntity_WhenServiceSavesNewEntity_ThenServiceShouldReturnSameEntityWithGeneratedId() {
+    fun `Given new entity, when service saves new entity, then service should return same entity with generated id`() {
         val entity = Squad(name = SQUAD_NAME)
         val result = squadService.save(entity)
 
@@ -42,7 +42,7 @@ internal class SquadServiceIT @Autowired constructor(
 
     @Test
     @Transactional
-    fun givenExistingEntityInDb_WhenServiceFindsEntityById_ThenServiceShouldReturnCorrectEntity() {
+    fun `Given existing entity in db, when service finds entity by id, then service should return correct entity`() {
         val existingEntity = squadService.save(Squad(name = SQUAD_NAME))
         val result = squadService.find(existingEntity.id)
 
@@ -52,7 +52,7 @@ internal class SquadServiceIT @Autowired constructor(
 
     @Test
     @Transactional
-    fun givenExistingEntityInDb_WhenServiceDeletesEntity_ThenServiceShouldRemovesEntityFromDb() {
+    fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
         val existingEntity = squadService.save(Squad(name = SQUAD_NAME))
         val removedEntity = squadService.delete(existingEntity)
         val result = squadService.find(removedEntity.id)

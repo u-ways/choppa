@@ -45,3 +45,8 @@ log/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# JAva               #
+######################
+build/
+.gradle/

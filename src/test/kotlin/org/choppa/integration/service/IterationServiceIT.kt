@@ -33,7 +33,7 @@ internal class IterationServiceIT @Autowired constructor(
 
     @Test
     @Transactional
-    fun givenNewEntity_WhenServiceSavesNewEntity_ThenServiceShouldReturnSameEntityWithGeneratedId() {
+    fun `Given new entity, when service saves new entity, then service should return same entity with generated id`() {
         val entity = Iteration(number = ITERATION_NUMBER, timebox = ITERATION_TIMEBOX)
         val result = iterationService.save(entity)
 
@@ -44,7 +44,7 @@ internal class IterationServiceIT @Autowired constructor(
 
     @Test
     @Transactional
-    fun givenExistingEntityInDb_WhenServiceFindsEntityById_ThenServiceShouldReturnCorrectEntity() {
+    fun `Given existing entity in db, when service finds entity by id, then service should return correct entity`() {
         val existingEntity = iterationService.save(Iteration(number = ITERATION_NUMBER, timebox = ITERATION_TIMEBOX))
         val result = iterationService.find(existingEntity.id)
 
@@ -55,7 +55,7 @@ internal class IterationServiceIT @Autowired constructor(
 
     @Test
     @Transactional
-    fun givenExistingEntityInDb_WhenServiceDeletesEntity_ThenServiceShouldRemovesEntityFromDb() {
+    fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
         val existingEntity = iterationService.save(Iteration(number = ITERATION_NUMBER, timebox = ITERATION_TIMEBOX))
         val removedEntity = iterationService.delete(existingEntity)
         val result = iterationService.find(removedEntity.id)

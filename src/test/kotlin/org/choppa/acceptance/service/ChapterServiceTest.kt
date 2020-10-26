@@ -41,7 +41,7 @@ internal class ChapterServiceTest {
     }
 
     @Test
-    fun givenExistingEntity_WhenServiceLooksForExistingEntityById_ThenServiceShouldFindUsingRepositoryAndReturnExistingEntity() {
+    fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
         val existingEntity = Chapter(id, CHAPTER_NAME)
 
@@ -55,7 +55,7 @@ internal class ChapterServiceTest {
     }
 
     @Test
-    fun givenExistingEntity_WhenServiceDeletesExistingEntity_ThenServiceShouldDeleteUsingRepository() {
+    fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
         val existingEntity = Chapter(randomUUID(), CHAPTER_NAME)
 
         every { repository.delete(existingEntity) } returns Unit

@@ -33,7 +33,7 @@ internal class SquadCurrentMembersServiceTest {
     }
 
     @Test
-    fun givenNewEntity_WhenServiceSavesNewEntity_ThenServiceShouldSaveInRepositoryAndReturnTheSameEntity() {
+    fun `Given new entity when, service saves new entity, then service should save in repository and return the same entity`() {
         val entity = SquadCurrentMembers(SQUAD, MEMBER)
 
         every { repository.save(entity) } returns entity
@@ -46,7 +46,7 @@ internal class SquadCurrentMembersServiceTest {
     }
 
     @Test
-    fun givenExistingEntity_WhenServiceLooksForExistingEntityById_ThenServiceShouldFindUsingRepositoryAndReturnExistingEntity() {
+    fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = SquadCurrentMembersId(SQUAD.id, MEMBER.id)
         val existingEntity = SquadCurrentMembers(SQUAD, MEMBER)
 
@@ -60,7 +60,7 @@ internal class SquadCurrentMembersServiceTest {
     }
 
     @Test
-    fun givenExistingEntity_WhenServiceDeletesExistingEntity_ThenServiceShouldDeleteUsingRepository() {
+    fun `Given existing entity when, service deletes existing entity, then service should delete using repository`() {
         val id = SquadCurrentMembersId(SQUAD.id, MEMBER.id)
         val existingEntity = SquadCurrentMembers(SQUAD, MEMBER)
 

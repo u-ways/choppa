@@ -83,6 +83,12 @@ ktlint {
     }
 }
 
+tasks.register<Test>("all") {
+    description = "Runs all tests. (except integration tests)"
+    include("org/choppa/unit/**")
+    include("org/choppa/acceptance/**")
+}
+
 tasks.register<Test>("unit") {
     description = "Runs all unit tests."
     maxParallelForks = 3

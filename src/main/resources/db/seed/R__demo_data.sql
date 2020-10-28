@@ -85,14 +85,14 @@ BEGIN
          , (member_romany_id, 'Romany E.', chapter_intern_id) ON CONFLICT (member_id) DO NOTHING;
 
     -- Iteration
-    insert into iteration (iteration_id, number, timebox, date)
-    values (iteration_370_id, 370, 14, to_timestamp('01-APR-20', 'DD-MON-RRF'))
-         , (iteration_371_id, 371, 14, to_timestamp('15-APR-20', 'DD-MON-RRF'))
-         , (iteration_372_id, 372, 14, to_timestamp('29-APR-20', 'DD-MON-RRF'))
-         , (iteration_373_id, 373, 14, to_timestamp('13-MAY-20', 'DD-MON-RRF'))
-         , (iteration_374_id, 374, 14, to_timestamp('27-MAY-20', 'DD-MON-RRF'))
-         , (iteration_375_id, 375, 14, to_timestamp('10-JUN-20', 'DD-MON-RRF'))
-         , (iteration_376_id, 376, 14, to_timestamp('24-JUN-20', 'DD-MON-RRF')) ON CONFLICT (iteration_id) DO NOTHING;
+    insert into iteration (iteration_id, number, start_date, end_date)
+    values (iteration_370_id, 370, to_timestamp('01-APR-20', 'DD-MON-RRF'), to_timestamp('15-APR-20', 'DD-MON-RRF'))
+         , (iteration_371_id, 371, to_timestamp('15-APR-20', 'DD-MON-RRF'), to_timestamp('29-APR-20', 'DD-MON-RRF'))
+         , (iteration_372_id, 372, to_timestamp('29-APR-20', 'DD-MON-RRF'), to_timestamp('13-MAY-20', 'DD-MON-RRF'))
+         , (iteration_373_id, 373, to_timestamp('13-MAY-20', 'DD-MON-RRF'), to_timestamp('27-MAY-20', 'DD-MON-RRF'))
+         , (iteration_374_id, 374, to_timestamp('27-MAY-20', 'DD-MON-RRF'), to_timestamp('10-JUN-20', 'DD-MON-RRF'))
+         , (iteration_375_id, 375, to_timestamp('10-JUN-20', 'DD-MON-RRF'), to_timestamp('24-JUN-20', 'DD-MON-RRF'))
+         , (iteration_376_id, 376, to_timestamp('24-JUN-20', 'DD-MON-RRF'), to_timestamp('08-JUL-20', 'DD-MON-RRF')) ON CONFLICT (iteration_id) DO NOTHING;
 
     -- Squad Setup
     INSERT INTO squad_current_members (squad_id, member_id, rotation_date)

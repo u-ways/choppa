@@ -33,7 +33,7 @@ data class SquadCurrentMembers(
     @JsonProperty("member")
     val member: Member,
 
-    @Column(name = "rotation_date", columnDefinition = "TIMESTAMP", nullable = false)
+    @Column(name = "rotation_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
     @JsonProperty("rotationDate")
     val rotationDate: Instant = now()
 ) {

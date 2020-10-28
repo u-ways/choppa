@@ -18,7 +18,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import javax.transaction.Transactional
 
 private const val ITERATION_NUMBER = 100
-private const val ITERATION_TIMEBOX = 10
 
 @SpringBootTest
 @Testcontainers
@@ -34,29 +33,31 @@ internal class IterationServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given new entity, when service saves new entity, then service should return same entity with generated id`() {
-        val entity = Iteration(number = ITERATION_NUMBER, timebox = ITERATION_TIMEBOX)
+        val entity = Iteration(number = ITERATION_NUMBER)
         val result = iterationService.save(entity)
 
         result.id shouldBe entity.id
         result.number shouldBe entity.number
-        result.timebox shouldBe entity.timebox
+        result.startDate shouldBe entity.startDate
+        result.endDate shouldBe entity.endDate
     }
 
     @Test
     @Transactional
     fun `Given existing entity in db, when service finds entity by id, then service should return correct entity`() {
-        val existingEntity = iterationService.save(Iteration(number = ITERATION_NUMBER, timebox = ITERATION_TIMEBOX))
+        val existingEntity = iterationService.save(Iteration(number = ITERATION_NUMBER))
         val result = iterationService.find(existingEntity.id)
 
         result?.id shouldBe existingEntity.id
         result?.number shouldBe existingEntity.number
-        result?.timebox shouldBe existingEntity.timebox
+        result?.startDate shouldBe existingEntity.startDate
+        result?.endDate shouldBe existingEntity.endDate
     }
 
     @Test
     @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
-        val existingEntity = iterationService.save(Iteration(number = ITERATION_NUMBER, timebox = ITERATION_TIMEBOX))
+        val existingEntity = iterationService.save(Iteration(number = ITERATION_NUMBER))
         val removedEntity = iterationService.delete(existingEntity)
         val result = iterationService.find(removedEntity.id)
 

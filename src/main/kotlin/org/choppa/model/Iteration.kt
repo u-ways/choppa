@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import java.time.Instant.now
+import java.time.temporal.ChronoUnit.DAYS
 import java.util.UUID
 import java.util.UUID.randomUUID
 import javax.persistence.Column
@@ -25,15 +26,15 @@ data class Iteration @JsonCreator constructor(
     @JsonProperty("number")
     val number: Int,
 
-    @Column(name = "timebox", columnDefinition = "INTEGER", nullable = false)
-    @JsonProperty("timebox")
-    val timebox: Int,
+    @Column(name = "start_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
+    @JsonProperty("startDate")
+    val startDate: Instant = now(),
 
-    @Column(name = "date", columnDefinition = "TIMESTAMP", nullable = false)
-    @JsonProperty("date")
-    val date: Instant = now()
+    @Column(name = "end_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
+    @JsonProperty("endDate")
+    val endDate: Instant = now().plus(14, DAYS)
 
     // TODO(u-ways) it might be better to couple the iteration history column in here instead of having relations? (with lazy fetch)
 ) {
-    override fun toString() = "Iteration(id=$id, number=$number, timebox=$timebox, date=$date)"
+    override fun toString() = "Iteration(id=$id, number=$number, startDate=$startDate, endDate=$endDate)"
 }

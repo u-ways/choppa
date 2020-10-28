@@ -36,7 +36,7 @@ private val CHAPTER = Chapter(id = randomUUID(), name = "chapterName")
 private val MEMBER = Member(id = randomUUID(), name = "memberName", chapter = CHAPTER)
 private val SQUAD = Squad(id = randomUUID(), name = "squadName")
 private val TRIBE = Tribe(id = randomUUID(), name = "tribeName")
-private val ITERATION = Iteration(id = randomUUID(), number = 100, timebox = 10)
+private val ITERATION = Iteration(id = randomUUID(), number = 100)
 
 @SpringBootTest
 @Testcontainers

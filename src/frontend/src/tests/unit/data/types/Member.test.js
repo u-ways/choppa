@@ -1,4 +1,4 @@
-import { describe, it, expect } from "@/tests/unit/test-imports";
+import { describe, expect, it } from "@/tests/unit/test-imports";
 import Member from "@/data/types/Member";
 
 describe("Member test", () => {

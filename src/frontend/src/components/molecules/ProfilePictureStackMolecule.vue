@@ -3,7 +3,7 @@
     <ProfilePictureAtom v-for="member in membersShowing"
                         v-bind:key="member.id"
                         :member="member"
-                        cssClasses="profile-picture-stack__picture"
+                        css="profile-picture-stack__picture"
     />
     <div v-if="numberOfExtraMembers > 0" class="profile-picture-stack__not-showing-count">
       +{{ numberOfExtraMembers }}
@@ -69,7 +69,8 @@ export default {
     text-align: center;
     vertical-align: middle;
     color: $text-dark;
-    font-weight: $font-weight-light;
+    font-family: $font-family-body;
+    font-weight: $font-weight-body-medium;
     font-size: 0.75rem;
     z-index: 1;
   }

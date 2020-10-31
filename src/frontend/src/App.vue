@@ -10,8 +10,8 @@
 
 body {
   background: $bg-off-white !important;
-  font-family: $font-family-standard !important;
-  font-weight: $font-weight-medium !important;
+  font-family: $font-family-body !important;
+  font-weight: $font-weight-body-medium !important;
 }
 
 #app {

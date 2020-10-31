@@ -24,6 +24,6 @@ export default {
   border: 1px solid $white-border;
   padding: 1.5rem;
   font-size: 1.2rem;
-  font-weight: $font-weight-light;
+  font-weight: $font-weight-body-light;
 }
 </style>

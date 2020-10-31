@@ -64,21 +64,23 @@ export default {
     background-color: $white;
     padding: 1.25rem 1.25rem 0.8rem 1.25rem;
     max-width: 100%;
+    font-family: $font-family-emphasis;
 
     &-name {
       font-size: 1.5rem;
-      font-weight: $font-weight-light;
+      font-weight: $font-weight-emphasis-medium;
       overflow: hidden;
       max-width: 100%;
 
       &--light {
-        font-weight: $font-weight-extra-light;
+        font-weight: $font-weight-emphasis-light;
       }
     }
 
     &-member-count {
-      font-weight: $font-weight-extra-light;
-      font-size: 0.899rem;
+      font-family: $font-family-body;
+      font-weight: $font-weight-body-light;
+      font-size: 0.9rem;
       display: inline-block;
     }
 
@@ -92,7 +94,7 @@ export default {
     max-width: 100%;
 
     &--heading {
-      font-weight: $font-weight-light;
+      font-weight: $font-weight-body-light;
       font-size: 0.75rem;
     }
 
@@ -100,7 +102,7 @@ export default {
       max-width: 100%;
       margin: 0;
       padding: 0.4rem 0;
-      font-weight: $font-weight-medium;
+      font-weight: $font-weight-body-medium;
       font-size: 1rem;
       color: hsla(0, 0, 0, 0.7);
       border-top: 1px solid $white-border;

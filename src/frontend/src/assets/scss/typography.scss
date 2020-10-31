@@ -1,10 +1,14 @@
 @import "colours";
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&display=swap");
 
-$font-family-standard: "Roboto", sans-serif;
-$font-weight-extra-light: 100;
-$font-weight-light: 300;
-$font-weight-medium: 400;
-$font-weight-bold: 700;
+$font-family-body: "Open Sans", sans-serif;
+$font-weight-body-light: 300;
+$font-weight-body-medium: 400;
+$font-weight-body-bold: 600;
+
+$font-family-emphasis: "Raleway", sans-serif;
+$font-weight-emphasis-light: 300;
+$font-weight-emphasis-medium: 400;
 
 $text-dark: $dark-grey;

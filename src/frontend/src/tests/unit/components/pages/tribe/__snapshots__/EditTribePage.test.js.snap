@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Edit Tribe Page test Renders correctly 1`] = `
+"<fixedwidthwithnavbartemplate-stub css=\\"mt-3 px-0\\">
+  <div class=\\"contents\\">
+    Edit Tribe Page
+  </div>
+</fixedwidthwithnavbartemplate-stub>"
+`;

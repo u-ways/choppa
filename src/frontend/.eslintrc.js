@@ -16,5 +16,9 @@ module.exports = {
   rules: {
     quotes: ["error", "double", { allowTemplateLiterals: true }],
     "max-len": ["error", { code: 120 }],
+    "linebreak-style": "off",
+    "no-trailing-spaces": "off",
+    "no-underscore-dangle": "off",
+    "object-curly-newline": ["error", { consistent: true }],
   },
 };

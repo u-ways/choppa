@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Profile Picture Stack Molecule test Renders correctly 1`] = `
+"<div class=\\"profile-picture-stack row m-0\\">
+  <profilepictureatom-stub member=\\"[object Object]\\" css=\\"profile-picture-stack__picture\\"></profilepictureatom-stub>
+  <profilepictureatom-stub member=\\"[object Object]\\" css=\\"profile-picture-stack__picture\\"></profilepictureatom-stub>
+  <profilepictureatom-stub member=\\"[object Object]\\" css=\\"profile-picture-stack__picture\\"></profilepictureatom-stub>
+  <div class=\\"profile-picture-stack__not-showing-count\\">
+    +2
+  </div>
+</div>"
+`;

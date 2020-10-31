@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Full Width With Navbar Template test Renders correctly 1`] = `
+"<div class=\\"container-fluid w-100 m-0 p-0 mb-5 mh-100\\">
+  <navbarorganism-stub></navbarorganism-stub> Full Width With Navbar Template Test Slot
+</div>"
+`;

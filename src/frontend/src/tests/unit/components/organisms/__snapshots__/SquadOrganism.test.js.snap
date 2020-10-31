@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Squad Organism test Renders correctly 1`] = `
+"<div class=\\"squad\\">
+  <div class=\\"squad__header\\" style=\\"border-top-color: #00FFFF;\\">
+    <h1 class=\\"squad__header-name m-0\\"><span class=\\"squad__header-name--light\\">Squad</span> Squad Two</h1>
+    <div class=\\"row align-items-center m-0 pt-1\\">
+      <div class=\\"squad__header-member-count\\">
+        2 Members
+      </div>
+      <div class=\\"squad__header-profile-pictures ml-1\\">
+        <profilepicturestackmolecule-stub members=\\"[object Object],[object Object]\\" showcount=\\"3\\"></profilepicturestackmolecule-stub>
+      </div>
+    </div>
+  </div>
+  <div class=\\"squad__contents\\">
+    <div class=\\"row ml-0 mr-0 pb-1\\">
+      <div class=\\"col-1\\"></div>
+      <div class=\\"col-6\\"><span class=\\"squad__contents--heading\\">Name</span></div>
+      <div class=\\"col\\"><span class=\\"squad__contents--heading\\">Chapter</span></div>
+    </div>
+    <div class=\\"row squad__contents-person-row\\">
+      <div class=\\"col-6 d-flex align-items-center squad__contents-person-cell\\">
+        <div class=\\"d-inline mr-3 squad__contents-person-picture\\">
+          <profilepictureatom-stub member=\\"[object Object]\\"></profilepictureatom-stub>
+        </div>
+        <div>Johnny</div>
+      </div>
+      <div class=\\"col-3 squad__contents-person-cell\\"></div>
+    </div>
+    <div class=\\"row squad__contents-person-row\\">
+      <div class=\\"col-6 d-flex align-items-center squad__contents-person-cell\\">
+        <div class=\\"d-inline mr-3 squad__contents-person-picture\\">
+          <profilepictureatom-stub member=\\"[object Object]\\"></profilepictureatom-stub>
+        </div>
+        <div>Robert</div>
+      </div>
+      <div class=\\"col-3 squad__contents-person-cell\\"></div>
+    </div>
+  </div>
+</div>"
+`;

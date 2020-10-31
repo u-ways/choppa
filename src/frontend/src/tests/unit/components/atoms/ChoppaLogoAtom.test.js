@@ -1,19 +1,17 @@
-import {
-  describe, it, render, screen, expect,
-} from "@/tests/unit/test-imports";
+import { describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
 import ChoppaLogoAtom from "@/components/atoms/ChoppaLogoAtom";
 
 describe("Choppa Logo Atom test", () => {
-  it("Applies the CSS prop onto the icon", async () => {
-    render(ChoppaLogoAtom, {
-      props: {
+  it("Renders correctly", async () => {
+    const wrapper = shallowMount(ChoppaLogoAtom, {
+      propsData: {
         css: "my-css-test",
       },
       stubs: {
-        "font-awesome-icon": { template: `<span data-testid="testing-icon"></span>` },
+        "font-awesome-icon": true,
       },
     });
 
-    expect(screen.getByTestId("testing-icon")).toHaveClass("my-css-test");
+    expect(wrapper.html()).toMatchSnapshot();
   });
 });

@@ -53,11 +53,11 @@ export default {
 
   &__name {
     font-size: 1.45rem;
-    font-weight: $font-weight-medium;
+    font-weight: $font-weight-body-medium;
     color: $dark-grey;
 
     &--light {
-      font-weight: $font-weight-light;
+      font-weight: $font-weight-body-light;
     }
   }
 }

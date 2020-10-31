@@ -1,5 +1,5 @@
 <template>
-  <div class="profile-picture" :class="[ this.cssClasses ]">
+  <div class="profile-picture" :class="[ this.css ]">
     <canvas v-show="hasRenderedProfilePicture"
             width="100"
             height="100"
@@ -24,7 +24,7 @@ export default {
       type: Member,
       required: true,
     },
-    cssClasses: String,
+    css: String,
   },
   data() {
     return {

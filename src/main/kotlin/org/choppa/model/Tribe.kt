@@ -30,11 +30,11 @@ data class Tribe @JsonCreator constructor(
 
     @OneToMany(mappedBy = "tribe", fetch = EAGER)
     @JsonIgnore
-    var squads: MutableList<Squad> = mutableListOf(),
+    var squads: List<Squad> = emptyList(),
 
     @OneToMany(mappedBy = "tribe", fetch = LAZY)
     @JsonIgnore
-    var iterations: MutableList<IterationHistory> = mutableListOf()
+    var iterations: List<IterationHistory> = emptyList()
 ) {
     override fun toString() = "Tribe(id=$id, name=$name)"
 }

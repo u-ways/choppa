@@ -34,7 +34,7 @@ data class Squad @JsonCreator constructor(
     // TODO(u-ways) it might be better to couple the current squads column in here instead of having relations? (with lazy fetch)
     @OneToMany(mappedBy = "squad", fetch = EAGER)
     @JsonIgnore
-    var members: MutableList<SquadCurrentMembers> = mutableListOf(),
+    var members: List<SquadCurrentMembers> = emptyList(),
 
     @ManyToOne(fetch = EAGER)
     @JsonIgnore
@@ -43,7 +43,7 @@ data class Squad @JsonCreator constructor(
 
     @OneToMany(mappedBy = "squad", fetch = LAZY)
     @JsonIgnore
-    var iterations: MutableList<IterationHistory> = mutableListOf()
+    var iterations: List<IterationHistory> = emptyList()
 ) {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 }

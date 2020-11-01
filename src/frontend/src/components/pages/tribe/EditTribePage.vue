@@ -1,7 +1,9 @@
 <template>
   <FixedWidthWithNavbarTemplate css="mt-3 px-0">
-    <div class="contents">
-      Edit Tribe Page
+    <div class="edit-tribe-page">
+      <div class="edit-tribe-page__header">
+        Edit Tribe Page
+      </div>
     </div>
   </FixedWidthWithNavbarTemplate>
 </template>
@@ -11,7 +13,9 @@ import FixedWidthWithNavbarTemplate from "@/components/templates/FixedWidthWithN
 
 export default {
   name: "EditTribePage",
-  components: { FixedWidthWithNavbarTemplate },
+  components: {
+    FixedWidthWithNavbarTemplate,
+  },
 };
 </script>
 
@@ -19,11 +23,16 @@ export default {
 @import "src/assets/scss/colours";
 @import "src/assets/scss/typography";
 
-.contents {
-  background: $white;
-  border: 1px solid $white-border;
+.edit-tribe-page {
   padding: 1.5rem;
-  font-size: 1.2rem;
-  font-weight: $font-weight-body-light;
+
+  &__header {
+    color: $text-dark;
+    font-size: 1.2rem;
+    font-family: $font-family-emphasis;
+    font-weight: $font-weight-emphasis-bold;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid $white-border;
+  }
 }
 </style>

@@ -1,17 +1,15 @@
 <template>
   <nav class="container-fluid navbar">
-    <div class="navbar__element ml-1 ml-sm-3 navbar__link">
-      <router-link to="/">
-        <div class="justify-content-start">
-          <div class="d-inline-block pr-1">
-            <ChoppaLogoAtom css="navbar__logo"/>
-          </div>
-          <div class="navbar__name d-inline-block">
-            Choppa<span class="navbar__name--light">.app</span>
-          </div>
+    <router-link to="/" active-class="navbar__element ml-1 ml-sm-3 navbar__link" tag="a">
+      <div class="justify-content-start">
+        <div class="d-inline-block pr-1">
+          <ChoppaLogoAtom css="navbar__logo"/>
         </div>
-      </router-link>
-    </div>
+        <div class="navbar__name d-inline-block">
+          Choppa<span class="navbar__name--light">.app</span>
+        </div>
+      </div>
+    </router-link>
   </nav>
 </template>
 
@@ -19,7 +17,9 @@
 import ChoppaLogoAtom from "@/components/atoms/ChoppaLogoAtom";
 
 export default {
-  components: { ChoppaLogoAtom },
+  components: {
+    ChoppaLogoAtom,
+  },
 };
 </script>
 
@@ -41,8 +41,10 @@ export default {
   &__link {
     &:hover,
     &:focus {
-      border-bottom-color: $accent;
-      transition: 0.4s border-bottom-color;
+      border-bottom: 3px solid $accent;
+      transition: 0.2s border-bottom-color;
+      outline: none;
+      cursor: pointer;
     }
   }
 

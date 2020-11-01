@@ -26,7 +26,7 @@ class IterationHistoryService(
         return iterationHistoryRepository.save(iterationHistory)
     }
 
-    fun save(iterationHistory: MutableList<IterationHistory>): List<IterationHistory> {
+    fun save(iterationHistory: List<IterationHistory>): List<IterationHistory> {
         return iterationHistoryRepository.saveAll(iterationHistory)
     }
 

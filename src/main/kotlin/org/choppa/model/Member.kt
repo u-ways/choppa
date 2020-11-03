@@ -3,6 +3,7 @@ package org.choppa.model
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.choppa.model.chapter.Chapter
 import org.choppa.model.relations.IterationHistory
 import org.choppa.model.relations.SquadCurrentMembers
 import org.hibernate.annotations.GenericGenerator

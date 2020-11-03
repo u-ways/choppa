@@ -52,6 +52,9 @@ dependencies {
     testImplementation("com.natpryce:hamkrest:1.8.0.1")
     testImplementation("org.amshove.kluent:kluent:1.63")
 
+    testImplementation("com.nfeld.jsonpathkt:jsonpathkt:2.0.0")
+    testImplementation("org.skyscreamer:jsonassert:1.5.0")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.6.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")

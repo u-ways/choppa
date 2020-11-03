@@ -2,9 +2,9 @@ package org.choppa.integration.service.relations
 
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Chapter
 import org.choppa.model.Member
 import org.choppa.model.Squad
+import org.choppa.model.chapter.Chapter
 import org.choppa.model.relations.SquadCurrentMembers
 import org.choppa.model.relations.SquadCurrentMembersId
 import org.choppa.repository.relations.SquadCurrentMembersRepository

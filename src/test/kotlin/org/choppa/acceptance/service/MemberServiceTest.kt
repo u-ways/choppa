@@ -5,8 +5,8 @@ import io.mockk.mockkClass
 import io.mockk.verify
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Chapter
 import org.choppa.model.Member
+import org.choppa.model.chapter.Chapter
 import org.choppa.repository.MemberRepository
 import org.choppa.service.ChapterService
 import org.choppa.service.MemberService

@@ -2,6 +2,7 @@ package org.choppa.controller
 
 import org.choppa.helpers.exception.EmptyListException
 import org.choppa.helpers.exception.EntityNotFoundException
+import org.choppa.helpers.exception.UnprocessableEntityException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
@@ -34,7 +35,7 @@ class BaseController(@Autowired private val env: Environment) {
             fromCurrentRequest().path("/$path").buildAndExpand(*uriVariableValues).toUri()
     }
 
-    @ExceptionHandler(value = [HttpMessageNotReadableException::class])
+    @ExceptionHandler(value = [UnprocessableEntityException::class, HttpMessageNotReadableException::class])
     fun invalidPayLoad(e: HttpMessageNotReadableException, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
         response(UNPROCESSABLE_ENTITY, "Invalid ${req.request.method} request payload.", req, e)
 

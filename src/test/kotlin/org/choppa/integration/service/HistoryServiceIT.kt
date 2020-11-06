@@ -4,15 +4,12 @@ import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEmpty
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.chapter.Chapter
 import org.choppa.model.history.History
 import org.choppa.model.history.HistoryId
 import org.choppa.model.iteration.Iteration
 import org.choppa.model.member.Member
 import org.choppa.model.squad.Squad
 import org.choppa.model.tribe.Tribe
-import org.choppa.repository.HistoryRepository
-import org.choppa.service.ChapterService
 import org.choppa.service.HistoryService
 import org.choppa.service.IterationService
 import org.choppa.service.MemberService
@@ -29,22 +26,13 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.UUID.randomUUID
 import javax.transaction.Transactional
-
-private val CHAPTER = Chapter(id = randomUUID(), name = "chapterName")
-private val MEMBER = Member(id = randomUUID(), name = "memberName", chapter = CHAPTER)
-private val SQUAD = Squad(id = randomUUID(), name = "squadName")
-private val TRIBE = Tribe(id = randomUUID(), name = "tribeName")
-private val ITERATION = Iteration(id = randomUUID(), number = 100)
 
 @SpringBootTest
 @Testcontainers
 @Import(FlywayMigrationConfig::class)
 @ActiveProfiles("test")
 internal class HistoryServiceIT @Autowired constructor(
-    private val historyRepository: HistoryRepository,
-    private val chapterService: ChapterService,
     private val memberService: MemberService,
     private val squadService: SquadService,
     private val tribeService: TribeService,
@@ -54,18 +42,25 @@ internal class HistoryServiceIT @Autowired constructor(
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
+    private lateinit var member: Member
+    private lateinit var squad: Squad
+    private lateinit var tribe: Tribe
+    private lateinit var iteration: Iteration
+    private lateinit var entity: History
+
     @BeforeEach
     @Transactional
     internal fun setUp() {
-        memberService.save(MEMBER)
-        squadService.save(SQUAD)
-        tribeService.save(TRIBE)
-        iterationService.save(ITERATION)
+        member = memberService.save(Member())
+        squad = squadService.save(Squad())
+        tribe = tribeService.save(Tribe())
+        iteration = iterationService.save(Iteration())
+        entity = historyService.save(History(iteration, tribe, squad, member))
     }
 
     @Test
+    @Transactional
     fun `Given new entity, when service saves new entity, then service should return same entities with generated id`() {
-        val entity = History(ITERATION, TRIBE, SQUAD, MEMBER)
         val result = historyService.save(entity)
 
         result.tribe.id shouldBeEqualTo entity.tribe.id
@@ -84,14 +79,13 @@ internal class HistoryServiceIT @Autowired constructor(
         result.member.name shouldBeEqualTo entity.member.name
         result.member.chapter.id shouldBeEqualTo entity.member.chapter.id
         result.member.chapter.name shouldBeEqualTo entity.member.chapter.name
-        result.member.squads.shouldBeEmpty()
-        entity.member.squads.shouldBeEmpty()
     }
 
     @Test
     @Transactional
     fun `Given existing entity in db, when service finds entity by id, then service should return correct entities`() {
-        val existingEntity = historyService.save(History(ITERATION, TRIBE, SQUAD, MEMBER))
+        val existingEntity = entity
+
         val result = historyService.find(
             HistoryId(
                 existingEntity.iteration.id,
@@ -110,7 +104,7 @@ internal class HistoryServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
-        val existingEntity = historyService.save(History(ITERATION, TRIBE, SQUAD, MEMBER))
+        val existingEntity = entity
         val removedEntity = historyService.delete(existingEntity)
 
         val result = historyService.find(
@@ -127,11 +121,10 @@ internal class HistoryServiceIT @Autowired constructor(
 
     @AfterEach
     internal fun tearDown() {
-        historyRepository.deleteAll()
-        iterationService.delete(ITERATION)
-        squadService.delete(SQUAD)
-        tribeService.delete(TRIBE)
-        memberService.delete(MEMBER)
-        chapterService.delete(CHAPTER)
+        iterationService.delete(iteration)
+        squadService.delete(squad)
+        tribeService.delete(tribe)
+        memberService.delete(member)
+        historyService.delete(entity)
     }
 }

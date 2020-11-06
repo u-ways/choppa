@@ -14,8 +14,6 @@ import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID.randomUUID
 
-private const val ITERATION_NUMBER = 100
-
 internal class IterationServiceTest {
     private lateinit var repository: IterationRepository
     private lateinit var service: IterationService
@@ -29,7 +27,7 @@ internal class IterationServiceTest {
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = Iteration(number = ITERATION_NUMBER)
+        val entity = Iteration()
 
         every { repository.save(entity) } returns entity
 
@@ -43,7 +41,7 @@ internal class IterationServiceTest {
     @Test
     fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
-        val existingEntity = Iteration(id, ITERATION_NUMBER)
+        val existingEntity = Iteration(id)
 
         every { repository.findById(id) } returns of(existingEntity)
 
@@ -56,7 +54,7 @@ internal class IterationServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val existingEntity = Iteration(randomUUID(), ITERATION_NUMBER)
+        val existingEntity = Iteration()
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(existingEntity.id) } returns empty()

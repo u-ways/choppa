@@ -8,14 +8,14 @@ import com.nfeld.jsonpathkt.extension.read
 import org.choppa.model.chapter.Chapter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 internal class SerializerTest {
-    private val chapter = Chapter(id = UUID.randomUUID(), name = "chapterName")
+    private lateinit var chapter: Chapter
     private lateinit var mapper: ObjectMapper
 
     @BeforeEach
     internal fun setUp() {
+        chapter = Chapter()
         mapper = ObjectMapper()
     }
 

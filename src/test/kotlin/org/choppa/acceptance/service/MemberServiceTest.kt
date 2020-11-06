@@ -4,41 +4,38 @@ import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
 import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeNull
+import org.choppa.helpers.exception.EntityNotFoundException
 import org.choppa.model.chapter.Chapter
 import org.choppa.model.member.Member
 import org.choppa.repository.MemberRepository
 import org.choppa.service.ChapterService
-import org.choppa.service.HistoryService
 import org.choppa.service.MemberService
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID.randomUUID
 
-private const val MEMBER_NAME = "memberName"
-private val CHAPTER = Chapter(id = randomUUID(), name = "chapterName")
-
 internal class MemberServiceTest {
     private lateinit var repository: MemberRepository
     private lateinit var chapterService: ChapterService
-    private lateinit var historyService: HistoryService
     private lateinit var service: MemberService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(MemberRepository::class)
         chapterService = mockkClass(ChapterService::class, relaxed = true)
-        historyService = mockkClass(HistoryService::class, relaxed = true)
 
-        service = MemberService(repository, chapterService, historyService)
+        service = MemberService(repository, chapterService)
     }
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = Member(name = MEMBER_NAME, chapter = CHAPTER)
+        val relatedEntityChapter = Chapter()
+        val entity = Member(chapter = relatedEntityChapter)
 
+        every { chapterService.find(entity.chapter.id) } returns relatedEntityChapter
         every { repository.save(entity) } returns entity
 
         val savedEntity = service.save(entity)
@@ -51,7 +48,8 @@ internal class MemberServiceTest {
     @Test
     fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
-        val existingEntity = Member(id, MEMBER_NAME, CHAPTER)
+        val relatedEntityChapter = Chapter()
+        val existingEntity = Member(id, chapter = relatedEntityChapter)
 
         every { repository.findById(id) } returns of(existingEntity)
 
@@ -64,7 +62,7 @@ internal class MemberServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val existingEntity = Member(randomUUID(), MEMBER_NAME, CHAPTER)
+        val existingEntity = Member()
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(existingEntity.id) } returns empty()
@@ -73,10 +71,15 @@ internal class MemberServiceTest {
 
         removedEntity shouldBe existingEntity
 
-        val nonExistentEntity = service.find(existingEntity.id)
-
-        nonExistentEntity.shouldBeNull()
-
         verify(exactly = 1) { repository.delete(existingEntity) }
+    }
+
+    @Test
+    fun `Given a non-existent entity UUID, when service tries to find by said UUID, then service should throw EntityNotFoundException`() {
+        val id = randomUUID()
+
+        every { repository.findById(id) } returns empty()
+
+        Assertions.assertThrows(EntityNotFoundException::class.java) { service.find(id) }
     }
 }

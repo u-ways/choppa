@@ -15,8 +15,6 @@ import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID.randomUUID
 
-private const val SQUAD_NAME = "squadName"
-
 internal class SquadServiceTest {
     private lateinit var repository: SquadRepository
     private lateinit var historyService: HistoryService
@@ -32,7 +30,7 @@ internal class SquadServiceTest {
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = Squad(name = SQUAD_NAME)
+        val entity = Squad()
 
         every { repository.save(entity) } returns entity
 
@@ -46,7 +44,7 @@ internal class SquadServiceTest {
     @Test
     fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
-        val existingEntity = Squad(id, SQUAD_NAME)
+        val existingEntity = Squad(id)
 
         every { repository.findById(id) } returns of(existingEntity)
 
@@ -59,7 +57,7 @@ internal class SquadServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val existingEntity = Squad(randomUUID(), SQUAD_NAME)
+        val existingEntity = Squad()
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(existingEntity.id) } returns empty()

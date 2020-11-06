@@ -8,11 +8,11 @@ import org.choppa.model.member.Member
 import org.choppa.model.tribe.Tribe
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
+import java.util.UUID.fromString
 import java.util.UUID.randomUUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType.EAGER
-import javax.persistence.FetchType.LAZY
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
@@ -32,12 +32,12 @@ data class Squad @JsonCreator constructor(
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
     @JsonProperty("name")
-    val name: String,
+    val name: String = "SQ-$id".substring(0, 15),
 
-    @ManyToOne(fetch = EAGER)
+    @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "tribe", referencedColumnName = "tribe_id")
-    var tribe: Tribe? = null,
+    val tribe: Tribe = UNASSIGNED_TRIBE,
 
     @ManyToMany(fetch = EAGER)
     @JoinTable(
@@ -48,7 +48,7 @@ data class Squad @JsonCreator constructor(
     @JsonIgnore
     val members: MutableList<Member> = mutableListOf(),
 
-    @OneToMany(mappedBy = "squad", fetch = LAZY)
+    @OneToMany(mappedBy = "squad")
     @JsonIgnore
     val iterations: MutableList<History> = mutableListOf()
 ) {

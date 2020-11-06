@@ -12,6 +12,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
+import kotlin.Int.Companion.MAX_VALUE
 
 @Entity
 @Table(name = "iteration")
@@ -24,7 +25,7 @@ data class Iteration @JsonCreator constructor(
 
     @Column(name = "number", columnDefinition = "INTEGER", nullable = false)
     @JsonProperty("number")
-    val number: Int,
+    val number: Int = (1..MAX_VALUE).random(),
 
     @Column(name = "start_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
     @JsonProperty("startDate")
@@ -32,7 +33,7 @@ data class Iteration @JsonCreator constructor(
 
     @Column(name = "end_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
     @JsonProperty("endDate")
-    val endDate: Instant = now().plus(14, DAYS)
+    val endDate: Instant = startDate.plus(14, DAYS)
 ) {
     override fun toString() = "Iteration(id=$id, number=$number, startDate=$startDate, endDate=$endDate)"
 }

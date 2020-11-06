@@ -2,9 +2,9 @@ package org.choppa.model.relations
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.choppa.model.Iteration
-import org.choppa.model.Member
-import org.choppa.model.Squad
 import org.choppa.model.Tribe
+import org.choppa.model.member.Member
+import org.choppa.model.squad.Squad
 import java.io.Serializable
 import java.util.UUID
 import java.util.UUID.randomUUID

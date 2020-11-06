@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.choppa.model.relations.IterationHistory
+import org.choppa.model.squad.Squad
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
 import java.util.UUID.randomUUID

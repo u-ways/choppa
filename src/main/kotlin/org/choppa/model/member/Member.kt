@@ -1,11 +1,11 @@
-package org.choppa.model
+package org.choppa.model.member
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.choppa.model.chapter.Chapter
 import org.choppa.model.relations.IterationHistory
-import org.choppa.model.relations.SquadCurrentMembers
+import org.choppa.model.squad.Squad
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -15,6 +15,7 @@ import javax.persistence.FetchType.EAGER
 import javax.persistence.FetchType.LAZY
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -37,9 +38,9 @@ data class Member @JsonCreator constructor(
     @JoinColumn(name = "chapter", referencedColumnName = "chapter_id")
     val chapter: Chapter,
 
-    @OneToMany(mappedBy = "member", fetch = EAGER)
+    @ManyToMany(mappedBy = "members", fetch = EAGER)
     @JsonIgnore
-    var squads: List<SquadCurrentMembers> = emptyList(),
+    var squads: List<Squad> = emptyList(),
 
     @OneToMany(mappedBy = "member", fetch = LAZY)
     @JsonIgnore

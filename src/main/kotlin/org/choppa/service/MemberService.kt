@@ -1,5 +1,7 @@
 package org.choppa.service
 
+import org.choppa.helpers.exception.EmptyListException
+import org.choppa.helpers.exception.EntityNotFoundException
 import org.choppa.model.member.Member
 import org.choppa.repository.MemberRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,33 +12,35 @@ import java.util.UUID
 @Service
 class MemberService(
     @Autowired private val memberRepository: MemberRepository,
-    @Autowired private val chapterService: ChapterService,
-    @Autowired private val historyService: HistoryService
+    @Autowired private val chapterService: ChapterService
 ) {
     fun find(id: UUID): Member? {
-        return memberRepository.findById(id).orElseGet { null }
+        return memberRepository.findById(id).orElseThrow {
+            throw EntityNotFoundException("Member with id [$id] does not exist.")
+        }
     }
 
     fun find(): List<Member> {
-        return memberRepository.findAll()
+        val members = memberRepository.findAll()
+        return if (members.isEmpty()) throw EmptyListException("No members exist yet.") else members
     }
 
     fun find(ids: List<UUID>): List<Member> {
         return memberRepository.findAllById(ids)
     }
 
+    // NOTE(u-ways) #57 member is the owning map of chapter, it should update chapter correctly.
+    //                  So we need to consider deserialization on save.
     @Transactional
     fun save(member: Member): Member {
-        chapterService.save(member.chapter)
-        historyService.save(member.iterations)
-        return memberRepository.save(member)
+        val chapter = chapterService.find(member.chapter.id)
+        val member2 = Member(member.id, member.name, chapter)
+        return memberRepository.save(member2)
     }
 
     @Transactional
     fun save(members: List<Member>): List<Member> {
-        chapterService.save(members.map { it.chapter })
-        members.forEach { historyService.save(it.iterations) }
-        return memberRepository.saveAll(members)
+        return members.map(::save)
     }
 
     @Transactional

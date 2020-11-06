@@ -16,8 +16,6 @@ import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID.randomUUID
 
-private const val TRIBE_NAME = "tribeName"
-
 internal class TribeServiceTest {
     private lateinit var repository: TribeRepository
     private lateinit var historyService: HistoryService
@@ -35,7 +33,7 @@ internal class TribeServiceTest {
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = Tribe(name = TRIBE_NAME)
+        val entity = Tribe()
 
         every { repository.save(entity) } returns entity
 
@@ -49,7 +47,7 @@ internal class TribeServiceTest {
     @Test
     fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
-        val existingEntity = Tribe(id, TRIBE_NAME)
+        val existingEntity = Tribe(id)
 
         every { repository.findById(id) } returns of(existingEntity)
 
@@ -62,7 +60,7 @@ internal class TribeServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val existingEntity = Tribe(randomUUID(), TRIBE_NAME)
+        val existingEntity = Tribe()
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(existingEntity.id) } returns empty()

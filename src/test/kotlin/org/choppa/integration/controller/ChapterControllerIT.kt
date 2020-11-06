@@ -9,6 +9,7 @@ import org.choppa.helpers.exception.EntityNotFoundException
 import org.choppa.model.chapter.Chapter
 import org.choppa.service.ChapterService
 import org.hamcrest.core.StringContains
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,9 +24,6 @@ import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import java.util.UUID
 
-private val CHAPTER = Chapter(id = UUID.randomUUID(), name = "chapterName")
-private val ANOTHER_CHAPTER = Chapter(id = UUID.randomUUID(), name = "anotherChapterName")
-
 @WebMvcTest(controllers = [ChapterController::class])
 @ActiveProfiles("test")
 internal class ChapterControllerIT @Autowired constructor(
@@ -36,12 +34,20 @@ internal class ChapterControllerIT @Autowired constructor(
     @MockkBean
     private lateinit var chapterService: ChapterService
 
+    private lateinit var chapter: Chapter
+
+    @BeforeEach
+    internal fun setUp() {
+        chapter = Chapter()
+    }
+
     @Nested
     inner class HappyPath {
 
         @Test
         fun `LIST entities`() {
-            val entities = listOf(CHAPTER, ANOTHER_CHAPTER)
+            val anotherChapter = Chapter()
+            val entities = listOf(chapter, anotherChapter)
 
             every { chapterService.find() } returns entities
 
@@ -57,7 +63,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `GET entity by ID`() {
-            val entity = CHAPTER
+            val entity = chapter
 
             every { chapterService.find(entity.id) } returns entity
 
@@ -73,8 +79,8 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `PUT entity by ID`() {
-            val entity = CHAPTER
-            val updatedEntity = Chapter(CHAPTER.id, name = "updatedChapter")
+            val entity = chapter
+            val updatedEntity = Chapter(chapter.id)
 
             every { chapterService.find(entity.id) } returns entity
             every { chapterService.save(updatedEntity) } returns updatedEntity
@@ -91,7 +97,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `DELETE entity by ID`() {
-            val entity = CHAPTER
+            val entity = chapter
 
             every { chapterService.find(entity.id) } returns entity
             every { chapterService.delete(entity) } returns entity
@@ -106,7 +112,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `POST new entity`() {
-            val newEntity = CHAPTER
+            val newEntity = chapter
 
             every { chapterService.save(newEntity) } returns newEntity
 

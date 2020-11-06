@@ -15,8 +15,6 @@ import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID.randomUUID
 
-private const val CHAPTER_NAME = "chapterName"
-
 internal class ChapterServiceTest {
     private lateinit var repository: ChapterRepository
     private lateinit var service: ChapterService
@@ -24,13 +22,12 @@ internal class ChapterServiceTest {
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(ChapterRepository::class)
-
         service = ChapterService(repository)
     }
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = Chapter(name = CHAPTER_NAME)
+        val entity = Chapter()
 
         every { repository.save(entity) } returns entity
 
@@ -44,7 +41,7 @@ internal class ChapterServiceTest {
     @Test
     fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
-        val existingEntity = Chapter(id, CHAPTER_NAME)
+        val existingEntity = Chapter(id)
 
         every { repository.findById(id) } returns of(existingEntity)
 
@@ -57,7 +54,7 @@ internal class ChapterServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val existingEntity = Chapter(randomUUID(), CHAPTER_NAME)
+        val existingEntity = Chapter()
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(existingEntity.id) } returns empty()

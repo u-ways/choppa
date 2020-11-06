@@ -18,27 +18,32 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Optional.empty
 import java.util.Optional.of
-import java.util.UUID.randomUUID
-
-private val CHAPTER = Chapter(id = randomUUID(), name = "chapterName")
-private val MEMBER = Member(id = randomUUID(), name = "memberName", chapter = CHAPTER)
-private val SQUAD = Squad(id = randomUUID(), name = "squadName")
-private val TRIBE = Tribe(id = randomUUID(), name = "tribeName")
-private val ITERATION = Iteration(id = randomUUID(), number = 100)
 
 internal class HistoryServiceTest {
+    private lateinit var chapter: Chapter
+    private lateinit var member: Member
+    private lateinit var squad: Squad
+    private lateinit var tribe: Tribe
+    private lateinit var iteration: Iteration
+
     private lateinit var repository: HistoryRepository
     private lateinit var service: HistoryService
 
     @BeforeEach
     internal fun setUp() {
+        chapter = Chapter()
+        member = Member()
+        squad = Squad()
+        tribe = Tribe()
+        iteration = Iteration()
+
         repository = mockkClass(HistoryRepository::class)
         service = HistoryService(repository)
     }
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = History(ITERATION, TRIBE, SQUAD, MEMBER)
+        val entity = History(iteration, tribe, squad, member)
 
         every { repository.save(entity) } returns entity
 
@@ -51,8 +56,8 @@ internal class HistoryServiceTest {
 
     @Test
     fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
-        val id = HistoryId(ITERATION.id, TRIBE.id, SQUAD.id, MEMBER.id)
-        val existingEntity = History(ITERATION, TRIBE, SQUAD, MEMBER)
+        val id = HistoryId(iteration.id, tribe.id, squad.id, member.id)
+        val existingEntity = History(iteration, tribe, squad, member)
 
         every { repository.findById(id) } returns of(existingEntity)
 
@@ -65,8 +70,8 @@ internal class HistoryServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val id = HistoryId(ITERATION.id, TRIBE.id, SQUAD.id, MEMBER.id)
-        val existingEntity = History(ITERATION, TRIBE, SQUAD, MEMBER)
+        val id = HistoryId(iteration.id, tribe.id, squad.id, member.id)
+        val existingEntity = History(iteration, tribe, squad, member)
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(id) } returns empty()

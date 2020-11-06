@@ -27,7 +27,7 @@ data class Tribe @JsonCreator constructor(
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
     @JsonProperty("name")
-    val name: String,
+    val name: String = "TR-$id".substring(0, 15),
 
     @OneToMany(mappedBy = "tribe", fetch = EAGER)
     @JsonIgnore

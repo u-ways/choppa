@@ -46,11 +46,11 @@ data class Squad @JsonCreator constructor(
         inverseJoinColumns = [JoinColumn(name = "member_id", referencedColumnName = "member_id")]
     )
     @JsonIgnore
-    var members: List<Member> = emptyList(),
+    val members: MutableList<Member> = mutableListOf(),
 
     @OneToMany(mappedBy = "squad", fetch = LAZY)
     @JsonIgnore
-    var iterations: List<History> = emptyList()
+    val iterations: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 }

@@ -1,6 +1,6 @@
 package org.choppa.service
 
-import org.choppa.model.Member
+import org.choppa.model.member.Member
 import org.choppa.repository.MemberRepository
 import org.choppa.service.relations.IterationHistoryService
 import org.springframework.beans.factory.annotation.Autowired

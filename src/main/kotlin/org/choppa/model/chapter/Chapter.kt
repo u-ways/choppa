@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import org.choppa.model.Member
+import org.choppa.model.member.Member
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
 import java.util.UUID.randomUUID

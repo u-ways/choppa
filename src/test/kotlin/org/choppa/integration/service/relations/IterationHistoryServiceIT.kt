@@ -5,12 +5,12 @@ import org.amshove.kluent.shouldBeEmpty
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeNull
 import org.choppa.model.Iteration
-import org.choppa.model.Member
-import org.choppa.model.Squad
 import org.choppa.model.Tribe
 import org.choppa.model.chapter.Chapter
+import org.choppa.model.member.Member
 import org.choppa.model.relations.IterationHistory
 import org.choppa.model.relations.IterationHistoryId
+import org.choppa.model.squad.Squad
 import org.choppa.repository.relations.IterationHistoryRepository
 import org.choppa.service.ChapterService
 import org.choppa.service.IterationService

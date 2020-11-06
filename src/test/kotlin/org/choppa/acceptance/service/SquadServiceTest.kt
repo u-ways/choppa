@@ -5,11 +5,10 @@ import io.mockk.mockkClass
 import io.mockk.verify
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Squad
+import org.choppa.model.squad.Squad
 import org.choppa.repository.SquadRepository
 import org.choppa.service.SquadService
 import org.choppa.service.relations.IterationHistoryService
-import org.choppa.service.relations.SquadCurrentMembersService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Optional.empty
@@ -20,17 +19,15 @@ private const val SQUAD_NAME = "squadName"
 
 internal class SquadServiceTest {
     private lateinit var repository: SquadRepository
-    private lateinit var squadCurrentMembersService: SquadCurrentMembersService
     private lateinit var iterationHistoryService: IterationHistoryService
     private lateinit var service: SquadService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(SquadRepository::class)
-        squadCurrentMembersService = mockkClass(SquadCurrentMembersService::class, relaxed = true)
         iterationHistoryService = mockkClass(IterationHistoryService::class, relaxed = true)
 
-        service = SquadService(repository, squadCurrentMembersService, iterationHistoryService)
+        service = SquadService(repository, iterationHistoryService)
     }
 
     @Test

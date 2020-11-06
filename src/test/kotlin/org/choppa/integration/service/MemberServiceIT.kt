@@ -2,8 +2,8 @@ package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Member
 import org.choppa.model.chapter.Chapter
+import org.choppa.model.member.Member
 import org.choppa.repository.ChapterRepository
 import org.choppa.repository.MemberRepository
 import org.choppa.service.MemberService

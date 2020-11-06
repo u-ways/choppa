@@ -2,7 +2,7 @@ package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Squad
+import org.choppa.model.squad.Squad
 import org.choppa.repository.SquadRepository
 import org.choppa.service.SquadService
 import org.choppa.support.flyway.FlywayMigrationConfig

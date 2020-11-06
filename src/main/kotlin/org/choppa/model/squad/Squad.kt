@@ -1,10 +1,11 @@
-package org.choppa.model
+package org.choppa.model.squad
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.choppa.model.Tribe
+import org.choppa.model.member.Member
 import org.choppa.model.relations.IterationHistory
-import org.choppa.model.relations.SquadCurrentMembers
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -14,6 +15,8 @@ import javax.persistence.FetchType.EAGER
 import javax.persistence.FetchType.LAZY
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
@@ -31,15 +34,19 @@ data class Squad @JsonCreator constructor(
     @JsonProperty("name")
     val name: String,
 
-    // TODO(u-ways) it might be better to couple the current squads column in here instead of having relations? (with lazy fetch)
-    @OneToMany(mappedBy = "squad", fetch = EAGER)
-    @JsonIgnore
-    var members: List<SquadCurrentMembers> = emptyList(),
-
     @ManyToOne(fetch = EAGER)
     @JsonIgnore
     @JoinColumn(name = "tribe", referencedColumnName = "tribe_id")
     var tribe: Tribe? = null,
+
+    @ManyToMany(fetch = EAGER)
+    @JoinTable(
+        name = "squad_current_members",
+        joinColumns = [JoinColumn(name = "squad_id", referencedColumnName = "squad_id")],
+        inverseJoinColumns = [JoinColumn(name = "member_id", referencedColumnName = "member_id")]
+    )
+    @JsonIgnore
+    var members: List<Member> = emptyList(),
 
     @OneToMany(mappedBy = "squad", fetch = LAZY)
     @JsonIgnore

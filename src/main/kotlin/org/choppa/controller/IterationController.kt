@@ -1,9 +1,9 @@
 package org.choppa.controller
 
-import org.choppa.model.Iteration
-import org.choppa.model.relations.IterationHistory
+import org.choppa.model.history.History
+import org.choppa.model.iteration.Iteration
+import org.choppa.service.HistoryService
 import org.choppa.service.IterationService
-import org.choppa.service.relations.IterationHistoryService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("api/domain/iterations")
 class IterationController(
     @Autowired private val iterationService: IterationService,
-    @Autowired private val iterationHistoryService: IterationHistoryService
+    @Autowired private val historyService: HistoryService
 ) {
 
     @GetMapping()
@@ -22,7 +22,7 @@ class IterationController(
     }
 
     @GetMapping("/history")
-    fun getIterationHistory(): List<IterationHistory> {
-        return iterationHistoryService.find()
+    fun getIterationHistory(): List<History> {
+        return historyService.find()
     }
 }

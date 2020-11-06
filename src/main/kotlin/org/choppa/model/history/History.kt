@@ -1,13 +1,10 @@
-package org.choppa.model.relations
+package org.choppa.model.history
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.choppa.model.Iteration
-import org.choppa.model.Tribe
+import org.choppa.model.iteration.Iteration
 import org.choppa.model.member.Member
 import org.choppa.model.squad.Squad
-import java.io.Serializable
-import java.util.UUID
-import java.util.UUID.randomUUID
+import org.choppa.model.tribe.Tribe
 import javax.persistence.Entity
 import javax.persistence.FetchType.EAGER
 import javax.persistence.Id
@@ -17,9 +14,9 @@ import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
-@IdClass(IterationHistoryId::class)
-@Table(name = "iteration_history")
-data class IterationHistory(
+@IdClass(HistoryId::class)
+@Table(name = "history")
+data class History(
     @Id
     @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "iteration_id", referencedColumnName = "iteration_id", columnDefinition = "uuid")
@@ -46,10 +43,3 @@ data class IterationHistory(
 ) {
     override fun toString() = "IterationHistory(iteration=$iteration, tribe=$tribe, squad=$squad, member=$member)"
 }
-
-class IterationHistoryId(
-    val iteration: UUID = randomUUID(),
-    val tribe: UUID = randomUUID(),
-    val squad: UUID = randomUUID(),
-    val member: UUID = randomUUID()
-) : Serializable

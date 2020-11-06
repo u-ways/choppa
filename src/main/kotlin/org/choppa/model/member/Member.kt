@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.choppa.model.chapter.Chapter
-import org.choppa.model.relations.IterationHistory
+import org.choppa.model.history.History
 import org.choppa.model.squad.Squad
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
@@ -44,7 +44,7 @@ data class Member @JsonCreator constructor(
 
     @OneToMany(mappedBy = "member", fetch = LAZY)
     @JsonIgnore
-    var iterations: List<IterationHistory> = emptyList()
+    var iterations: List<History> = emptyList()
 ) {
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
 }

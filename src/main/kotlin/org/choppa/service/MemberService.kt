@@ -2,7 +2,6 @@ package org.choppa.service
 
 import org.choppa.model.member.Member
 import org.choppa.repository.MemberRepository
-import org.choppa.service.relations.IterationHistoryService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +11,7 @@ import java.util.UUID
 class MemberService(
     @Autowired private val memberRepository: MemberRepository,
     @Autowired private val chapterService: ChapterService,
-    @Autowired private val iterationHistoryService: IterationHistoryService
+    @Autowired private val historyService: HistoryService
 ) {
     fun find(id: UUID): Member? {
         return memberRepository.findById(id).orElseGet { null }
@@ -29,14 +28,14 @@ class MemberService(
     @Transactional
     fun save(member: Member): Member {
         chapterService.save(member.chapter)
-        iterationHistoryService.save(member.iterations)
+        historyService.save(member.iterations)
         return memberRepository.save(member)
     }
 
     @Transactional
     fun save(members: List<Member>): List<Member> {
         chapterService.save(members.map { it.chapter })
-        members.forEach { iterationHistoryService.save(it.iterations) }
+        members.forEach { historyService.save(it.iterations) }
         return memberRepository.saveAll(members)
     }
 

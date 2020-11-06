@@ -1,9 +1,9 @@
-package org.choppa.model
+package org.choppa.model.tribe
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.choppa.model.relations.IterationHistory
+import org.choppa.model.history.History
 import org.choppa.model.squad.Squad
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
@@ -35,7 +35,7 @@ data class Tribe @JsonCreator constructor(
 
     @OneToMany(mappedBy = "tribe", fetch = LAZY)
     @JsonIgnore
-    var iterations: List<IterationHistory> = emptyList()
+    var iterations: List<History> = emptyList()
 ) {
     override fun toString() = "Tribe(id=$id, name=$name)"
 }

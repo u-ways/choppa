@@ -3,9 +3,9 @@ package org.choppa.model.squad
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.choppa.model.Tribe
+import org.choppa.model.history.History
 import org.choppa.model.member.Member
-import org.choppa.model.relations.IterationHistory
+import org.choppa.model.tribe.Tribe
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -50,7 +50,7 @@ data class Squad @JsonCreator constructor(
 
     @OneToMany(mappedBy = "squad", fetch = LAZY)
     @JsonIgnore
-    var iterations: List<IterationHistory> = emptyList()
+    var iterations: List<History> = emptyList()
 ) {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 }

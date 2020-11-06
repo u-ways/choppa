@@ -2,7 +2,7 @@ package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Iteration
+import org.choppa.model.iteration.Iteration
 import org.choppa.repository.IterationRepository
 import org.choppa.service.IterationService
 import org.choppa.support.flyway.FlywayMigrationConfig

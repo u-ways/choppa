@@ -2,7 +2,6 @@ package org.choppa.service
 
 import org.choppa.model.squad.Squad
 import org.choppa.repository.SquadRepository
-import org.choppa.service.relations.IterationHistoryService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,7 +10,7 @@ import java.util.UUID
 @Service
 class SquadService(
     @Autowired private val squadRepository: SquadRepository,
-    @Autowired private val iterationHistoryService: IterationHistoryService
+    @Autowired private val historyService: HistoryService
 ) {
     fun find(id: UUID): Squad? {
         return squadRepository.findById(id).orElseGet { null }
@@ -27,13 +26,13 @@ class SquadService(
 
     @Transactional
     fun save(squad: Squad): Squad {
-        iterationHistoryService.save(squad.iterations)
+        historyService.save(squad.iterations)
         return squadRepository.save(squad)
     }
 
     @Transactional
     fun save(squads: List<Squad>): List<Squad> {
-        squads.forEach { iterationHistoryService.save(it.iterations) }
+        squads.forEach { historyService.save(it.iterations) }
         return squadRepository.saveAll(squads)
     }
 

@@ -1,4 +1,4 @@
-package org.choppa.model
+package org.choppa.model.iteration
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -33,8 +33,6 @@ data class Iteration @JsonCreator constructor(
     @Column(name = "end_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
     @JsonProperty("endDate")
     val endDate: Instant = now().plus(14, DAYS)
-
-    // TODO(u-ways) it might be better to couple the iteration history column in here instead of having relations? (with lazy fetch)
 ) {
     override fun toString() = "Iteration(id=$id, number=$number, startDate=$startDate, endDate=$endDate)"
 }

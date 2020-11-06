@@ -1,6 +1,6 @@
 package org.choppa.service
 
-import org.choppa.model.Iteration
+import org.choppa.model.iteration.Iteration
 import org.choppa.repository.IterationRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

@@ -2,7 +2,7 @@ package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Tribe
+import org.choppa.model.tribe.Tribe
 import org.choppa.repository.TribeRepository
 import org.choppa.service.TribeService
 import org.choppa.support.flyway.FlywayMigrationConfig

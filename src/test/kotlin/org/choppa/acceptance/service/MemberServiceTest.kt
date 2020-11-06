@@ -9,8 +9,8 @@ import org.choppa.model.chapter.Chapter
 import org.choppa.model.member.Member
 import org.choppa.repository.MemberRepository
 import org.choppa.service.ChapterService
+import org.choppa.service.HistoryService
 import org.choppa.service.MemberService
-import org.choppa.service.relations.IterationHistoryService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Optional.empty
@@ -23,16 +23,16 @@ private val CHAPTER = Chapter(id = randomUUID(), name = "chapterName")
 internal class MemberServiceTest {
     private lateinit var repository: MemberRepository
     private lateinit var chapterService: ChapterService
-    private lateinit var iterationHistoryService: IterationHistoryService
+    private lateinit var historyService: HistoryService
     private lateinit var service: MemberService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(MemberRepository::class)
         chapterService = mockkClass(ChapterService::class, relaxed = true)
-        iterationHistoryService = mockkClass(IterationHistoryService::class, relaxed = true)
+        historyService = mockkClass(HistoryService::class, relaxed = true)
 
-        service = MemberService(repository, chapterService, iterationHistoryService)
+        service = MemberService(repository, chapterService, historyService)
     }
 
     @Test

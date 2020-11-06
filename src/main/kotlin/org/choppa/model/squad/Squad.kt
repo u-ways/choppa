@@ -53,4 +53,8 @@ data class Squad @JsonCreator constructor(
     val iterations: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
+
+    companion object {
+        val UNASSIGNED_TRIBE = Tribe(fromString("00000000-0000-0000-0000-000000000000"), "Unassigned Squad")
+    }
 }

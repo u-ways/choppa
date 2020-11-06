@@ -1,6 +1,6 @@
 package org.choppa.controller
 
-import org.choppa.model.Tribe
+import org.choppa.model.tribe.Tribe
 import org.choppa.service.TribeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping

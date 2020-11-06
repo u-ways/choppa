@@ -5,7 +5,7 @@ import io.mockk.mockkClass
 import io.mockk.verify
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Iteration
+import org.choppa.model.iteration.Iteration
 import org.choppa.repository.IterationRepository
 import org.choppa.service.IterationService
 import org.junit.jupiter.api.BeforeEach

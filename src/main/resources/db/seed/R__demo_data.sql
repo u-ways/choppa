@@ -116,10 +116,11 @@ BEGIN
          , (squad_district_id, member_monty_id, to_timestamp('24-JUN-20', 'DD-MON-RR'))
          , (squad_district_id, member_lamar_id, to_timestamp('10-JUN-20', 'DD-MON-RR'))
          , (squad_district_id, member_shantelle_id, to_timestamp('24-JUN-20', 'DD-MON-RR'))
-         , (squad_district_id, member_ezra_id, to_timestamp('01-APR-20', 'DD-MON-RR')) ON CONFLICT (squad_id, member_id) DO NOTHING;
+         , (squad_district_id, member_ezra_id, to_timestamp('01-APR-20', 'DD-MON-RR'))
+    ON CONFLICT (squad_id, member_id) DO NOTHING;
 
-    -- Iteration History
-    insert into iteration_history (iteration_id, tribe_id, squad_id, member_id)
+    -- History
+    insert into history (iteration_id, tribe_id, squad_id, member_id)
     values (iteration_370_id, tribe_bannock_id, squad_metropolitan_id, member_arian_id)
          , (iteration_370_id, tribe_bannock_id, squad_metropolitan_id, member_rose_id)
          , (iteration_370_id, tribe_bannock_id, squad_metropolitan_id, member_gerald_id)

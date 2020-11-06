@@ -1,23 +1,23 @@
-package org.choppa.integration.service.relations
+package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEmpty
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Iteration
-import org.choppa.model.Tribe
 import org.choppa.model.chapter.Chapter
+import org.choppa.model.history.History
+import org.choppa.model.history.HistoryId
+import org.choppa.model.iteration.Iteration
 import org.choppa.model.member.Member
-import org.choppa.model.relations.IterationHistory
-import org.choppa.model.relations.IterationHistoryId
 import org.choppa.model.squad.Squad
-import org.choppa.repository.relations.IterationHistoryRepository
+import org.choppa.model.tribe.Tribe
+import org.choppa.repository.HistoryRepository
 import org.choppa.service.ChapterService
+import org.choppa.service.HistoryService
 import org.choppa.service.IterationService
 import org.choppa.service.MemberService
 import org.choppa.service.SquadService
 import org.choppa.service.TribeService
-import org.choppa.service.relations.IterationHistoryService
 import org.choppa.support.flyway.FlywayMigrationConfig
 import org.choppa.support.testcontainers.TestDBContainer
 import org.junit.jupiter.api.AfterEach
@@ -42,14 +42,14 @@ private val ITERATION = Iteration(id = randomUUID(), number = 100)
 @Testcontainers
 @Import(FlywayMigrationConfig::class)
 @ActiveProfiles("test")
-internal class IterationHistoryServiceIT @Autowired constructor(
-    private val iterationHistoryRepository: IterationHistoryRepository,
+internal class HistoryServiceIT @Autowired constructor(
+    private val historyRepository: HistoryRepository,
     private val chapterService: ChapterService,
     private val memberService: MemberService,
     private val squadService: SquadService,
     private val tribeService: TribeService,
     private val iterationService: IterationService,
-    private val iterationHistoryService: IterationHistoryService
+    private val historyService: HistoryService
 ) {
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
@@ -65,8 +65,8 @@ internal class IterationHistoryServiceIT @Autowired constructor(
 
     @Test
     fun `Given new entity, when service saves new entity, then service should return same entities with generated id`() {
-        val entity = IterationHistory(ITERATION, TRIBE, SQUAD, MEMBER)
-        val result = iterationHistoryService.save(entity)
+        val entity = History(ITERATION, TRIBE, SQUAD, MEMBER)
+        val result = historyService.save(entity)
 
         result.tribe.id shouldBeEqualTo entity.tribe.id
         result.squad.id shouldBeEqualTo entity.squad.id
@@ -91,9 +91,9 @@ internal class IterationHistoryServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db, when service finds entity by id, then service should return correct entities`() {
-        val existingEntity = iterationHistoryService.save(IterationHistory(ITERATION, TRIBE, SQUAD, MEMBER))
-        val result = iterationHistoryService.find(
-            IterationHistoryId(
+        val existingEntity = historyService.save(History(ITERATION, TRIBE, SQUAD, MEMBER))
+        val result = historyService.find(
+            HistoryId(
                 existingEntity.iteration.id,
                 existingEntity.tribe.id,
                 existingEntity.squad.id,
@@ -110,11 +110,11 @@ internal class IterationHistoryServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
-        val existingEntity = iterationHistoryService.save(IterationHistory(ITERATION, TRIBE, SQUAD, MEMBER))
-        val removedEntity = iterationHistoryService.delete(existingEntity)
+        val existingEntity = historyService.save(History(ITERATION, TRIBE, SQUAD, MEMBER))
+        val removedEntity = historyService.delete(existingEntity)
 
-        val result = iterationHistoryService.find(
-            IterationHistoryId(
+        val result = historyService.find(
+            HistoryId(
                 removedEntity.iteration.id,
                 removedEntity.tribe.id,
                 removedEntity.squad.id,
@@ -127,7 +127,7 @@ internal class IterationHistoryServiceIT @Autowired constructor(
 
     @AfterEach
     internal fun tearDown() {
-        iterationHistoryRepository.deleteAll()
+        historyRepository.deleteAll()
         iterationService.delete(ITERATION)
         squadService.delete(SQUAD)
         tribeService.delete(TRIBE)

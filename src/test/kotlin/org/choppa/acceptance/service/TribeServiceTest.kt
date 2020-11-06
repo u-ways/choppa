@@ -5,11 +5,11 @@ import io.mockk.mockkClass
 import io.mockk.verify
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Tribe
+import org.choppa.model.tribe.Tribe
 import org.choppa.repository.TribeRepository
+import org.choppa.service.HistoryService
 import org.choppa.service.SquadService
 import org.choppa.service.TribeService
-import org.choppa.service.relations.IterationHistoryService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Optional.empty
@@ -20,7 +20,7 @@ private const val TRIBE_NAME = "tribeName"
 
 internal class TribeServiceTest {
     private lateinit var repository: TribeRepository
-    private lateinit var iterationHistoryService: IterationHistoryService
+    private lateinit var historyService: HistoryService
     private lateinit var squadService: SquadService
     private lateinit var service: TribeService
 
@@ -28,9 +28,9 @@ internal class TribeServiceTest {
     internal fun setUp() {
         repository = mockkClass(TribeRepository::class)
         squadService = mockkClass(SquadService::class, relaxed = true)
-        iterationHistoryService = mockkClass(IterationHistoryService::class, relaxed = true)
+        historyService = mockkClass(HistoryService::class, relaxed = true)
 
-        service = TribeService(repository, squadService, iterationHistoryService)
+        service = TribeService(repository, squadService, historyService)
     }
 
     @Test

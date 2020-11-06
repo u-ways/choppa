@@ -1,9 +1,9 @@
 package org.choppa.repository
 
-import org.choppa.model.tribe.Tribe
+import org.choppa.model.history.History
+import org.choppa.model.history.HistoryId
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.util.UUID
 
 @Repository
-interface TribeRepository : JpaRepository<Tribe, UUID>
+interface HistoryRepository : JpaRepository<History, HistoryId>

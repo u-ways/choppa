@@ -40,11 +40,11 @@ data class Member @JsonCreator constructor(
 
     @ManyToMany(mappedBy = "members", fetch = EAGER)
     @JsonIgnore
-    var squads: List<Squad> = emptyList(),
+    val squads: MutableList<Squad> = mutableListOf(UNASSIGNED_SQUAD),
 
     @OneToMany(mappedBy = "member", fetch = LAZY)
     @JsonIgnore
-    var iterations: List<History> = emptyList()
+    val iterations: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
 }

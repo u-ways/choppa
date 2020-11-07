@@ -1,7 +1,7 @@
 package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
-import org.choppa.helpers.exception.EntityNotFoundException
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.chapter.Chapter
 import org.choppa.model.member.Member
 import org.choppa.service.ChapterService
@@ -57,10 +57,10 @@ internal class MemberServiceIT @Autowired constructor(
         val existingEntity = entity
         val result = memberService.find(existingEntity.id)
 
-        result?.id shouldBe existingEntity.id
-        result?.name shouldBe existingEntity.name
-        result?.chapter?.id shouldBe existingEntity.chapter.id
-        result?.chapter?.name shouldBe existingEntity.chapter.name
+        result.id shouldBe existingEntity.id
+        result.name shouldBe existingEntity.name
+        result.chapter.id shouldBe existingEntity.chapter.id
+        result.chapter.name shouldBe existingEntity.chapter.name
     }
 
     @Test

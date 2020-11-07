@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.choppa.model.chapter.Chapter
+import org.choppa.model.chapter.Chapter.Companion.UNASSIGNED_ROLE
 import org.choppa.model.history.History
 import org.choppa.model.squad.Squad
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
-import java.util.UUID.fromString
 import java.util.UUID.randomUUID
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -43,16 +43,11 @@ data class Member @JsonCreator constructor(
 
     @ManyToMany(mappedBy = "members")
     @JsonIgnore
-    val squads: MutableList<Squad> = mutableListOf(UNASSIGNED_SQUAD),
+    val squads: MutableList<Squad> = mutableListOf(),
 
     @OneToMany(mappedBy = "member")
     @JsonIgnore
-    val iterations: MutableList<History> = mutableListOf()
+    val history: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
-
-    companion object {
-        val UNASSIGNED_ROLE = Chapter(fromString("00000000-0000-0000-0000-000000000000"), "Unassigned")
-        val UNASSIGNED_SQUAD = Squad(fromString("00000000-0000-0000-0000-000000000000"), "Unassigned Members")
-    }
 }

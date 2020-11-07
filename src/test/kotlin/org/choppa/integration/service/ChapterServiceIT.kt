@@ -1,7 +1,7 @@
 package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
-import org.choppa.helpers.exception.EntityNotFoundException
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.chapter.Chapter
 import org.choppa.service.ChapterService
 import org.choppa.support.flyway.FlywayMigrationConfig

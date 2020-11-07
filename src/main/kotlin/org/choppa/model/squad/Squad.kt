@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.choppa.model.history.History
 import org.choppa.model.member.Member
 import org.choppa.model.tribe.Tribe
+import org.choppa.model.tribe.Tribe.Companion.UNASSIGNED_TRIBE
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
 import java.util.UUID.fromString
@@ -55,6 +56,6 @@ data class Squad @JsonCreator constructor(
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 
     companion object {
-        val UNASSIGNED_TRIBE = Tribe(fromString("00000000-0000-0000-0000-000000000000"), "Unassigned Squad")
+        val UNASSIGNED_SQUAD = Squad(fromString("00000000-0000-0000-0000-000000000000"), "Unassigned Members")
     }
 }

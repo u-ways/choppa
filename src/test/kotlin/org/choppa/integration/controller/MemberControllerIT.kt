@@ -3,11 +3,12 @@ package org.choppa.integration.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import org.choppa.controller.ChapterController
+import org.choppa.controller.MemberController
 import org.choppa.exception.EmptyListException
 import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.chapter.Chapter
-import org.choppa.service.ChapterService
+import org.choppa.model.member.Member
+import org.choppa.service.MemberService
 import org.hamcrest.core.StringContains
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -24,21 +25,21 @@ import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import java.util.UUID
 
-@WebMvcTest(controllers = [ChapterController::class])
+@WebMvcTest(controllers = [MemberController::class])
 @ActiveProfiles("test")
-internal class ChapterControllerIT @Autowired constructor(
+internal class MemberControllerIT @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
 ) {
 
     @MockkBean
-    private lateinit var chapterService: ChapterService
+    private lateinit var memberService: MemberService
 
-    private lateinit var chapter: Chapter
+    private lateinit var member: Member
 
     @BeforeEach
     internal fun setUp() {
-        chapter = Chapter()
+        member = Member()
     }
 
     @Nested
@@ -46,12 +47,13 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `LIST entities`() {
-            val anotherChapter = Chapter()
-            val entities = listOf(chapter, anotherChapter)
+            val anotherMember = Member()
+            val entities = listOf(member, anotherMember)
 
-            every { chapterService.find() } returns entities
+            every { memberService.find() } returns entities
+            every { memberService.find() } returns entities
 
-            mvc.get("/api/chapters") {
+            mvc.get("/api/members") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -63,11 +65,11 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `GET entity by ID`() {
-            val entity = chapter
+            val entity = member
 
-            every { chapterService.find(entity.id) } returns entity
+            every { memberService.find(entity.id) } returns entity
 
-            mvc.get("/api/chapters/{id}", entity.id) {
+            mvc.get("/api/members/{id}", entity.id) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -79,30 +81,38 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `PUT entity by ID`() {
-            val entity = chapter
-            val updatedEntity = Chapter(chapter.id)
+            val entity = member
+            val updatedEntity = Member(member.id)
 
-            every { chapterService.find(entity.id) } returns entity
-            every { chapterService.save(updatedEntity) } returns updatedEntity
+            every { memberService.find(entity.id) } returns entity
+            every {
+                memberService.save(
+                    Member(
+                        member.id,
+                        member.name,
+                        Chapter(member.chapter.id)
+                    )
+                )
+            } returns updatedEntity
 
-            mvc.put("/api/chapters/{id}", entity.id) {
+            mvc.put("/api/members/{id}", entity.id) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(updatedEntity)
             }.andExpect {
                 status { isCreated }
-                header { string(LOCATION, StringContains("/api/chapters/${entity.id}")) }
+                header { string(LOCATION, StringContains("/api/members/${entity.id}")) }
             }
         }
 
         @Test
         fun `DELETE entity by ID`() {
-            val entity = chapter
+            val entity = member
 
-            every { chapterService.find(entity.id) } returns entity
-            every { chapterService.delete(entity) } returns entity
+            every { memberService.find(entity.id) } returns entity
+            every { memberService.delete(entity) } returns entity
 
-            mvc.delete("/api/chapters/{id}", entity.id) {
+            mvc.delete("/api/members/{id}", entity.id) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -112,17 +122,17 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `POST new entity`() {
-            val newEntity = chapter
+            val newEntity = member
 
-            every { chapterService.save(newEntity) } returns newEntity
+            every { memberService.save(Member(member.id, member.name, Chapter(member.chapter.id))) } returns newEntity
 
-            mvc.post("/api/chapters") {
+            mvc.post("/api/members") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(newEntity)
             }.andExpect {
                 status { isCreated }
-                header { string(LOCATION, StringContains("/api/chapters/${newEntity.id}")) }
+                header { string(LOCATION, StringContains("/api/members/${newEntity.id}")) }
             }
         }
     }
@@ -132,9 +142,9 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `LIST no content`() {
-            every { chapterService.find() } throws EmptyListException("No chapters exist yet")
+            every { memberService.find() } throws EmptyListException("No members exist yet")
 
-            mvc.get("/api/chapters") {
+            mvc.get("/api/members") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -146,9 +156,9 @@ internal class ChapterControllerIT @Autowired constructor(
         fun `GET UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { chapterService.find(randomUUID) } throws EntityNotFoundException("Chapter with id [$randomUUID] does not exist.")
+            every { memberService.find(randomUUID) } throws EntityNotFoundException("Member with id [$randomUUID] does not exist.")
 
-            mvc.get("/api/chapters/{id}", randomUUID) {
+            mvc.get("/api/members/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -160,7 +170,7 @@ internal class ChapterControllerIT @Autowired constructor(
         fun `PUT invalid payload`() {
             val randomUUID = UUID.randomUUID()
 
-            mvc.put("/api/chapters/{id}", randomUUID) {
+            mvc.put("/api/members/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = "invalidPayload"
@@ -173,9 +183,9 @@ internal class ChapterControllerIT @Autowired constructor(
         fun `DELETE UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { chapterService.find(randomUUID) } throws EntityNotFoundException("Chapter with id [$randomUUID] does not exist.")
+            every { memberService.find(randomUUID) } throws EntityNotFoundException("Member with id [$randomUUID] does not exist.")
 
-            mvc.delete("/api/chapters/{id}", randomUUID) {
+            mvc.delete("/api/members/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -185,7 +195,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `POST invalid payload`() {
-            mvc.post("/api/chapters") {
+            mvc.post("/api/members") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = "invalidPayload"

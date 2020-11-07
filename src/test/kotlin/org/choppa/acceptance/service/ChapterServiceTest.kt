@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
 import org.amshove.kluent.shouldBe
-import org.choppa.helpers.exception.EntityNotFoundException
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.chapter.Chapter
 import org.choppa.repository.ChapterRepository
 import org.choppa.service.ChapterService

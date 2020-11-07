@@ -1,10 +1,8 @@
 package org.choppa.controller
 
-import org.choppa.helpers.exception.EmptyListException
-import org.choppa.helpers.exception.EntityNotFoundException
-import org.choppa.helpers.exception.UnprocessableEntityException
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.env.Environment
+import org.choppa.exception.EmptyListException
+import org.choppa.exception.EntityNotFoundException
+import org.choppa.exception.UnprocessableEntityException
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.NO_CONTENT
@@ -21,7 +19,7 @@ import java.net.URI
 import java.time.Instant.now
 
 @ControllerAdvice
-class BaseController(@Autowired private val env: Environment) {
+class BaseController {
     companion object {
         /**
          * Standard path for an identification of a singular resource.
@@ -36,7 +34,7 @@ class BaseController(@Autowired private val env: Environment) {
     }
 
     @ExceptionHandler(value = [UnprocessableEntityException::class, HttpMessageNotReadableException::class])
-    fun invalidPayLoad(e: HttpMessageNotReadableException, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
+    fun invalidPayLoad(e: Exception, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
         response(UNPROCESSABLE_ENTITY, "Invalid ${req.request.method} request payload.", req, e)
 
     @ExceptionHandler(value = [EntityNotFoundException::class, MethodArgumentTypeMismatchException::class])
@@ -44,7 +42,7 @@ class BaseController(@Autowired private val env: Environment) {
         response(NOT_FOUND, "${req.request.method} failed - entity does not exist.", req, e)
 
     @ExceptionHandler(value = [EmptyListException::class])
-    fun emptyList(e: EmptyListException, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
+    fun emptyList(e: Exception, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
         response(NO_CONTENT, "LIST failed - no entities exist for collection yet.", req, e)
 
     private fun response(
@@ -58,8 +56,9 @@ class BaseController(@Autowired private val env: Environment) {
         response["status"] = status.value()
         response["path"] = request.request.requestURI
         response["timestamp"] = now()
-        response["message"] = when {
-            env.activeProfiles.contains("prod") -> message
+        response["message"] = message
+        response["error"] = when (error.cause) {
+            is Throwable -> error.cause!!.localizedMessage
             else -> error.localizedMessage
         }
 

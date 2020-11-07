@@ -1,7 +1,7 @@
 package org.choppa.service
 
-import org.choppa.helpers.exception.EmptyListException
-import org.choppa.helpers.exception.EntityNotFoundException
+import org.choppa.exception.EmptyListException
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.chapter.Chapter
 import org.choppa.repository.ChapterRepository
 import org.springframework.beans.factory.annotation.Autowired

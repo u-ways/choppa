@@ -1,7 +1,7 @@
 package org.choppa.service
 
-import org.choppa.helpers.exception.EmptyListException
-import org.choppa.helpers.exception.EntityNotFoundException
+import org.choppa.exception.EmptyListException
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.member.Member
 import org.choppa.repository.MemberRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +14,7 @@ class MemberService(
     @Autowired private val memberRepository: MemberRepository,
     @Autowired private val chapterService: ChapterService
 ) {
-    fun find(id: UUID): Member? {
+    fun find(id: UUID): Member {
         return memberRepository.findById(id).orElseThrow {
             throw EntityNotFoundException("Member with id [$id] does not exist.")
         }
@@ -29,13 +29,12 @@ class MemberService(
         return memberRepository.findAllById(ids)
     }
 
-    // NOTE(u-ways) #57 member is the owning map of chapter, it should update chapter correctly.
-    //                  So we need to consider deserialization on save.
+    // NOTE(u-ways) #57 Member is the owning map of chapter.
+    //                  Therefore, service ensure they exist before relating chapter accordingly.
     @Transactional
     fun save(member: Member): Member {
         val chapter = chapterService.find(member.chapter.id)
-        val member2 = Member(member.id, member.name, chapter)
-        return memberRepository.save(member2)
+        return memberRepository.save(Member(member.id, member.name, chapter))
     }
 
     @Transactional

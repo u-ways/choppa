@@ -3,26 +3,17 @@ package org.choppa.model.chapter
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import org.choppa.helpers.exception.UnprocessableEntityException
-import java.util.UUID
+import org.choppa.databind.BaseDeserializer
+import org.choppa.exception.UnprocessableEntityException
 
-class Deserializer(supportedClass: Class<Chapter>? = null) : StdDeserializer<Chapter>(supportedClass) {
+class Deserializer(supportedClass: Class<Chapter>? = null) : BaseDeserializer<Chapter>(supportedClass) {
     override fun deserialize(parser: JsonParser, ctx: DeserializationContext): Chapter {
-        val uniformURIAddition = Chapter::class.simpleName!!.toLowerCase().length + 2
-        fun String.isUniformURI(): Boolean = this.length > 36
-
         try {
             val node: JsonNode = parser.codec.readTree(parser)
-            val uuid = UUID.fromString(
-                node.get("id").textValue().let {
-                    if (it.isUniformURI()) it.substring(uniformURIAddition) else it
-                }
-            )
-            val name = node.get("name").textValue()
-            return Chapter(uuid, name)
+            return if (node.size() <= 1) Chapter(node.extractUUID())
+            else Chapter(node["id"].extractUUID(), node["name"].textValue())
         } catch (e: Exception) {
-            throw UnprocessableEntityException("Unable to parse requested chapter entity.")
+            throw UnprocessableEntityException("Unable to parse requested chapter entity.", e)
         }
     }
 }

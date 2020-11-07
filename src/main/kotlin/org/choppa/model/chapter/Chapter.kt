@@ -35,4 +35,8 @@ data class Chapter @JsonCreator constructor(
     val members: MutableList<Member> = mutableListOf(),
 ) {
     override fun toString() = "Chapter(id=$id, name=$name)"
+
+    companion object {
+        val UNASSIGNED_ROLE = Chapter(UUID.fromString("00000000-0000-0000-0000-000000000000"), "Unassigned")
+    }
 }

@@ -12,13 +12,19 @@ class Deserializer(supportedClass: Class<Member>? = null) : BaseDeserializer<Mem
     override fun deserialize(parser: JsonParser, ctx: DeserializationContext): Member {
         try {
             val node: JsonNode = parser.codec.readTree(parser)
-            val uuid = node["id"].extractUUID()
-            val name = node["name"].textValue()
-            val chapter = when (val child: JsonNode? = node["chapter"]) {
-                null -> UNASSIGNED_ROLE
-                else -> mapper.readValue("$child", Chapter::class.java)
+            return when (node.size()) {
+                0 -> Member(node.extractUUID())
+                1 -> Member(node["id"].extractUUID())
+                else -> {
+                    val id = node["id"].extractUUID()
+                    val name = node["name"].textValue()
+                    val chapter = when (val child: JsonNode? = node["chapter"]) {
+                        null -> UNASSIGNED_ROLE
+                        else -> mapper.readValue("$child", Chapter::class.java)
+                    }
+                    Member(id, name, chapter)
+                }
             }
-            return Member(uuid, name, chapter)
         } catch (e: Exception) {
             throw UnprocessableEntityException("Unable to parse requested member entity.", e)
         }

@@ -10,7 +10,7 @@ import org.choppa.model.member.Member
 import org.choppa.repository.MemberRepository
 import org.choppa.service.ChapterService
 import org.choppa.service.MemberService
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Optional.empty
@@ -80,6 +80,6 @@ internal class MemberServiceTest {
 
         every { repository.findById(id) } returns empty()
 
-        Assertions.assertThrows(EntityNotFoundException::class.java) { service.find(id) }
+        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
     }
 }

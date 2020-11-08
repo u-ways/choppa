@@ -1,5 +1,7 @@
 package org.choppa.service
 
+import org.choppa.exception.EmptyListException
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.tribe.Tribe
 import org.choppa.repository.TribeRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,15 +12,16 @@ import java.util.UUID
 @Service
 class TribeService(
     @Autowired private val tribeRepository: TribeRepository,
-    @Autowired private val squadService: SquadService,
-    @Autowired private val historyService: HistoryService
 ) {
-    fun find(id: UUID): Tribe? {
-        return tribeRepository.findById(id).orElseGet { null }
+    fun find(id: UUID): Tribe {
+        return tribeRepository.findById(id).orElseThrow {
+            throw EntityNotFoundException("Tribe with id [$id] does not exist.")
+        }
     }
 
     fun find(): List<Tribe> {
-        return tribeRepository.findAll()
+        val tribes = tribeRepository.findAll()
+        return if (tribes.isEmpty()) throw EmptyListException("No tribes exist yet.") else tribes
     }
 
     fun find(ids: List<UUID>): List<Tribe> {
@@ -27,15 +30,11 @@ class TribeService(
 
     @Transactional
     fun save(tribe: Tribe): Tribe {
-        squadService.save(tribe.squads)
-        historyService.save(tribe.iterations)
         return tribeRepository.save(tribe)
     }
 
     @Transactional
     fun save(tribes: List<Tribe>): List<Tribe> {
-        tribes.forEach { squadService.save(it.squads) }
-        tribes.forEach { historyService.save(it.iterations) }
         return tribeRepository.saveAll(tribes)
     }
 

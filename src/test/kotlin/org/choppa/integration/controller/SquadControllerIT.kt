@@ -3,12 +3,14 @@ package org.choppa.integration.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import org.choppa.controller.MemberController
+import org.choppa.controller.SquadController
 import org.choppa.exception.EmptyListException
 import org.choppa.exception.EntityNotFoundException
-import org.choppa.model.chapter.Chapter
-import org.choppa.model.member.Member
-import org.choppa.service.MemberService
+import org.choppa.model.member.Member.Companion.NO_MEMBERS
+import org.choppa.model.squad.Squad
+import org.choppa.model.tribe.Tribe
+import org.choppa.model.tribe.Tribe.Companion.UNASSIGNED_TRIBE
+import org.choppa.service.SquadService
 import org.hamcrest.core.StringContains
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -25,21 +27,21 @@ import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import java.util.UUID
 
-@WebMvcTest(controllers = [MemberController::class])
+@WebMvcTest(controllers = [SquadController::class])
 @ActiveProfiles("test")
-internal class MemberControllerIT @Autowired constructor(
+internal class SquadControllerIT @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
 ) {
 
     @MockkBean
-    private lateinit var memberService: MemberService
+    private lateinit var squadService: SquadService
 
-    private lateinit var member: Member
+    private lateinit var squad: Squad
 
     @BeforeEach
     internal fun setUp() {
-        member = Member()
+        squad = Squad()
     }
 
     @Nested
@@ -47,12 +49,12 @@ internal class MemberControllerIT @Autowired constructor(
 
         @Test
         fun `LIST entities`() {
-            val anotherMember = Member()
-            val entities = listOf(member, anotherMember)
+            val anotherSquad = Squad()
+            val entities = listOf(squad, anotherSquad)
 
-            every { memberService.find() } returns entities
+            every { squadService.find() } returns entities
 
-            mvc.get("/api/members") {
+            mvc.get("/api/squads") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -64,11 +66,11 @@ internal class MemberControllerIT @Autowired constructor(
 
         @Test
         fun `GET entity by ID`() {
-            val entity = member
+            val entity = squad
 
-            every { memberService.find(entity.id) } returns entity
+            every { squadService.find(entity.id) } returns entity
 
-            mvc.get("/api/members/{id}", entity.id) {
+            mvc.get("/api/squads/{id}", entity.id) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -80,38 +82,39 @@ internal class MemberControllerIT @Autowired constructor(
 
         @Test
         fun `PUT entity by ID`() {
-            val entity = member
-            val updatedEntity = Member(member.id)
+            val entity = squad
+            val updatedEntity = Squad(squad.id, squad.name, UNASSIGNED_TRIBE, NO_MEMBERS)
 
-            every { memberService.find(entity.id) } returns entity
+            every { squadService.find(entity.id) } returns entity
             every {
-                memberService.save(
-                    Member(
-                        member.id,
-                        member.name,
-                        Chapter(member.chapter.id)
+                squadService.save(
+                    Squad(
+                        squad.id,
+                        squad.name,
+                        Tribe(squad.tribe.id),
+                        squad.members
                     )
                 )
             } returns updatedEntity
 
-            mvc.put("/api/members/{id}", entity.id) {
+            mvc.put("/api/squads/{id}", entity.id) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(updatedEntity)
             }.andExpect {
                 status { isCreated }
-                header { string(LOCATION, StringContains("/api/members/${entity.id}")) }
+                header { string(LOCATION, StringContains("/api/squads/${entity.id}")) }
             }
         }
 
         @Test
         fun `DELETE entity by ID`() {
-            val entity = member
+            val entity = squad
 
-            every { memberService.find(entity.id) } returns entity
-            every { memberService.delete(entity) } returns entity
+            every { squadService.find(entity.id) } returns entity
+            every { squadService.delete(entity) } returns entity
 
-            mvc.delete("/api/members/{id}", entity.id) {
+            mvc.delete("/api/squads/{id}", entity.id) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -121,17 +124,17 @@ internal class MemberControllerIT @Autowired constructor(
 
         @Test
         fun `POST new entity`() {
-            val newEntity = member
+            val newEntity = squad
 
-            every { memberService.save(Member(member.id, member.name, Chapter(member.chapter.id))) } returns newEntity
+            every { squadService.save(Squad(squad.id, squad.name, Tribe(squad.tribe.id))) } returns newEntity
 
-            mvc.post("/api/members") {
+            mvc.post("/api/squads") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(newEntity)
             }.andExpect {
                 status { isCreated }
-                header { string(LOCATION, StringContains("/api/members/${newEntity.id}")) }
+                header { string(LOCATION, StringContains("/api/squads/${newEntity.id}")) }
             }
         }
     }
@@ -141,9 +144,9 @@ internal class MemberControllerIT @Autowired constructor(
 
         @Test
         fun `LIST no content`() {
-            every { memberService.find() } throws EmptyListException("No members exist yet")
+            every { squadService.find() } throws EmptyListException("No squads exist yet")
 
-            mvc.get("/api/members") {
+            mvc.get("/api/squads") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -155,9 +158,9 @@ internal class MemberControllerIT @Autowired constructor(
         fun `GET UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { memberService.find(randomUUID) } throws EntityNotFoundException("Member with id [$randomUUID] does not exist.")
+            every { squadService.find(randomUUID) } throws EntityNotFoundException("Squad with id [$randomUUID] does not exist.")
 
-            mvc.get("/api/members/{id}", randomUUID) {
+            mvc.get("/api/squads/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -169,7 +172,7 @@ internal class MemberControllerIT @Autowired constructor(
         fun `PUT invalid payload`() {
             val randomUUID = UUID.randomUUID()
 
-            mvc.put("/api/members/{id}", randomUUID) {
+            mvc.put("/api/squads/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = "invalidPayload"
@@ -182,9 +185,9 @@ internal class MemberControllerIT @Autowired constructor(
         fun `DELETE UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { memberService.find(randomUUID) } throws EntityNotFoundException("Member with id [$randomUUID] does not exist.")
+            every { squadService.find(randomUUID) } throws EntityNotFoundException("Squad with id [$randomUUID] does not exist.")
 
-            mvc.delete("/api/members/{id}", randomUUID) {
+            mvc.delete("/api/squads/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {
@@ -194,7 +197,7 @@ internal class MemberControllerIT @Autowired constructor(
 
         @Test
         fun `POST invalid payload`() {
-            mvc.post("/api/members") {
+            mvc.post("/api/squads") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = "invalidPayload"

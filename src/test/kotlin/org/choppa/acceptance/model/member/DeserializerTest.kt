@@ -3,6 +3,7 @@ package org.choppa.acceptance.model.member
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import com.natpryce.hamkrest.sameInstance
 import org.choppa.exception.UnprocessableEntityException
 import org.choppa.model.member.Member
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -77,6 +78,15 @@ internal class DeserializerTest {
 
         assertThat(dao.id, equalTo(member.id))
         assertThat(dao.name, equalTo(member.name))
+    }
+
+    @Test
+    fun `Given valid uniform DTO, when deserialize, then it should return correct DAO type`() {
+        val validDto = "\"members/${member.id}\""
+        val dao = mapper.readValue(validDto, Member::class.java)
+
+        assertThat(dao.id, equalTo(member.id))
+        assertThat(dao::class, sameInstance(Member::class))
     }
 
     @Test

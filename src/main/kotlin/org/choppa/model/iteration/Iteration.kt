@@ -2,6 +2,8 @@ package org.choppa.model.iteration
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import java.time.Instant.now
@@ -16,6 +18,8 @@ import kotlin.Int.Companion.MAX_VALUE
 
 @Entity
 @Table(name = "iteration")
+@JsonSerialize(using = Serializer::class)
+@JsonDeserialize(using = Deserializer::class)
 data class Iteration @JsonCreator constructor(
     @Id
     @Column(name = "iteration_id", columnDefinition = "uuid")

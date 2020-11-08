@@ -4,12 +4,11 @@ import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
 import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeNull
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.tribe.Tribe
 import org.choppa.repository.TribeRepository
-import org.choppa.service.HistoryService
-import org.choppa.service.SquadService
 import org.choppa.service.TribeService
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Optional.empty
@@ -18,17 +17,13 @@ import java.util.UUID.randomUUID
 
 internal class TribeServiceTest {
     private lateinit var repository: TribeRepository
-    private lateinit var historyService: HistoryService
-    private lateinit var squadService: SquadService
     private lateinit var service: TribeService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(TribeRepository::class)
-        squadService = mockkClass(SquadService::class, relaxed = true)
-        historyService = mockkClass(HistoryService::class, relaxed = true)
 
-        service = TribeService(repository, squadService, historyService)
+        service = TribeService(repository)
     }
 
     @Test
@@ -69,10 +64,15 @@ internal class TribeServiceTest {
 
         removedEntity shouldBe existingEntity
 
-        val nonExistentEntity = service.find(existingEntity.id)
-
-        nonExistentEntity.shouldBeNull()
-
         verify(exactly = 1) { repository.delete(existingEntity) }
+    }
+
+    @Test
+    fun `Given a non-existent entity UUID, when service tries to find by said UUID, then service should throw EntityNotFoundException`() {
+        val id = randomUUID()
+
+        every { repository.findById(id) } returns empty()
+
+        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
     }
 }

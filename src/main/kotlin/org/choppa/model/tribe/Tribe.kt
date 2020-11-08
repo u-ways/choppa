@@ -3,6 +3,8 @@ package org.choppa.model.tribe
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.choppa.model.history.History
 import org.choppa.model.squad.Squad
 import org.hibernate.annotations.GenericGenerator
@@ -18,6 +20,8 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "tribe")
+@JsonSerialize(using = Serializer::class)
+@JsonDeserialize(using = Deserializer::class)
 data class Tribe @JsonCreator constructor(
     @Id
     @Column(name = "tribe_id", columnDefinition = "uuid")
@@ -35,7 +39,7 @@ data class Tribe @JsonCreator constructor(
 
     @OneToMany(mappedBy = "tribe", fetch = LAZY)
     @JsonIgnore
-    val iterations: MutableList<History> = mutableListOf()
+    val history: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Tribe(id=$id, name=$name)"
 

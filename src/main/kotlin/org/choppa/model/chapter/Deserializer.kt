@@ -10,8 +10,11 @@ class Deserializer(supportedClass: Class<Chapter>? = null) : BaseDeserializer<Ch
     override fun deserialize(parser: JsonParser, ctx: DeserializationContext): Chapter {
         try {
             val node: JsonNode = parser.codec.readTree(parser)
-            return if (node.size() <= 1) Chapter(node.extractUUID())
-            else Chapter(node["id"].extractUUID(), node["name"].textValue())
+            return when (node.size()) {
+                0 -> Chapter(node.extractUUID())
+                1 -> Chapter(node["id"].extractUUID())
+                else -> Chapter(node["id"].extractUUID(), node["name"].textValue())
+            }
         } catch (e: Exception) {
             throw UnprocessableEntityException("Unable to parse requested chapter entity.", e)
         }

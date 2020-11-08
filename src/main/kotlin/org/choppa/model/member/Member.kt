@@ -50,4 +50,8 @@ data class Member @JsonCreator constructor(
     val history: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
+
+    companion object {
+        val NO_MEMBERS = mutableListOf<Member>()
+    }
 }

@@ -69,7 +69,7 @@ internal class MemberServiceIT @Autowired constructor(
         val existingEntity = entity
         val removedEntity = memberService.delete(existingEntity)
 
-        assertThrows(EntityNotFoundException::class.java) { chapterService.find(removedEntity.id) }
+        assertThrows(EntityNotFoundException::class.java) { memberService.find(removedEntity.id) }
     }
 
     @AfterEach

@@ -1,40 +1,38 @@
-package org.choppa.acceptance.model.member
+package org.choppa.acceptance.model.tribe
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.nfeld.jsonpathkt.JsonPath
 import com.nfeld.jsonpathkt.extension.read
-import org.choppa.model.member.Member
+import org.choppa.model.tribe.Tribe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class SerializerTest {
-    private lateinit var member: Member
+    private lateinit var tribe: Tribe
     private lateinit var mapper: ObjectMapper
 
     @BeforeEach
     internal fun setUp() {
-        member = Member()
+        tribe = Tribe()
         mapper = ObjectMapper()
     }
 
     @Test
     fun `Given entity DAO, when serialize, then it should return correct uniform DTO`() {
-        val uniformDto = JsonPath.parse(mapper.writeValueAsString(member))
+        val uniformDto = JsonPath.parse(mapper.writeValueAsString(tribe))
 
         val id = uniformDto?.read<String>("$.id")
         val name = uniformDto?.read<String>("$.name")
-        val members = uniformDto?.read<String>("$.chapter")
         val squads = uniformDto?.read<String>("$.squads")
         val iterations = uniformDto?.read<String>("$.iterations")
         val history = uniformDto?.read<String>("$.history")
 
-        assertThat(id, equalTo("members/${member.id}"))
-        assertThat(name, equalTo(member.name))
-        assertThat(members, equalTo("chapters/${member.chapter.id}"))
-        assertThat(squads, equalTo("squads?member=${member.id}"))
-        assertThat(iterations, equalTo("iterations?member=${member.id}"))
-        assertThat(history, equalTo("history?member=${member.id}"))
+        assertThat(id, equalTo("tribes/${tribe.id}"))
+        assertThat(name, equalTo(tribe.name))
+        assertThat(squads, equalTo("squads?tribe=${tribe.id}"))
+        assertThat(iterations, equalTo("iterations?tribe=${tribe.id}"))
+        assertThat(history, equalTo("history?tribe=${tribe.id}"))
     }
 }

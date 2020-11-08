@@ -1,12 +1,13 @@
 package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeNull
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.squad.Squad
 import org.choppa.service.SquadService
 import org.choppa.support.flyway.FlywayMigrationConfig
 import org.choppa.support.testcontainers.TestDBContainer
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -49,8 +50,8 @@ internal class SquadServiceIT @Autowired constructor(
         val existingEntity = entity
         val result = squadService.find(existingEntity.id)
 
-        result?.id shouldBe existingEntity.id
-        result?.name shouldBe existingEntity.name
+        result.id shouldBe existingEntity.id
+        result.name shouldBe existingEntity.name
     }
 
     @Test
@@ -58,9 +59,8 @@ internal class SquadServiceIT @Autowired constructor(
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
         val existingEntity = entity
         val removedEntity = squadService.delete(existingEntity)
-        val result = squadService.find(removedEntity.id)
 
-        result?.shouldBeNull()
+        assertThrows(EntityNotFoundException::class.java) { squadService.find(removedEntity.id) }
     }
 
     @AfterEach

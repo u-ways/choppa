@@ -3,8 +3,11 @@ package org.choppa.model.squad
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.choppa.model.history.History
 import org.choppa.model.member.Member
+import org.choppa.model.member.Member.Companion.NO_MEMBERS
 import org.choppa.model.tribe.Tribe
 import org.choppa.model.tribe.Tribe.Companion.UNASSIGNED_TRIBE
 import org.hibernate.annotations.GenericGenerator
@@ -24,6 +27,8 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "squad")
+@JsonSerialize(using = Serializer::class)
+@JsonDeserialize(using = Deserializer::class)
 data class Squad @JsonCreator constructor(
     @Id
     @Column(name = "squad_id", columnDefinition = "uuid")
@@ -47,11 +52,11 @@ data class Squad @JsonCreator constructor(
         inverseJoinColumns = [JoinColumn(name = "member_id", referencedColumnName = "member_id")]
     )
     @JsonIgnore
-    val members: MutableList<Member> = mutableListOf(),
+    val members: MutableList<Member> = NO_MEMBERS,
 
     @OneToMany(mappedBy = "squad")
     @JsonIgnore
-    val iterations: MutableList<History> = mutableListOf()
+    val history: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 

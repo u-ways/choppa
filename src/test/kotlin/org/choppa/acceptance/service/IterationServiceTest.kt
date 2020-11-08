@@ -4,10 +4,11 @@ import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
 import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeNull
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.iteration.Iteration
 import org.choppa.repository.IterationRepository
 import org.choppa.service.IterationService
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Optional.empty
@@ -63,10 +64,15 @@ internal class IterationServiceTest {
 
         removedEntity shouldBe existingEntity
 
-        val nonExistentEntity = service.find(existingEntity.id)
-
-        nonExistentEntity.shouldBeNull()
-
         verify(exactly = 1) { repository.delete(existingEntity) }
+    }
+
+    @Test
+    fun `Given a non-existent entity UUID, when service tries to find by said UUID, then service should throw EntityNotFoundException`() {
+        val id = randomUUID()
+
+        every { repository.findById(id) } returns empty()
+
+        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
     }
 }

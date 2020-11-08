@@ -2,12 +2,13 @@ package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeNull
+import org.choppa.exception.EntityNotFoundException
 import org.choppa.model.iteration.Iteration
 import org.choppa.service.IterationService
 import org.choppa.support.flyway.FlywayMigrationConfig
 import org.choppa.support.testcontainers.TestDBContainer
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -52,10 +53,10 @@ internal class IterationServiceIT @Autowired constructor(
         val existingEntity = entity
         val result = iterationService.find(existingEntity.id)
 
-        result?.id shouldBe existingEntity.id
-        result?.number shouldBeEqualTo existingEntity.number
-        result?.startDate shouldBeEqualTo existingEntity.startDate
-        result?.endDate shouldBeEqualTo existingEntity.endDate
+        result.id shouldBe existingEntity.id
+        result.number shouldBeEqualTo existingEntity.number
+        result.startDate shouldBeEqualTo existingEntity.startDate
+        result.endDate shouldBeEqualTo existingEntity.endDate
     }
 
     @Test
@@ -63,9 +64,8 @@ internal class IterationServiceIT @Autowired constructor(
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
         val existingEntity = entity
         val removedEntity = iterationService.delete(existingEntity)
-        val result = iterationService.find(removedEntity.id)
 
-        result?.shouldBeNull()
+        assertThrows(EntityNotFoundException::class.java) { iterationService.find(removedEntity.id) }
     }
 
     @AfterEach

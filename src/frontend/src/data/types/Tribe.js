@@ -31,4 +31,17 @@ export default class Tribe {
 
     return Object.values(uniques);
   }
+
+  removeSquadById(squadId) {
+    this._squads = this._squads.filter((squad) => squad.id !== squadId);
+  }
+
+  findSquadById(squadId) {
+    const result = this._squads.filter((squad) => squad.id === squadId);
+    if (!result[0]) {
+      throw new Error(`No squad found with id ${squadId}`);
+    }
+
+    return result[0];
+  }
 }

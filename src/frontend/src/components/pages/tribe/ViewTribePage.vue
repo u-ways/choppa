@@ -1,7 +1,7 @@
 <template>
   <FullWidthWithNavbarTemplate>
     <div class="pt-3">
-      <TribeOrganism :tribe="this.$root.$data.testTribeOne" />
+      <TribeOrganism :tribe="tribe" />
     </div>
   </FullWidthWithNavbarTemplate>
 </template>
@@ -15,6 +15,11 @@ export default {
   components: {
     TribeOrganism,
     FullWidthWithNavbarTemplate,
+  },
+  data() {
+    return {
+      tribe: this.$root.$data.testTribeOne,
+    };
   },
 };
 </script>

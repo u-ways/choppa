@@ -1,11 +1,13 @@
 package org.choppa.model.history
 
+import org.choppa.utils.NoArg
 import java.io.Serializable
 import java.util.UUID
 
-class HistoryId(
-    val iteration: UUID = UUID.randomUUID(),
-    val tribe: UUID = UUID.randomUUID(),
-    val squad: UUID = UUID.randomUUID(),
-    val member: UUID = UUID.randomUUID()
+@NoArg
+data class HistoryId(
+    val iteration: UUID,
+    val tribe: UUID,
+    val squad: UUID,
+    val member: UUID
 ) : Serializable

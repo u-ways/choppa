@@ -21,6 +21,18 @@ export default class Tribe {
     return this._squads;
   }
 
+  allDistinctChapters() {
+    const uniques = {};
+    this.squads
+      .flatMap((squad) => squad.members)
+      .flatMap((member) => member.chapter)
+      .forEach((chapter) => {
+        uniques[chapter.id] = chapter;
+      });
+
+    return Object.values(uniques);
+  }
+
   allDistinctMembers() {
     const uniques = {};
     this.squads
@@ -43,5 +55,10 @@ export default class Tribe {
     }
 
     return result[0];
+  }
+
+  updateChapter(id, name, colour) {
+    this.squads
+      .forEach((squad) => squad.updateChapter(id, name, colour));
   }
 }

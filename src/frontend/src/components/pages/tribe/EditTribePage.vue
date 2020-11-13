@@ -16,6 +16,39 @@
             </div>
           </div>
         </div>
+        <div class="edit-tribe__chapters">
+          <div class="row">
+            <div class="col-md-3 edit-tribe__subheading pb-2 pb-md-0">
+              Chapters
+            </div>
+            <div class="col-md-9">
+              <div class="mb-4" v-for="chapter in tribe.allDistinctChapters()" :key="chapter.id">
+                <div class="row">
+                  <div class="col-8 p-0 pl-3 pl-md-0">
+                    <label>Chapter Name</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-8 p-0 pl-3 pl-md-0">
+                    <input class="form-control" v-model="chapter.name">
+                  </div>
+                  <div class="col-2 px-1 px-md-3">
+                    <ColourSquareMolecule
+                      :startingColour="chapter.colour"
+                      @colourChanged="onChapterColourChanged"
+                      :returnEvent="{ chapter: chapter }"
+                    />
+                  </div>
+                  <div class="col-2 p-0">
+                    <button type="button" class="btn btn-outline-dark" @click="deleteChapter(chapter.id)">
+                      <font-awesome-icon icon="trash"/>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="edit-tribe__squads">
           <div class="row">
             <div class="col-md-3 edit-tribe__subheading pb-2 pb-md-0">
@@ -82,6 +115,16 @@ export default {
     onSquadColourChanged(eventData) {
       this.tribe.findSquadById(eventData.squadId).colour = eventData.colour.hex;
     },
+    onChapterColourChanged(eventData) {
+      this.tribe.updateChapter(eventData.chapter.id, eventData.chapter.name, eventData.colour.hex);
+      // TODO DELETE ME AFTER INTEGRATION
+    },
+    deleteChapter(chapterId) {
+      this.tribe.allDistinctChapters().filter((chapter) => chapter.id !== chapterId);
+    },
+  },
+  mounted() {
+    this.$root.$data.testTribeOne.updateChapter(1, "Team Loser", "FF0000");
   },
 };
 </script>
@@ -107,6 +150,12 @@ export default {
 
   &__body {
     margin-top: 1rem;
+  }
+
+  &__chapters {
+    border-top: 1px solid $white-border;
+    margin-top: 1rem;
+    padding-top: 0.3rem;
   }
 
   &__squads {

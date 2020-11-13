@@ -1,7 +1,8 @@
 export default class Member {
-  constructor(id, name) {
+  constructor(id, name, chapter) {
     this._id = id;
     this._name = name;
+    this._chapter = chapter;
   }
 
   get id() {
@@ -14,5 +15,9 @@ export default class Member {
 
   set name(newName) {
     this._name = newName;
+  }
+
+  get chapter() {
+    return this._chapter;
   }
 }

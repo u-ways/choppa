@@ -17,6 +17,10 @@ export default class Member {
     this._name = newName;
   }
 
+  set chapter(newChapter) {
+    this._chapter = newChapter;
+  }
+
   get chapter() {
     return this._chapter;
   }

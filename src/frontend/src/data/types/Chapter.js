@@ -13,15 +13,7 @@ export default class Chapter {
     return this._name;
   }
 
-  set name(newName) {
-    this._name = newName;
-  }
-
   get colour() {
     return this._colour;
-  }
-
-  set colour(newColour) {
-    this._colour = newColour;
   }
 }

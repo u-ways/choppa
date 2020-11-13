@@ -30,7 +30,7 @@
                 </div>
                 <div class="row">
                   <div class="col-8 p-0 pl-3 pl-md-0">
-                    <input class="form-control" v-model="chapter.name">
+                    <input class="form-control" :value="chapter.name" @change="onChapterNameChanged(chapter, $event)">
                   </div>
                   <div class="col-2 px-1 px-md-3">
                     <ColourSquareMolecule
@@ -40,7 +40,7 @@
                     />
                   </div>
                   <div class="col-2 p-0">
-                    <button type="button" class="btn btn-outline-dark" @click="deleteChapter(chapter.id)">
+                    <button type="button" class="btn btn-outline-dark">
                       <font-awesome-icon icon="trash"/>
                     </button>
                   </div>
@@ -117,14 +117,10 @@ export default {
     },
     onChapterColourChanged(eventData) {
       this.tribe.updateChapter(eventData.chapter.id, eventData.chapter.name, eventData.colour.hex);
-      // TODO DELETE ME AFTER INTEGRATION
     },
-    deleteChapter(chapterId) {
-      this.tribe.allDistinctChapters().filter((chapter) => chapter.id !== chapterId);
+    onChapterNameChanged(chapter, eventData) {
+      this.tribe.updateChapter(chapter.id, eventData.target.value, chapter.colour);
     },
-  },
-  mounted() {
-    this.$root.$data.testTribeOne.updateChapter(1, "Team Loser", "FF0000");
   },
 };
 </script>

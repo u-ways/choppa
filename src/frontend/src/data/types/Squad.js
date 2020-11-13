@@ -34,9 +34,7 @@ export default class Squad {
 
   updateChapter(id, name, colour) {
     this.members
-      .map((member) => member.chapter)
-      .filter((chapter) => chapter && chapter.id === id)
-      .map((chapter) => new Chapter(chapter.id, name, colour))
-      .forEach((chapter) => console.log(`${chapter.name} ${chapter.colour}`));
+      .filter((member) => member.chapter && member.chapter.id === id)
+      .forEach((member, index) => { this.members[index].chapter = new Chapter(member.chapter.id, name, colour); });
   }
 }

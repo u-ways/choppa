@@ -68,6 +68,8 @@ configurations {
     }
 }
 
+/** Kotlin linter settings ************************/
+
 ktlint {
     version.set("0.38.1")
     debug.set(false)
@@ -85,6 +87,15 @@ ktlint {
         include("**/kotlin/**")
     }
 }
+
+/** Set noArg eligible annotations ************************/
+
+noArg {
+    annotation("org.choppa.utils.NoArg")
+    invokeInitializers = true
+}
+
+/** Gradle tasks ************************/
 
 tasks.register<Test>("all") {
     description = "Runs all tests. (except integration tests)"

@@ -130,7 +130,7 @@ export default {
     },
     onChapterSelectedChanged(eventData) {
       if (eventData.target.value) {
-        const selectedChapter = this.possibleChapters.filter((c) => c.id === Number(eventData.target.value))[0];
+        const selectedChapter = this.possibleChapters.filter((c) => c.id === eventData.target.value)[0];
         if (selectedChapter) {
           this.member.chapter = selectedChapter;
         }
@@ -138,7 +138,7 @@ export default {
     },
     onSquadMoveSelectedChanged(eventData) {
       if (eventData.target.value) {
-        const selectedSquad = this.possibleSquads.filter((s) => s.id === Number(eventData.target.value))[0];
+        const selectedSquad = this.possibleSquads.filter((s) => s.id === eventData.target.value)[0];
         if (selectedSquad && selectedSquad.id !== this.currentSquad.id) {
           this.currentSelectedSquadToMoveTo = selectedSquad;
         } else {

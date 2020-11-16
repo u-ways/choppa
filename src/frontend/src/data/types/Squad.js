@@ -33,8 +33,19 @@ export default class Squad {
   }
 
   updateChapter(id, name, colour) {
-    this.members.filter((member) => member.chapter && member.chapter.id === id)
-      .forEach((member, index) => { this.members[index].chapter = new Chapter(member.chapter.id, name, colour); });
+    this.members.forEach((member, index) => {
+      if (member.chapter && member.chapter.id === id) {
+        this.members[index].chapter = new Chapter(member.chapter.id, name, colour);
+      }
+    });
+  }
+
+  deleteChapter(id) {
+    this.members.forEach((member, index) => {
+      if (member.chapter && member.chapter.id === id) {
+        this.members[index].chapter = undefined;
+      }
+    });
   }
 
   removeMember(member) {

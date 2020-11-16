@@ -22,7 +22,7 @@
               Chapters
             </div>
             <div class="col-md-9">
-              <div class="mb-4" v-for="chapter in tribe.allDistinctChapters()" :key="chapter.id">
+              <div class="mb-4" v-for="chapter in currentChapters" :key="chapter.id">
                 <div class="row">
                   <div class="col-8 p-0 pl-3 pl-md-0">
                     <label :for="chapterInputId(chapter.id)">Chapter Name</label>
@@ -39,15 +39,23 @@
                   <div class="col-2 px-1 px-md-3">
                     <ColourSquareMolecule
                       :startingColour="chapter.colour"
-                      @colourChanged="onChapterColourChanged"
+                      @colourChanged="onChapterColourChanged(chapter, $event)"
                       :returnEvent="{ chapter: chapter }"
                     />
                   </div>
                   <div class="col-2 p-0">
-                    <button type="button" class="btn btn-outline-dark" @click="onChapterDeleted(chapter)">
+                    <button type="button" class="btn btn-outline-dark" @click="onChapterDeleted(chapter.id)">
                       <font-awesome-icon icon="trash"/>
                     </button>
                   </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-12 pl-3 pl-md-0">
+                  <button type="button" class="btn btn-outline-dark" @click="addNewChapter">
+                    <font-awesome-icon icon="plus"/>
+                    Add New Chapter
+                  </button>
                 </div>
               </div>
             </div>
@@ -93,7 +101,7 @@
                 <div class="row mt-2">
                   <div class="col-12 p-md-0 bg-white mb-2" v-for="member in squad.members" :key="member.id">
                     <EditTribeMemberRow :member="member"
-                                        :possible-chapters="tribe.allDistinctChapters()"
+                                        :possible-chapters="currentChapters"
                                         :possible-squads="tribe.squads"
                                         :current-squad="squad"
                                         @expanded="onMemberRowExpanded"
@@ -149,12 +157,15 @@
 </template>
 
 <script>
+/* eslint-disable */
+
 import FixedWidthWithNavbarTemplate from "@/components/templates/FixedWidthWithNavbarTemplate";
 import ColourSquareMolecule from "@/components/molecules/ColourSquareMolecule";
 import EditTribeMemberRow from "@/components/molecules/EditTribeMemberRow";
 import { v4 as uuidv4 } from "uuid";
 import Member from "@/data/types/Member";
 import Squad from "@/data/types/Squad";
+import Chapter from "@/data/types/Chapter";
 
 export default {
   name: "EditTribePage",
@@ -167,7 +178,11 @@ export default {
     return {
       tribe: this.$root.$data.testTribeOne,
       currentlyExpandedMemberRow: undefined,
+      currentChapters: [],
     };
+  },
+  mounted() {
+    this.currentChapters = this.tribe.allDistinctChapters();
   },
   methods: {
     nameInputId(squadId) {
@@ -185,11 +200,16 @@ export default {
     onSquadColourChanged(eventData) {
       this.tribe.findSquadById(eventData.squadId).colour = eventData.colour.hex;
     },
-    onChapterColourChanged(eventData) {
+    getLocalChapter(chapterId) {
+      return this.currentChapters.filter((c) => c.id === chapterId)[0];
+    },
+    onChapterColourChanged(chapter, eventData) {
       this.tribe.updateChapter(eventData.chapter.id, eventData.chapter.name, eventData.colour.hex);
+      this.getLocalChapter(chapter.id).colour = eventData.colour.hex;
     },
     onChapterNameChanged(chapter, eventData) {
       this.tribe.updateChapter(chapter.id, eventData.target.value, chapter.colour);
+      this.getLocalChapter(chapter.id).name = eventData.target.value;
     },
     onMemberRowExpanded(memberRow) {
       if (this.currentlyExpandedMemberRow) {
@@ -203,12 +223,15 @@ export default {
         this.currentlyExpandedMemberRow = null;
       }
     },
-    onChapterDeleted(chapter) {
-      console.log(chapter);
+    onChapterDeleted(chapterId) {
+      this.currentChapters = this.currentChapters.filter((c) => c.id !== chapterId);
+      this.tribe.deleteChapter(chapterId);
+    },
+    addNewChapter() {
+      this.currentChapters.push(new Chapter(uuidv4(), "New Chapter", "#ff00ff"));
     },
     addNewMember(squad) {
       squad.addMember(new Member(uuidv4(), "New Member", undefined));
-      // squad.addMember(new Member(uuidv4(), "", undefined));
     },
     addNewSquad() {
       this.tribe.addSquad(new Squad(uuidv4(), "New Squad", "#ff00ff", []));

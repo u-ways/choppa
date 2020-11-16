@@ -25,6 +25,7 @@ export default class Tribe {
     const uniques = {};
     this.squads
       .flatMap((squad) => squad.members)
+      .filter((member) => member.chapter)
       .flatMap((member) => member.chapter)
       .forEach((chapter) => {
         uniques[chapter.id] = chapter;
@@ -59,5 +60,9 @@ export default class Tribe {
 
   updateChapter(id, name, colour) {
     this.squads.forEach((squad) => squad.updateChapter(id, name, colour));
+  }
+
+  addSquad(squad) {
+    this.squads.push(squad);
   }
 }

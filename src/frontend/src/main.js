@@ -1,6 +1,6 @@
 import { BootstrapVue } from "bootstrap-vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faUserAlt, faHelicopter, faCog, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
@@ -12,7 +12,7 @@ import Chapter from "@/data/types/Chapter";
 import App from "./App.vue";
 import router from "./router";
 
-library.add(faUserAlt, faHelicopter, faCog, faTrash, faUpload);
+library.add(faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.use(BootstrapVue);

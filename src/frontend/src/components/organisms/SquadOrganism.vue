@@ -29,7 +29,7 @@
           <div>{{ member.name }}</div>
         </div>
         <div class="col-5 col-md-3 flex justify-content-center">
-          <ChapterLabelAtom :chapter="member.chapter" />
+          <ChapterLabelAtom :chapter="member.chapter" v-if="member.chapter" />
         </div>
       </div>
     </div>

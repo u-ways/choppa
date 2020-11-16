@@ -1,6 +1,6 @@
 <template>
   <FixedWidthWithNavbarTemplate css="pt-3">
-    <div class="edit-tribe">
+    <div class="edit-tribe mb-5">
       <div class="edit-tribe__header text-center">
         Edit Tribe
       </div>
@@ -16,7 +16,7 @@
             </div>
           </div>
         </div>
-        <div class="edit-tribe__chapters">
+        <div class="edit-tribe__section">
           <div class="row">
             <div class="col-md-3 edit-tribe__subheading pb-2 pb-md-0">
               Chapters
@@ -44,7 +44,7 @@
                     />
                   </div>
                   <div class="col-2 p-0">
-                    <button type="button" class="btn btn-outline-dark">
+                    <button type="button" class="btn btn-outline-dark" @click="onChapterDeleted(chapter)">
                       <font-awesome-icon icon="trash"/>
                     </button>
                   </div>
@@ -53,7 +53,7 @@
             </div>
           </div>
         </div>
-        <div class="edit-tribe__squads">
+        <div class="edit-tribe__section">
           <div class="row">
             <div class="col-12 col-md-3 edit-tribe__subheading pb-2 pb-md-0">
               Squads
@@ -86,8 +86,8 @@
                   </div>
                 </div>
                 <div class="row mt-md-3 justify-content-center">
-                  <div class="col-12 p-md-0 text-secondary pt-3">
-                    Members
+                  <div class="col-12 p-md-0 text-secondary pt-3 d-flex align-items-center">
+                    <span>Members</span>
                   </div>
                 </div>
                 <div class="row mt-2">
@@ -101,7 +101,45 @@
                     />
                   </div>
                 </div>
+                <div class="row mt-2">
+                  <div class="col-12 pl-3 pl-md-0">
+                    <button type="button" class="btn btn-sm btn-outline-dark" @click="addNewMember(squad)">
+                      <font-awesome-icon icon="plus"/>
+                      Add New Member
+                    </button>
+                  </div>
+                </div>
               </div>
+              <div class="row mt-2">
+                <div class="col-12 pl-3 pl-md-0">
+                  <button type="button" class="btn btn-outline-dark" @click="addNewSquad">
+                    <font-awesome-icon icon="plus"/>
+                    Add New Squad
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="edit-tribe__section">
+          <div class="row">
+            <div class="col-12 col-md-3 pb-2 pb-md-0">
+              <p class="edit-tribe__subheading">Rotation</p>
+              <p class="text-muted">You can manually trigger a rotation here.</p>
+            </div>
+            <div class="col-12 col-md-9 d-flex align-items-center">
+              <button class="btn btn-block btn-secondary">Trigger Rotation</button>
+            </div>
+          </div>
+        </div>
+        <div class="edit-tribe__section">
+          <div class="row">
+            <div class="col-12 col-md-3 pb-2 pb-md-0">
+              <p class="edit-tribe__subheading">Save changes</p>
+              <p class="text-muted">Save your changes before leaving this page.</p>
+            </div>
+            <div class="col-12 col-md-9 d-flex align-items-center">
+              <button class="btn btn-block btn-primary">Save</button>
             </div>
           </div>
         </div>
@@ -114,6 +152,9 @@
 import FixedWidthWithNavbarTemplate from "@/components/templates/FixedWidthWithNavbarTemplate";
 import ColourSquareMolecule from "@/components/molecules/ColourSquareMolecule";
 import EditTribeMemberRow from "@/components/molecules/EditTribeMemberRow";
+import { v4 as uuidv4 } from "uuid";
+import Member from "@/data/types/Member";
+import Squad from "@/data/types/Squad";
 
 export default {
   name: "EditTribePage",
@@ -162,6 +203,16 @@ export default {
         this.currentlyExpandedMemberRow = null;
       }
     },
+    onChapterDeleted(chapter) {
+      console.log(chapter);
+    },
+    addNewMember(squad) {
+      squad.addMember(new Member(uuidv4(), "New Member", undefined));
+      // squad.addMember(new Member(uuidv4(), "", undefined));
+    },
+    addNewSquad() {
+      this.tribe.addSquad(new Squad(uuidv4(), "New Squad", "#ff00ff", []));
+    },
   },
 };
 </script>
@@ -189,13 +240,7 @@ export default {
     margin-top: 1rem;
   }
 
-  &__chapters {
-    border-top: 1px solid $white-border;
-    margin-top: 1rem;
-    padding-top: 0.3rem;
-  }
-
-  &__squads {
+  &__section {
     border-top: 1px solid $white-border;
     margin-top: 1rem;
     padding-top: 0.3rem;

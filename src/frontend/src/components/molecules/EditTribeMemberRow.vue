@@ -11,8 +11,9 @@
             <div class="form-group">
               <label :for="chapterSelectId">Chapter</label>
               <select class="form-control form-control-sm" :id="chapterSelectId" @change="onChapterSelectedChanged">
+                <option :value="null">Select a Chapter...</option>
                 <option v-for="chapter in possibleChapters"
-                        :selected="chapter.id === member.chapter.id"
+                        :selected="member.chapter ? chapter.id === member.chapter.id : false"
                         :key="chapter.id"
                         :value="chapter.id">
                   {{chapter.name}}
@@ -57,7 +58,7 @@
     <template v-else>
       <div class="col-10 pl-3">
         <div>
-          <ChapterBadgeAtom :chapter="member.chapter"/>
+          <ChapterBadgeAtom :chapter="member.chapter" v-if="member.chapter" />
         </div>
         {{ member.name }}
       </div>

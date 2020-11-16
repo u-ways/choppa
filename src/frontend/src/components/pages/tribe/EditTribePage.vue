@@ -9,7 +9,7 @@
           <div class="col-md-3 edit-tribe__subheading pb-2 pb-md-0">
             Tribe
           </div>
-          <div class="col-md-9 p-0 pl-3 pl-md-0">
+          <div class="col-md-9 p-0 px-3 pl-md-0">
             <div class="form-group">
               <label for="tribe-name">Tribe Name</label>
               <input class="form-control" id="tribe-name" v-model="tribe.name">
@@ -25,12 +25,16 @@
               <div class="mb-4" v-for="chapter in tribe.allDistinctChapters()" :key="chapter.id">
                 <div class="row">
                   <div class="col-8 p-0 pl-3 pl-md-0">
-                    <label>Chapter Name</label>
+                    <label :for="chapterInputId(chapter.id)">Chapter Name</label>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-8 p-0 pl-3 pl-md-0">
-                    <input class="form-control" :value="chapter.name" @change="onChapterNameChanged(chapter, $event)">
+                    <input class="form-control"
+                           :id="chapterInputId(chapter.id)"
+                           :value="chapter.name"
+                           @change="onChapterNameChanged(chapter, $event)"
+                    >
                   </div>
                   <div class="col-2 px-1 px-md-3">
                     <ColourSquareMolecule
@@ -51,10 +55,10 @@
         </div>
         <div class="edit-tribe__squads">
           <div class="row">
-            <div class="col-md-3 edit-tribe__subheading pb-2 pb-md-0">
+            <div class="col-12 col-md-3 edit-tribe__subheading pb-2 pb-md-0">
               Squads
             </div>
-            <div class="col-md-9">
+            <div class="col-12 col-md-9">
               <div class="mb-4" v-for="squad in tribe.squads" :key="squad.id">
                 <div class="row">
                   <div class="col-8 p-0 pl-3 pl-md-0">
@@ -81,6 +85,22 @@
                     </button>
                   </div>
                 </div>
+                <div class="row mt-md-3 justify-content-center">
+                  <div class="col-12 p-md-0 text-secondary pt-3">
+                    Members
+                  </div>
+                </div>
+                <div class="row mt-2">
+                  <div class="col-12 p-md-0 bg-white mb-2" v-for="member in squad.members" :key="member.id">
+                    <EditTribeMemberRow :member="member"
+                                        :possible-chapters="tribe.allDistinctChapters()"
+                                        :possible-squads="tribe.squads"
+                                        :current-squad="squad"
+                                        @expanded="onMemberRowExpanded"
+                                        @collapsed="onMemberRowCollapsed"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -93,21 +113,30 @@
 <script>
 import FixedWidthWithNavbarTemplate from "@/components/templates/FixedWidthWithNavbarTemplate";
 import ColourSquareMolecule from "@/components/molecules/ColourSquareMolecule";
+import EditTribeMemberRow from "@/components/molecules/EditTribeMemberRow";
 
 export default {
   name: "EditTribePage",
   components: {
+    EditTribeMemberRow,
     ColourSquareMolecule,
     FixedWidthWithNavbarTemplate,
   },
   data() {
     return {
       tribe: this.$root.$data.testTribeOne,
+      currentlyExpandedMemberRow: undefined,
     };
   },
   methods: {
     nameInputId(squadId) {
       return `squad-name-${squadId}`;
+    },
+    chapterInputId(chapterId) {
+      return `chapter-name-${chapterId}`;
+    },
+    memberDropdownSettingsId(memberId) {
+      return `member-dropdown-setting-${memberId}`;
     },
     deleteSquad(squadId) {
       this.tribe.removeSquadById(squadId);
@@ -120,6 +149,18 @@ export default {
     },
     onChapterNameChanged(chapter, eventData) {
       this.tribe.updateChapter(chapter.id, eventData.target.value, chapter.colour);
+    },
+    onMemberRowExpanded(memberRow) {
+      if (this.currentlyExpandedMemberRow) {
+        this.currentlyExpandedMemberRow.silentCollapse();
+      }
+
+      this.currentlyExpandedMemberRow = memberRow;
+    },
+    onMemberRowCollapsed(memberRow) {
+      if (this.currentlyExpandedMemberRow === memberRow) {
+        this.currentlyExpandedMemberRow = null;
+      }
     },
   },
 };

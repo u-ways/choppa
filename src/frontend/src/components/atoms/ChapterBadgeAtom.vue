@@ -1,14 +1,12 @@
 <template>
-  <div class="label text-center" :style="cssVars">
-    {{ chapter.name }}
-  </div>
+  <span class="badge badge-primary background" :style="cssVars">{{ chapter.name }}</span>
 </template>
 
 <script>
 import Chapter from "@/data/types/Chapter";
 
 export default {
-  name: "ChapterLabelAtom",
+  name: "ChapterBadgeAtom",
   props: {
     chapter: Chapter,
   },
@@ -24,12 +22,7 @@ export default {
 
 <style scoped>
 
-.label {
-  color: white;
-  border: 3px solid black;
-  border-radius: 5px 0 5px 0;
-  padding: 0.15rem;
+.background {
   background-color: var(--bg-colour);
-  width: 100%;
 }
 </style>

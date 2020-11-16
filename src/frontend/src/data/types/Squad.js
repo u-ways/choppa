@@ -33,8 +33,15 @@ export default class Squad {
   }
 
   updateChapter(id, name, colour) {
-    this.members
-      .filter((member) => member.chapter && member.chapter.id === id)
+    this.members.filter((member) => member.chapter && member.chapter.id === id)
       .forEach((member, index) => { this.members[index].chapter = new Chapter(member.chapter.id, name, colour); });
+  }
+
+  removeMember(member) {
+    this._members = this.members.filter((m) => m.id !== member.id);
+  }
+
+  addMember(member) {
+    this._members.push(member);
   }
 }

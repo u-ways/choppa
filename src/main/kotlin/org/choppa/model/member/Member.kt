@@ -52,6 +52,6 @@ data class Member @JsonCreator constructor(
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
 
     companion object {
-        val NO_MEMBERS = mutableListOf<Member>()
+        val NO_MEMBERS get() = mutableListOf<Member>()
     }
 }

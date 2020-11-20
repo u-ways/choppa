@@ -1,8 +1,8 @@
 export default class Member {
-  constructor(id, name, chapter) {
-    this._id = id;
-    this._name = name;
-    this._chapter = chapter;
+  constructor(config) {
+    this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : "";
+    this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
+    this._chapter = Object.prototype.hasOwnProperty.call(config, "chapter") ? config.chapter : null;
   }
 
   get id() {

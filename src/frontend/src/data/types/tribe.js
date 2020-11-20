@@ -1,8 +1,8 @@
 export default class Tribe {
-  constructor(id, name, squads) {
-    this._id = id;
-    this._name = name;
-    this._squads = squads;
+  constructor(config) {
+    this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : "";
+    this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
+    this._squads = Object.prototype.hasOwnProperty.call(config, "squads") ? config.squads : [];
   }
 
   get id() {
@@ -46,11 +46,11 @@ export default class Tribe {
   }
 
   removeSquadById(squadId) {
-    this._squads = this._squads.filter((squad) => squad.id !== squadId);
+    this._squads = this.squads.filter((squad) => squad.id !== squadId);
   }
 
   findSquadById(squadId) {
-    const result = this._squads.filter((squad) => squad.id === squadId);
+    const result = this.squads.filter((squad) => squad.id === squadId);
     if (!result[0]) {
       throw new Error(`No squad found with id ${squadId}`);
     }

@@ -1,11 +1,11 @@
 import Chapter from "@/data/types/chapter";
 
 export default class Squad {
-  constructor(id, name, colour, members) {
-    this._id = id;
-    this._name = name;
-    this._colour = colour;
-    this._members = members;
+  constructor(config) {
+    this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : "";
+    this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
+    this._colour = "#FF00FF"; // TODO: COLOUR
+    this._members = Object.prototype.hasOwnProperty.call(config, "members") ? config.members : [];
   }
 
   get id() {

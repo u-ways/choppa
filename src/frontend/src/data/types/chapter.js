@@ -1,8 +1,8 @@
 export default class Chapter {
-  constructor(id, name, colour) {
-    this._id = id;
-    this._name = name;
-    this._colour = colour;
+  constructor(config) {
+    this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : "";
+    this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
+    this._colour = "#FF00FF"; // TODO: COLOUR
   }
 
   get id() {

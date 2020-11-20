@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.choppa.model.history.History
 import org.choppa.model.squad.Squad
+import org.choppa.utils.Color.Companion.GREY
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -32,6 +33,10 @@ data class Tribe @JsonCreator constructor(
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
     @JsonProperty("name")
     val name: String = "TR-$id".substring(0, 15),
+
+    @Column(name = "color", columnDefinition = "INTEGER")
+    @JsonProperty("color")
+    val color: Int = GREY,
 
     @OneToMany(mappedBy = "tribe", fetch = EAGER)
     @JsonIgnore

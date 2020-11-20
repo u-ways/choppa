@@ -20,6 +20,7 @@ class Deserializer(supportedClass: Class<Squad>? = null) : BaseDeserializer<Squa
                 else -> {
                     val id = node["id"].extractUUID()
                     val name = node["name"].textValue()
+                    val color = node.extractColor()
                     val tribe = when (val child: JsonNode? = node["tribe"]) {
                         null -> UNASSIGNED_TRIBE
                         else -> mapper.readValue("$child", Tribe::class.java)
@@ -31,7 +32,7 @@ class Deserializer(supportedClass: Class<Squad>? = null) : BaseDeserializer<Squa
                             children.map { mapper.readValue("$it", Member::class.java) }.toMutableList()
                         }
                     }
-                    Squad(id, name, tribe, members)
+                    Squad(id, name, color, tribe, members)
                 }
             }
         } catch (e: Exception) {

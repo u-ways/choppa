@@ -193,5 +193,23 @@ internal class ChapterControllerIT @Autowired constructor(
                 status { isUnprocessableEntity }
             }
         }
+
+        @Test
+        fun `POST invalid color payload`() {
+            mvc.post("/api/chapters") {
+                contentType = APPLICATION_JSON
+                accept = APPLICATION_JSON
+                content =
+                    """
+                        {
+                            "id": "squads/${chapter.id}",
+                            "name": "${chapter.name}",
+                            "color": "#123456789"
+                        }
+                    """.trimIndent()
+            }.andExpect {
+                status { isUnprocessableEntity }
+            }
+        }
     }
 }

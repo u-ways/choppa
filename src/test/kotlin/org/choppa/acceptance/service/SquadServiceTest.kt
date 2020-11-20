@@ -40,7 +40,7 @@ internal class SquadServiceTest {
 
         every { tribeService.find(entity.tribe.id) } returns tribe
         every { memberService.find(entity.members.map { it.id }) } returns members
-        every { repository.save(Squad(entity.id, entity.name, tribe, members)) } returns entity
+        every { repository.save(Squad(entity.id, entity.name, entity.color, tribe, members)) } returns entity
 
         val savedEntity = service.save(entity)
 

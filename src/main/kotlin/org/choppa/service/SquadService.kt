@@ -41,7 +41,7 @@ class SquadService(
             }
         }.toMutableList()
 
-        return squadRepository.save(Squad(squad.id, squad.name, tribe, members))
+        return squadRepository.save(Squad(squad.id, squad.name, squad.color, tribe, members))
     }
 
     @Transactional

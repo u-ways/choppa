@@ -6,17 +6,18 @@ import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.sameInstance
 import org.choppa.exception.UnprocessableEntityException
 import org.choppa.model.chapter.Chapter
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class DeserializerTest {
+    private val white = -256
     private lateinit var chapter: Chapter
     private lateinit var mapper: ObjectMapper
 
     @BeforeEach
     internal fun setUp() {
-        chapter = Chapter()
+        chapter = Chapter(color = white)
         mapper = ObjectMapper()
     }
 
@@ -27,7 +28,8 @@ internal class DeserializerTest {
             {
                 "id": "chapters/${chapter.id}",
                 "name": "${chapter.name}",
-                "members": "members?chapter=${chapter.id}"
+                "members": "members?chapter=${chapter.id}",
+                "color": "#ffffff"
             }
             """.trimIndent()
 
@@ -35,6 +37,7 @@ internal class DeserializerTest {
 
         assertThat(dao.id, equalTo(chapter.id))
         assertThat(dao.name, equalTo(chapter.name))
+        assertThat(dao.color, equalTo(chapter.color))
     }
 
     @Test
@@ -50,7 +53,23 @@ internal class DeserializerTest {
     fun `Given invalid entity DTO, when deserialize, then it should throw UnprocessableEntityException`() {
         val invalidDto = "{ invalidDto }"
 
-        Assertions.assertThrows(UnprocessableEntityException::class.java) {
+        assertThrows(UnprocessableEntityException::class.java) {
+            mapper.readValue(invalidDto, Chapter::class.java)
+        }
+    }
+
+    @Test
+    fun `Given invalid color in entity DTO, when deserialize, then it it should throw UnprocessableEntityException`() {
+        val invalidDto =
+            """
+            {
+                "id": "chapters/${chapter.id}",
+                "name": "${chapter.name}",
+                "color": "#ffffff0"
+            }
+            """.trimIndent()
+
+        assertThrows(UnprocessableEntityException::class.java) {
             mapper.readValue(invalidDto, Chapter::class.java)
         }
     }

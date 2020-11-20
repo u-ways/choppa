@@ -11,6 +11,7 @@ import org.choppa.model.squad.Squad
 import org.choppa.model.tribe.Tribe
 import org.choppa.model.tribe.Tribe.Companion.UNASSIGNED_TRIBE
 import org.choppa.service.SquadService
+import org.choppa.utils.Color.Companion.GREY
 import org.hamcrest.core.StringContains
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -83,7 +84,7 @@ internal class SquadControllerIT @Autowired constructor(
         @Test
         fun `PUT entity by ID`() {
             val entity = squad
-            val updatedEntity = Squad(squad.id, squad.name, UNASSIGNED_TRIBE, NO_MEMBERS)
+            val updatedEntity = Squad(squad.id, squad.name, GREY, UNASSIGNED_TRIBE, NO_MEMBERS)
 
             every { squadService.find(entity.id) } returns entity
             every {
@@ -91,6 +92,7 @@ internal class SquadControllerIT @Autowired constructor(
                     Squad(
                         squad.id,
                         squad.name,
+                        squad.color,
                         Tribe(squad.tribe.id),
                         squad.members
                     )
@@ -126,7 +128,16 @@ internal class SquadControllerIT @Autowired constructor(
         fun `POST new entity`() {
             val newEntity = squad
 
-            every { squadService.save(Squad(squad.id, squad.name, Tribe(squad.tribe.id))) } returns newEntity
+            every {
+                squadService.save(
+                    Squad(
+                        squad.id,
+                        squad.name,
+                        squad.color,
+                        Tribe(squad.tribe.id)
+                    )
+                )
+            } returns newEntity
 
             mvc.post("/api/squads") {
                 contentType = APPLICATION_JSON
@@ -201,6 +212,24 @@ internal class SquadControllerIT @Autowired constructor(
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = "invalidPayload"
+            }.andExpect {
+                status { isUnprocessableEntity }
+            }
+        }
+
+        @Test
+        fun `POST invalid color payload`() {
+            mvc.post("/api/squads") {
+                contentType = APPLICATION_JSON
+                accept = APPLICATION_JSON
+                content =
+                    """
+                        {
+                            "id": "squads/${squad.id}",
+                            "name": "${squad.name}",
+                            "color": "#xfxfxf"
+                        }
+                    """.trimIndent()
             }.andExpect {
                 status { isUnprocessableEntity }
             }

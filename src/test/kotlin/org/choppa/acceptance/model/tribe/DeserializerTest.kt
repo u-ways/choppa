@@ -11,12 +11,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class DeserializerTest {
+    private val white = 16777215
     private lateinit var tribe: Tribe
     private lateinit var mapper: ObjectMapper
 
     @BeforeEach
     internal fun setUp() {
-        tribe = Tribe()
+        tribe = Tribe(color = white)
         mapper = ObjectMapper()
     }
 
@@ -27,6 +28,7 @@ internal class DeserializerTest {
             {
                 "id": "tribes/${tribe.id}",
                 "name": "${tribe.name}",
+                "color": "#ffffff00",
                 "squads": "squads?tribe=${tribe.id}",
                 "iterations": "iterations?tribe=${tribe.id}",
                 "history": "history?tribe=${tribe.id}"
@@ -67,6 +69,22 @@ internal class DeserializerTest {
     @Test
     fun `Given invalid entity DTO, when deserialize, then it should throw UnprocessableEntityException`() {
         val invalidDto = "{ invalidDto }"
+
+        assertThrows(UnprocessableEntityException::class.java) {
+            mapper.readValue(invalidDto, Tribe::class.java)
+        }
+    }
+
+    @Test
+    fun `Given invalid color in entity DTO, when deserialize, then it it should throw UnprocessableEntityException`() {
+        val invalidDto =
+            """
+            {
+                "id": "tribes/${tribe.id}",
+                "name": "${tribe.name}",
+                "color": "ABCDXYZ"
+            }
+            """.trimIndent()
 
         assertThrows(UnprocessableEntityException::class.java) {
             mapper.readValue(invalidDto, Tribe::class.java)

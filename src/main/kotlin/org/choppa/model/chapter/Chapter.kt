@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.choppa.model.member.Member
+import org.choppa.utils.Color.Companion.GREY
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -29,6 +30,10 @@ data class Chapter @JsonCreator constructor(
     @Column(name = "name", columnDefinition = "VARCHAR(100)", unique = true, nullable = false)
     @JsonProperty("name")
     val name: String = "CH-$id".substring(0, 15),
+
+    @Column(name = "color", columnDefinition = "INTEGER")
+    @JsonProperty("color")
+    val color: Int = GREY,
 
     @OneToMany(mappedBy = "chapter")
     @JsonIgnore

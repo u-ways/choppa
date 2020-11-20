@@ -3,7 +3,7 @@
 exports[`View Tribe Page test Renders correctly 1`] = `
 "<fullwidthwithnavbartemplate-stub>
   <div class=\\"pt-3\\">
-    <tribeorganism-stub></tribeorganism-stub>
+    <tribeorganism-stub tribe=\\"[object Object]\\"></tribeorganism-stub>
   </div>
 </fullwidthwithnavbartemplate-stub>"
 `;

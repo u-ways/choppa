@@ -1,9 +1,143 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Edit Tribe Page test Renders correctly 1`] = `
-"<fixedwidthwithnavbartemplate-stub css=\\"mt-3 px-0\\">
-  <div class=\\"contents\\">
-    Edit Tribe Page
+"<fixedwidthwithnavbartemplate-stub css=\\"pt-3\\">
+  <div class=\\"edit-tribe mb-5\\">
+    <div class=\\"edit-tribe__header text-center\\">
+      Edit Tribe
+    </div>
+    <div class=\\"edit-tribe__body\\">
+      <div class=\\"row\\">
+        <div class=\\"col-md-3 edit-tribe__subheading pb-2 pb-md-0\\">
+          Tribe
+        </div>
+        <div class=\\"col-md-9 p-0 px-3 pl-md-0\\">
+          <div class=\\"form-group\\"><label for=\\"tribe-name\\">Tribe Name</label> <input id=\\"tribe-name\\" class=\\"form-control\\"></div>
+        </div>
+      </div>
+      <div class=\\"edit-tribe__section\\">
+        <div class=\\"row\\">
+          <div class=\\"col-md-3 edit-tribe__subheading pb-2 pb-md-0\\">
+            Chapters
+          </div>
+          <div class=\\"col-md-9\\">
+            <div class=\\"row mt-2\\">
+              <div class=\\"col-12 pl-3 pl-md-0\\"><button type=\\"button\\" class=\\"btn btn-outline-dark\\">
+                  <font-awesome-icon-stub icon=\\"plus\\"></font-awesome-icon-stub>
+                  Add New Chapter
+                </button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class=\\"edit-tribe__section\\">
+        <div class=\\"row\\">
+          <div class=\\"col-12 col-md-3 edit-tribe__subheading pb-2 pb-md-0\\">
+            Squads
+          </div>
+          <div class=\\"col-12 col-md-9\\">
+            <div class=\\"mb-4\\">
+              <div class=\\"row\\">
+                <div class=\\"col-8 p-0 pl-3 pl-md-0\\"><label for=\\"squad-name-1024\\">Squad Name</label></div>
+              </div>
+              <div class=\\"row\\">
+                <div class=\\"col-8 p-0 pl-3 pl-md-0\\"><input id=\\"squad-name-1024\\" class=\\"form-control\\"></div>
+                <div class=\\"col-2 px-1 px-md-3\\">
+                  <coloursquaremolecule-stub startingcolour=\\"#FFFFFF\\" returnevent=\\"[object Object]\\"></coloursquaremolecule-stub>
+                </div>
+                <div class=\\"col-2 p-0\\"><button type=\\"button\\" class=\\"btn btn-outline-dark\\">
+                    <font-awesome-icon-stub icon=\\"trash\\"></font-awesome-icon-stub>
+                  </button></div>
+              </div>
+              <div class=\\"row mt-md-3 justify-content-center\\">
+                <div class=\\"col-12 p-md-0 text-secondary pt-3 d-flex align-items-center\\"><span>Members</span></div>
+              </div>
+              <div class=\\"row mt-2\\">
+                <div class=\\"col-12 p-md-0 bg-white mb-2\\">
+                  <edittribememberrow-stub member=\\"[object Object]\\" possiblechapters=\\"\\" possiblesquads=\\"[object Object],[object Object]\\" currentsquad=\\"[object Object]\\"></edittribememberrow-stub>
+                </div>
+                <div class=\\"col-12 p-md-0 bg-white mb-2\\">
+                  <edittribememberrow-stub member=\\"[object Object]\\" possiblechapters=\\"\\" possiblesquads=\\"[object Object],[object Object]\\" currentsquad=\\"[object Object]\\"></edittribememberrow-stub>
+                </div>
+                <div class=\\"col-12 p-md-0 bg-white mb-2\\">
+                  <edittribememberrow-stub member=\\"[object Object]\\" possiblechapters=\\"\\" possiblesquads=\\"[object Object],[object Object]\\" currentsquad=\\"[object Object]\\"></edittribememberrow-stub>
+                </div>
+                <div class=\\"col-12 p-md-0 bg-white mb-2\\">
+                  <edittribememberrow-stub member=\\"[object Object]\\" possiblechapters=\\"\\" possiblesquads=\\"[object Object],[object Object]\\" currentsquad=\\"[object Object]\\"></edittribememberrow-stub>
+                </div>
+                <div class=\\"col-12 p-md-0 bg-white mb-2\\">
+                  <edittribememberrow-stub member=\\"[object Object]\\" possiblechapters=\\"\\" possiblesquads=\\"[object Object],[object Object]\\" currentsquad=\\"[object Object]\\"></edittribememberrow-stub>
+                </div>
+              </div>
+              <div class=\\"row mt-2\\">
+                <div class=\\"col-12 pl-3 pl-md-0\\"><button type=\\"button\\" class=\\"btn btn-sm btn-outline-dark\\">
+                    <font-awesome-icon-stub icon=\\"plus\\"></font-awesome-icon-stub>
+                    Add New Member
+                  </button></div>
+              </div>
+            </div>
+            <div class=\\"mb-4\\">
+              <div class=\\"row\\">
+                <div class=\\"col-8 p-0 pl-3 pl-md-0\\"><label for=\\"squad-name-2048\\">Squad Name</label></div>
+              </div>
+              <div class=\\"row\\">
+                <div class=\\"col-8 p-0 pl-3 pl-md-0\\"><input id=\\"squad-name-2048\\" class=\\"form-control\\"></div>
+                <div class=\\"col-2 px-1 px-md-3\\">
+                  <coloursquaremolecule-stub startingcolour=\\"#FFFFFF\\" returnevent=\\"[object Object]\\"></coloursquaremolecule-stub>
+                </div>
+                <div class=\\"col-2 p-0\\"><button type=\\"button\\" class=\\"btn btn-outline-dark\\">
+                    <font-awesome-icon-stub icon=\\"trash\\"></font-awesome-icon-stub>
+                  </button></div>
+              </div>
+              <div class=\\"row mt-md-3 justify-content-center\\">
+                <div class=\\"col-12 p-md-0 text-secondary pt-3 d-flex align-items-center\\"><span>Members</span></div>
+              </div>
+              <div class=\\"row mt-2\\">
+                <div class=\\"col-12 p-md-0 bg-white mb-2\\">
+                  <edittribememberrow-stub member=\\"[object Object]\\" possiblechapters=\\"\\" possiblesquads=\\"[object Object],[object Object]\\" currentsquad=\\"[object Object]\\"></edittribememberrow-stub>
+                </div>
+                <div class=\\"col-12 p-md-0 bg-white mb-2\\">
+                  <edittribememberrow-stub member=\\"[object Object]\\" possiblechapters=\\"\\" possiblesquads=\\"[object Object],[object Object]\\" currentsquad=\\"[object Object]\\"></edittribememberrow-stub>
+                </div>
+                <div class=\\"col-12 p-md-0 bg-white mb-2\\">
+                  <edittribememberrow-stub member=\\"[object Object]\\" possiblechapters=\\"\\" possiblesquads=\\"[object Object],[object Object]\\" currentsquad=\\"[object Object]\\"></edittribememberrow-stub>
+                </div>
+              </div>
+              <div class=\\"row mt-2\\">
+                <div class=\\"col-12 pl-3 pl-md-0\\"><button type=\\"button\\" class=\\"btn btn-sm btn-outline-dark\\">
+                    <font-awesome-icon-stub icon=\\"plus\\"></font-awesome-icon-stub>
+                    Add New Member
+                  </button></div>
+              </div>
+            </div>
+            <div class=\\"row mt-2\\">
+              <div class=\\"col-12 pl-3 pl-md-0\\"><button type=\\"button\\" class=\\"btn btn-outline-dark\\">
+                  <font-awesome-icon-stub icon=\\"plus\\"></font-awesome-icon-stub>
+                  Add New Squad
+                </button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class=\\"edit-tribe__section\\">
+        <div class=\\"row\\">
+          <div class=\\"col-12 col-md-3 pb-2 pb-md-0\\">
+            <p class=\\"edit-tribe__subheading\\">Rotation</p>
+            <p class=\\"text-muted\\">You can manually trigger a rotation here.</p>
+          </div>
+          <div class=\\"col-12 col-md-9 d-flex align-items-center\\"><button class=\\"btn btn-block btn-secondary\\">Trigger Rotation</button></div>
+        </div>
+      </div>
+      <div class=\\"edit-tribe__section\\">
+        <div class=\\"row\\">
+          <div class=\\"col-12 col-md-3 pb-2 pb-md-0\\">
+            <p class=\\"edit-tribe__subheading\\">Save changes</p>
+            <p class=\\"text-muted\\">Save your changes before leaving this page.</p>
+          </div>
+          <div class=\\"col-12 col-md-9 d-flex align-items-center\\"><button class=\\"btn btn-block btn-primary\\">Save</button></div>
+        </div>
+      </div>
+    </div>
   </div>
 </fixedwidthwithnavbartemplate-stub>"
 `;

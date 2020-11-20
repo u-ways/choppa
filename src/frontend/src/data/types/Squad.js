@@ -1,3 +1,5 @@
+import Chapter from "@/data/types/Chapter";
+
 export default class Squad {
   constructor(id, name, colour, members) {
     this._id = id;
@@ -28,5 +30,29 @@ export default class Squad {
 
   get members() {
     return this._members;
+  }
+
+  updateChapter(id, name, colour) {
+    this.members.forEach((member, index) => {
+      if (member.chapter && member.chapter.id === id) {
+        this.members[index].chapter = new Chapter(member.chapter.id, name, colour);
+      }
+    });
+  }
+
+  deleteChapter(id) {
+    this.members.forEach((member, index) => {
+      if (member.chapter && member.chapter.id === id) {
+        this.members[index].chapter = undefined;
+      }
+    });
+  }
+
+  removeMember(member) {
+    this._members = this.members.filter((m) => m.id !== member.id);
+  }
+
+  addMember(member) {
+    this._members.push(member);
   }
 }

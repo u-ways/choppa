@@ -1,87 +1,96 @@
 import { BootstrapVue } from "bootstrap-vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faUserAlt, faHelicopter, faCog } from "@fortawesome/free-solid-svg-icons";
+import { faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { v4 as uuidv4 } from "uuid";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import Vue from "vue";
 import Tribe from "@/data/types/Tribe";
 import Squad from "@/data/types/Squad";
 import Member from "@/data/types/Member";
+import Chapter from "@/data/types/Chapter";
 import App from "./App.vue";
 import router from "./router";
 
-library.add(faUserAlt, faHelicopter, faCog);
+library.add(faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false;
 
-const testTribeOne = new Tribe(1, "Game of Thrones", [
-  new Squad(1, "Lannister", "#9F1830", [
-    new Member(1, "Tywin Lannister"),
-    new Member(2, "Jamie Lannister"),
-    new Member(3, "Cercei Lannister"),
-    new Member(4, "Tyrion Lannister"),
+const chapterTeamLead = new Chapter(uuidv4(), "Team Lead", "#AC190F");
+const chapterTester = new Chapter(uuidv4(), "Tester", "#62A756");
+const chapterDeveloper = new Chapter(uuidv4(), "Developer", "#005391");
+const chapterIntern = new Chapter(uuidv4(), "Intern", "#674DA4");
+const chapterBA = new Chapter(uuidv4(), "Business Analyst", "#F5C147");
+const chapterSecretary = new Chapter(uuidv4(), "Secretary", "#C7288E");
+
+const testTribeOne = new Tribe(uuidv4(), "Game of Thrones", [
+  new Squad(uuidv4(), "Lannister", "#9F1830", [
+    new Member(uuidv4(), "Tywin Lannister", chapterTeamLead),
+    new Member(uuidv4(), "Jamie Lannister", chapterTester),
+    new Member(uuidv4(), "Cercei Lannister", chapterDeveloper),
+    new Member(uuidv4(), "Tyrion Lannister", chapterIntern),
   ]),
 
-  new Squad(2, "Stark", "#FEF5CC", [
-    new Member(5, "Eddard Stark"),
-    new Member(6, "Catelyn Stark"),
-    new Member(7, "Arya Stark"),
-    new Member(8, "Sansa Stark"),
-    new Member(9, "Rob Stark"),
-    new Member(10, "Bran Stark"),
-    new Member(11, "Rickon Stark"),
+  new Squad(uuidv4(), "Stark", "#FEF5CC", [
+    new Member(uuidv4(), "Eddard Stark", chapterTeamLead),
+    new Member(uuidv4(), "Catelyn Stark", chapterBA),
+    new Member(uuidv4(), "Rob Stark", chapterDeveloper),
+    new Member(uuidv4(), "Arya Stark", chapterSecretary),
+    new Member(uuidv4(), "Sansa Stark", chapterSecretary),
+    new Member(uuidv4(), "Bran Stark", chapterIntern),
+    new Member(uuidv4(), "Rickon Stark", chapterIntern),
   ]),
 
-  new Squad(3, "Targaryen", "#101006", [
-    new Member(12, "Danerys Targaryen"),
-    new Member(13, "Viserys Targaryen"),
-    new Member(14, "Aegon Targaryen (Jon Snow)"),
-    new Member(100, "Viserion the Dragon"),
-    new Member(101, "Drogon the Dragon"),
-    new Member(102, "Rhaegar the Dragon"),
+  new Squad(uuidv4(), "Targaryen", "#101006", [
+    new Member(uuidv4(), "Danerys Targaryen", chapterDeveloper),
+    new Member(uuidv4(), "Viserys Targaryen", chapterDeveloper),
+    new Member(uuidv4(), "Aegon Targaryen (Jon Snow)", chapterDeveloper),
+    new Member(uuidv4(), "Viserion the Dragon", chapterDeveloper),
+    new Member(uuidv4(), "Drogon the Dragon", chapterDeveloper),
+    new Member(uuidv4(), "Rhaegar the Dragon", chapterDeveloper),
   ]),
 
-  new Squad(4, "Baratheon", "#FCB600", [
-    new Member(15, "Robert Baratheon"),
-    new Member(16, "Joffery Baratheon"),
-    new Member(17, "Stannis Baratheon"),
-    new Member(18, "Renly Baratheon"),
-    new Member(19, "Thomon Baratheon"),
+  new Squad(uuidv4(), "Baratheon", "#FCB600", [
+    new Member(uuidv4(), "Robert Baratheon", chapterDeveloper),
+    new Member(uuidv4(), "Joffery Baratheon", chapterDeveloper),
+    new Member(uuidv4(), "Stannis Baratheon", chapterDeveloper),
+    new Member(uuidv4(), "Renly Baratheon", chapterDeveloper),
+    new Member(uuidv4(), "Thomon Baratheon", chapterDeveloper),
   ]),
 
-  new Squad(5, "Tully", "#002B4B", [
-    new Member(20, "Brynden Tully"),
+  new Squad(uuidv4(), "Tully", "#002B4B", [
+    new Member(uuidv4(), "Brynden Tully", chapterDeveloper),
   ]),
 
-  new Squad(6, "Greyjoy", "#FDD33A", [
-    new Member(21, "Theon Greyjoy"),
-    new Member(22, "Yara Greyjoy"),
-    new Member(23, "Balon Greyjoy"),
+  new Squad(uuidv4(), "Greyjoy", "#FDD33A", [
+    new Member(uuidv4(), "Theon Greyjoy", chapterDeveloper),
+    new Member(uuidv4(), "Yara Greyjoy", chapterDeveloper),
+    new Member(uuidv4(), "Balon Greyjoy", chapterDeveloper),
   ]),
 
-  new Squad(7, "Arryn", "#2B5DB2", [
-    new Member(24, "Robyn Arryn"),
-    new Member(25, "Lysa Arryn"),
-    new Member(26, "Jon Arryn"),
+  new Squad(uuidv4(), "Arryn", "#2B5DB2", [
+    new Member(uuidv4(), "Robyn Arryn", chapterDeveloper),
+    new Member(uuidv4(), "Lysa Arryn", chapterDeveloper),
+    new Member(uuidv4(), "Jon Arryn", chapterDeveloper),
   ]),
 
-  new Squad(8, "Tyrell", "#4C860D", [
-    new Member(27, "Olenna Tyrell"),
-    new Member(28, "Mace Tyrell"),
-    new Member(29, "Loras Tyrell"),
-    new Member(30, "Margaery Tyrell"),
+  new Squad(uuidv4(), "Tyrell", "#4C860D", [
+    new Member(uuidv4(), "Olenna Tyrell", chapterDeveloper),
+    new Member(uuidv4(), "Mace Tyrell", chapterDeveloper),
+    new Member(uuidv4(), "Loras Tyrell", chapterDeveloper),
+    new Member(uuidv4(), "Margaery Tyrell", chapterDeveloper),
   ]),
 
-  new Squad(9, "Martell", "#DD8A08", [
-    new Member(31, "Oberyn Martell"),
-    new Member(32, "Ellaria Martell"),
-    new Member(33, "Obara Martell"),
-    new Member(34, "Nymeria Martell"),
-    new Member(35, "Tyene Martell"),
+  new Squad(uuidv4(), "Martell", "#DD8A08", [
+    new Member(uuidv4(), "Oberyn Martell", chapterDeveloper),
+    new Member(uuidv4(), "Ellaria Martell", chapterDeveloper),
+    new Member(uuidv4(), "Obara Martell", chapterDeveloper),
+    new Member(uuidv4(), "Nymeria Martell", chapterDeveloper),
+    new Member(uuidv4(), "Tyene Martell", chapterDeveloper),
   ]),
 ]);
 

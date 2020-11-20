@@ -17,18 +17,19 @@
         <div class="col-6">
           <span class="squad__contents--heading">Name</span>
         </div>
-        <div class="col">
+        <div class="col-5 col-md-3 text-center">
           <span class="squad__contents--heading">Chapter</span>
         </div>
       </div>
       <div class="row squad__contents-person-row" v-for="member in squad.members" v-bind:key="member.id">
-        <div class="col-6 d-flex align-items-center squad__contents-person-cell">
-          <div class="d-inline mr-3 squad__contents-person-picture">
+        <div class="col-7 d-flex align-items-center squad__contents-person-cell">
+          <div class="d-inline-block mr-3 squad__contents-person-picture">
             <ProfilePictureAtom :member="member"/>
           </div>
           <div>{{ member.name }}</div>
         </div>
-        <div class="col-3 squad__contents-person-cell">
+        <div class="col-5 col-md-3 flex justify-content-center">
+          <ChapterLabelAtom :chapter="member.chapter" v-if="member.chapter" />
         </div>
       </div>
     </div>
@@ -39,10 +40,11 @@
 import Squad from "@/data/types/Squad";
 import ProfilePictureStackMolecule from "@/components/molecules/ProfilePictureStackMolecule";
 import ProfilePictureAtom from "@/components/atoms/ProfilePictureAtom";
+import ChapterLabelAtom from "@/components/atoms/ChapterLabelAtom";
 
 export default {
   name: "SquadOrganism",
-  components: { ProfilePictureAtom, ProfilePictureStackMolecule },
+  components: { ChapterLabelAtom, ProfilePictureAtom, ProfilePictureStackMolecule },
   props: {
     squad: Squad,
   },

@@ -2,6 +2,7 @@ module.exports = {
   root: true,
   env: {
     node: true,
+    "jest/globals": true,
   },
   extends: [
     "@vue/standard",
@@ -9,6 +10,9 @@ module.exports = {
     "plugin:vue/essential",
     "plugin:testing-library/recommended",
     "plugin:testing-library/vue",
+  ],
+  plugins: [
+    "jest",
   ],
   parserOptions: {
     parser: "babel-eslint",

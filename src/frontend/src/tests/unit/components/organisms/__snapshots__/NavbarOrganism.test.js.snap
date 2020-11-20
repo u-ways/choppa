@@ -2,16 +2,14 @@
 
 exports[`Navbar Organism test Renders correctly 1`] = `
 "<nav class=\\"container-fluid navbar\\">
-  <div class=\\"navbar__element ml-1 ml-sm-3 navbar__link\\">
-    <router-link-stub to=\\"/\\" tag=\\"a\\" ariacurrentvalue=\\"page\\" event=\\"click\\">
-      <div class=\\"justify-content-start\\">
-        <div class=\\"d-inline-block pr-1\\">
-          <choppalogoatom-stub css=\\"navbar__logo\\"></choppalogoatom-stub>
-        </div>
-        <div class=\\"navbar__name d-inline-block\\">
-          Choppa<span class=\\"navbar__name--light\\">.app</span></div>
+  <router-link-stub to=\\"/\\" tag=\\"a\\" activeclass=\\"navbar__element ml-1 ml-sm-3 navbar__link\\" ariacurrentvalue=\\"page\\" event=\\"click\\">
+    <div class=\\"justify-content-start\\">
+      <div class=\\"d-inline-block pr-1\\">
+        <choppalogoatom-stub css=\\"navbar__logo\\"></choppalogoatom-stub>
       </div>
-    </router-link-stub>
-  </div>
+      <div class=\\"navbar__name d-inline-block\\">
+        Choppa<span class=\\"navbar__name--light\\">.app</span></div>
+    </div>
+  </router-link-stub>
 </nav>"
 `;

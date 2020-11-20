@@ -1,6 +1,8 @@
 package org.choppa.service
 
-import org.choppa.model.Iteration
+import org.choppa.exception.EmptyListException
+import org.choppa.exception.EntityNotFoundException
+import org.choppa.model.iteration.Iteration
 import org.choppa.repository.IterationRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -10,12 +12,15 @@ import java.util.UUID
 class IterationService(
     @Autowired private val iterationRepository: IterationRepository
 ) {
-    fun find(id: UUID): Iteration? {
-        return iterationRepository.findById(id).orElseGet { null }
+    fun find(id: UUID): Iteration {
+        return iterationRepository.findById(id).orElseThrow {
+            throw EntityNotFoundException("Iteration with id [$id] does not exist.")
+        }
     }
 
     fun find(): List<Iteration> {
-        return iterationRepository.findAll()
+        val iterations = iterationRepository.findAll()
+        return if (iterations.isEmpty()) throw EmptyListException("No iterations exist yet.") else iterations
     }
 
     fun find(ids: List<UUID>): List<Iteration> {

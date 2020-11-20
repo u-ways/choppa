@@ -52,6 +52,9 @@ dependencies {
     testImplementation("com.natpryce:hamkrest:1.8.0.1")
     testImplementation("org.amshove.kluent:kluent:1.63")
 
+    testImplementation("com.nfeld.jsonpathkt:jsonpathkt:2.0.0")
+    testImplementation("org.skyscreamer:jsonassert:1.5.0")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.6.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
@@ -64,6 +67,8 @@ configurations {
         exclude(module = "mockito-core")
     }
 }
+
+/** Kotlin linter settings ************************/
 
 ktlint {
     version.set("0.38.1")
@@ -82,6 +87,15 @@ ktlint {
         include("**/kotlin/**")
     }
 }
+
+/** Set noArg eligible annotations ************************/
+
+noArg {
+    annotation("org.choppa.utils.NoArg")
+    invokeInitializers = true
+}
+
+/** Gradle tasks ************************/
 
 tasks.register<Test>("all") {
     description = "Runs all tests. (except integration tests)"

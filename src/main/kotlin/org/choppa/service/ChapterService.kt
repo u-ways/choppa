@@ -1,6 +1,8 @@
 package org.choppa.service
 
-import org.choppa.model.Chapter
+import org.choppa.exception.EmptyListException
+import org.choppa.exception.EntityNotFoundException
+import org.choppa.model.chapter.Chapter
 import org.choppa.repository.ChapterRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -10,12 +12,15 @@ import java.util.UUID
 class ChapterService(
     @Autowired private val chapterRepository: ChapterRepository
 ) {
-    fun find(id: UUID): Chapter? {
-        return chapterRepository.findById(id).orElseGet { null }
+    fun find(id: UUID): Chapter {
+        return chapterRepository.findById(id).orElseThrow {
+            throw EntityNotFoundException("Chapter with id [$id] does not exist.")
+        }
     }
 
     fun find(): List<Chapter> {
-        return chapterRepository.findAll()
+        val chapters = chapterRepository.findAll()
+        return if (chapters.isEmpty()) throw EmptyListException("No chapters exist yet.") else chapters
     }
 
     fun find(ids: List<UUID>): List<Chapter> {

@@ -1,15 +1,16 @@
 package org.choppa.integration.service
 
 import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeNull
-import org.choppa.model.Chapter
-import org.choppa.model.Member
-import org.choppa.repository.ChapterRepository
-import org.choppa.repository.MemberRepository
+import org.choppa.exception.EntityNotFoundException
+import org.choppa.model.chapter.Chapter
+import org.choppa.model.member.Member
+import org.choppa.service.ChapterService
 import org.choppa.service.MemberService
 import org.choppa.support.flyway.FlywayMigrationConfig
 import org.choppa.support.testcontainers.TestDBContainer
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -17,28 +18,31 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.UUID
 import javax.transaction.Transactional
-
-private val CHAPTER = Chapter(id = UUID.randomUUID(), name = "chapterName")
-private const val MEMBER_NAME = "memberName"
 
 @SpringBootTest
 @Testcontainers
 @Import(FlywayMigrationConfig::class)
 @ActiveProfiles("test")
 internal class MemberServiceIT @Autowired constructor(
-    private val chapterRepository: ChapterRepository,
-    private val memberRepository: MemberRepository,
+    private val chapterService: ChapterService,
     private val memberService: MemberService
 ) {
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
+    private lateinit var entity: Member
+    private lateinit var relatedEntityChapter: Chapter
+
+    @BeforeEach
+    internal fun setUp() {
+        relatedEntityChapter = chapterService.save(Chapter())
+        entity = memberService.save(Member(chapter = relatedEntityChapter))
+    }
+
     @Test
     @Transactional
     fun `Given new entity, when service saves new entity, then service should return same entity with generated id`() {
-        val entity = Member(name = MEMBER_NAME, chapter = CHAPTER)
         val result = memberService.save(entity)
 
         result.id shouldBe entity.id
@@ -50,28 +54,27 @@ internal class MemberServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db, when service finds entity by id, then service should return correct entity`() {
-        val existingEntity = memberService.save(Member(name = MEMBER_NAME, chapter = CHAPTER))
+        val existingEntity = entity
         val result = memberService.find(existingEntity.id)
 
-        result?.id shouldBe existingEntity.id
-        result?.name shouldBe existingEntity.name
-        result?.chapter?.id shouldBe existingEntity.chapter.id
-        result?.chapter?.name shouldBe existingEntity.chapter.name
+        result.id shouldBe existingEntity.id
+        result.name shouldBe existingEntity.name
+        result.chapter.id shouldBe existingEntity.chapter.id
+        result.chapter.name shouldBe existingEntity.chapter.name
     }
 
     @Test
     @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
-        val existingEntity = memberService.save(Member(name = MEMBER_NAME, chapter = CHAPTER))
+        val existingEntity = entity
         val removedEntity = memberService.delete(existingEntity)
-        val result = memberService.find(removedEntity.id)
 
-        result?.shouldBeNull()
+        assertThrows(EntityNotFoundException::class.java) { memberService.find(removedEntity.id) }
     }
 
     @AfterEach
     internal fun tearDown() {
-        memberRepository.deleteAll()
-        chapterRepository.deleteAll()
+        memberService.delete(entity)
+        chapterService.delete(relatedEntityChapter)
     }
 }

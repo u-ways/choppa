@@ -1,8 +1,9 @@
 package org.choppa.service
 
-import org.choppa.model.Member
+import org.choppa.exception.EmptyListException
+import org.choppa.exception.EntityNotFoundException
+import org.choppa.model.member.Member
 import org.choppa.repository.MemberRepository
-import org.choppa.service.relations.IterationHistoryService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,33 +12,34 @@ import java.util.UUID
 @Service
 class MemberService(
     @Autowired private val memberRepository: MemberRepository,
-    @Autowired private val chapterService: ChapterService,
-    @Autowired private val iterationHistoryService: IterationHistoryService
+    @Autowired private val chapterService: ChapterService
 ) {
-    fun find(id: UUID): Member? {
-        return memberRepository.findById(id).orElseGet { null }
+    fun find(id: UUID): Member {
+        return memberRepository.findById(id).orElseThrow {
+            throw EntityNotFoundException("Member with id [$id] does not exist.")
+        }
     }
 
     fun find(): List<Member> {
-        return memberRepository.findAll()
+        val members = memberRepository.findAll()
+        return if (members.isEmpty()) throw EmptyListException("No members exist yet.") else members
     }
 
     fun find(ids: List<UUID>): List<Member> {
         return memberRepository.findAllById(ids)
     }
 
+    // NOTE(u-ways) #57 Member is the owning map of chapter.
+    //                  Therefore, service ensure they exist before relating chapter accordingly.
     @Transactional
     fun save(member: Member): Member {
-        chapterService.save(member.chapter)
-        iterationHistoryService.save(member.iterations)
-        return memberRepository.save(member)
+        val chapter = chapterService.find(member.chapter.id)
+        return memberRepository.save(Member(member.id, member.name, chapter))
     }
 
     @Transactional
     fun save(members: List<Member>): List<Member> {
-        chapterService.save(members.map { it.chapter })
-        members.forEach { iterationHistoryService.save(it.iterations) }
-        return memberRepository.saveAll(members)
+        return members.map(::save)
     }
 
     @Transactional

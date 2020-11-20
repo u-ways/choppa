@@ -11,7 +11,7 @@ import Squad from "@/data/types/Squad";
 import Member from "@/data/types/Member";
 import Chapter from "@/data/types/Chapter";
 import App from "./App.vue";
-import router from "./router";
+import router from "./config/router";
 
 library.add(faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus);
 Vue.component("font-awesome-icon", FontAwesomeIcon);

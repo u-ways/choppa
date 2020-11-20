@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Chapter from "@/data/types/Chapter";
+import Chapter from "@/data/types/chapter";
 
 export default {
   name: "ChapterLabelAtom",

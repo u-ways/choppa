@@ -6,10 +6,10 @@ import { v4 as uuidv4 } from "uuid";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import Vue from "vue";
-import Tribe from "@/data/types/Tribe";
-import Squad from "@/data/types/Squad";
-import Member from "@/data/types/Member";
-import Chapter from "@/data/types/Chapter";
+import Tribe from "@/data/types/tribe";
+import Squad from "@/data/types/squad";
+import Member from "@/data/types/member";
+import Chapter from "@/data/types/chapter";
 import App from "./App.vue";
 import router from "./config/router";
 

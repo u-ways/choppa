@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import Tribe from "@/data/types/Tribe";
+import Tribe from "@/data/types/tribe";
 import SquadOrganism from "@/components/organisms/SquadOrganism";
 
 export default {

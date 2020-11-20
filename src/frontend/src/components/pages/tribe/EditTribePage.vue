@@ -163,9 +163,9 @@ import FixedWidthWithNavbarTemplate from "@/components/templates/FixedWidthWithN
 import ColourSquareMolecule from "@/components/molecules/ColourSquareMolecule";
 import EditTribeMemberRow from "@/components/molecules/EditTribeMemberRow";
 import { v4 as uuidv4 } from "uuid";
-import Member from "@/data/types/Member";
-import Squad from "@/data/types/Squad";
-import Chapter from "@/data/types/Chapter";
+import Member from "@/data/types/member";
+import Squad from "@/data/types/squad";
+import Chapter from "@/data/types/chapter";
 
 export default {
   name: "EditTribePage",

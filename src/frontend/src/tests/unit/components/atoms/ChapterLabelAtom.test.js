@@ -1,6 +1,6 @@
 import { describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
 import ChapterLabelAtom from "@/components/atoms/ChapterLabelAtom";
-import Chapter from "@/data/types/Chapter";
+import Chapter from "@/data/types/chapter";
 
 describe("Chapter Label Atom test", () => {
   it("Renders correctly", async () => {

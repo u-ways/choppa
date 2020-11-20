@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@/tests/unit/test-imports";
-import Member from "@/data/types/Member";
-import Chapter from "@/data/types/Chapter";
+import Member from "@/data/types/member";
+import Chapter from "@/data/types/chapter";
 
 describe("Member test", () => {
   it("Constructor assigns properties correctly", () => {

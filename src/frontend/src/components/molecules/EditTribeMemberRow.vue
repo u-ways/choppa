@@ -72,9 +72,9 @@
 </template>
 
 <script>
-import Member from "@/data/types/Member";
+import Member from "@/data/types/member";
 import ChapterBadgeAtom from "@/components/atoms/ChapterBadgeAtom";
-import Squad from "@/data/types/Squad";
+import Squad from "@/data/types/squad";
 
 export default {
   name: "EditTribeMemberRow",

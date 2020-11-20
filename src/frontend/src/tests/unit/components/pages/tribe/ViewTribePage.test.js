@@ -1,9 +1,9 @@
 import { createLocalVue, describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
 import VueRouter from "vue-router";
 import ViewTribePage from "@/components/pages/tribe/ViewTribePage";
-import Tribe from "@/data/types/Tribe";
-import Squad from "@/data/types/Squad";
-import Member from "@/data/types/Member";
+import Tribe from "@/data/types/tribe";
+import Squad from "@/data/types/squad";
+import Member from "@/data/types/member";
 
 const tribe = new Tribe(4096, "Mr Tribe", [
   new Squad(1024, "Mr SquadOne", "#FFFFFF", [

@@ -1,6 +1,6 @@
 import { describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
-import Squad from "@/data/types/Squad";
-import Member from "@/data/types/Member";
+import Squad from "@/data/types/squad";
+import Member from "@/data/types/member";
 import SquadOrganism from "@/components/organisms/SquadOrganism";
 
 const testSquad = new Squad(6, "Squad Two", "#00FFFF", [

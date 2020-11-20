@@ -1,6 +1,6 @@
 import { describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
 import ProfilePictureStackMolecule from "@/components/molecules/ProfilePictureStackMolecule";
-import Member from "@/data/types/Member";
+import Member from "@/data/types/member";
 
 const memberJohnny = new Member("1", "Johnny");
 const memberRobert = new Member("2", "Robert");

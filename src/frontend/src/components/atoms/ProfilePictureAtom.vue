@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import Member from "@/data/types/Member";
+import Member from "@/data/types/member";
 import { update } from "jdenticon";
 
 export default {

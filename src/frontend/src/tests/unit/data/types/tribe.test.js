@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@/tests/unit/test-imports";
-import Squad from "@/data/types/Squad";
-import Tribe from "@/data/types/Tribe";
-import Member from "@/data/types/Member";
+import Squad from "@/data/types/squad";
+import Tribe from "@/data/types/tribe";
+import Member from "@/data/types/member";
 
 describe("Tribe test", () => {
   it("Constructor assigns properties correctly", () => {

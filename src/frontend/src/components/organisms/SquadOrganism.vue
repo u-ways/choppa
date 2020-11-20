@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import Squad from "@/data/types/Squad";
+import Squad from "@/data/types/squad";
 import ProfilePictureStackMolecule from "@/components/molecules/ProfilePictureStackMolecule";
 import ProfilePictureAtom from "@/components/atoms/ProfilePictureAtom";
 import ChapterLabelAtom from "@/components/atoms/ChapterLabelAtom";

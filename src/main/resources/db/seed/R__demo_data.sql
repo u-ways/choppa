@@ -5,62 +5,68 @@
 DO
 $$
     DECLARE
-        tribe_bannock_id      CONSTANT uuid := '00000000000000000000000000000001';
-        squad_metropolitan_id CONSTANT uuid := '0000000000000000000000000000000a';
-        squad_circle_id       CONSTANT uuid := '0000000000000000000000000000000b';
-        squad_district_id     CONSTANT uuid := '0000000000000000000000000000000c';
-        chapter_lead_id       CONSTANT uuid := '00000000000000000000000000000001';
-        chapter_ba_id         CONSTANT uuid := '00000000000000000000000000000002';
-        chapter_tester_id     CONSTANT uuid := '00000000000000000000000000000003';
-        chapter_float_id      CONSTANT uuid := '00000000000000000000000000000004';
-        chapter_dev_id        CONSTANT uuid := '00000000000000000000000000000005';
-        chapter_intern_id     CONSTANT uuid := '00000000000000000000000000000006';
-        member_arian_id       CONSTANT uuid := '00000000000000000000000000000001';
-        member_lillie_id      CONSTANT uuid := '00000000000000000000000000000002';
-        member_tina_id        CONSTANT uuid := '00000000000000000000000000000003';
-        member_yan_id         CONSTANT uuid := '00000000000000000000000000000004';
-        member_rose_id        CONSTANT uuid := '00000000000000000000000000000005';
-        member_jess_id        CONSTANT uuid := '00000000000000000000000000000006';
-        member_maryam_id      CONSTANT uuid := '00000000000000000000000000000007';
-        member_monty_id       CONSTANT uuid := '00000000000000000000000000000008';
-        member_gerald_id      CONSTANT uuid := '00000000000000000000000000000009';
-        member_rochelle_id    CONSTANT uuid := '00000000000000000000000000000010';
-        member_lamar_id       CONSTANT uuid := '00000000000000000000000000000011';
-        member_maxine_id      CONSTANT uuid := '00000000000000000000000000000012';
-        member_ethel_id       CONSTANT uuid := '00000000000000000000000000000013';
-        member_hattie_id      CONSTANT uuid := '00000000000000000000000000000014';
-        member_zahraa_id      CONSTANT uuid := '00000000000000000000000000000015';
-        member_shantelle_id   CONSTANT uuid := '00000000000000000000000000000016';
-        member_ezra_id        CONSTANT uuid := '00000000000000000000000000000017';
-        member_romany_id      CONSTANT uuid := '00000000000000000000000000000018';
-        iteration_370_id      CONSTANT uuid := '00000000000000000000000000000001';
-        iteration_371_id      CONSTANT uuid := '00000000000000000000000000000002';
-        iteration_372_id      CONSTANT uuid := '00000000000000000000000000000003';
-        iteration_373_id      CONSTANT uuid := '00000000000000000000000000000004';
-        iteration_374_id      CONSTANT uuid := '00000000000000000000000000000005';
-        iteration_375_id      CONSTANT uuid := '00000000000000000000000000000006';
-        iteration_376_id      CONSTANT uuid := '00000000000000000000000000000007';
+        tribe_bannock_id      CONSTANT uuid    := '00000000000000000000000000000001';
+        squad_metropolitan_id CONSTANT uuid    := '0000000000000000000000000000000a';
+        squad_circle_id       CONSTANT uuid    := '0000000000000000000000000000000b';
+        squad_district_id   CONSTANT uuid    := '0000000000000000000000000000000c';
+        chapter_lead_id     CONSTANT uuid    := '00000000000000000000000000000001';
+        chapter_ba_id       CONSTANT uuid    := '00000000000000000000000000000002';
+        chapter_tester_id   CONSTANT uuid    := '00000000000000000000000000000003';
+        chapter_float_id    CONSTANT uuid    := '00000000000000000000000000000004';
+        chapter_dev_id      CONSTANT uuid    := '00000000000000000000000000000005';
+        chapter_intern_id   CONSTANT uuid    := '00000000000000000000000000000006';
+        member_arian_id     CONSTANT uuid    := '00000000000000000000000000000001';
+        member_lillie_id    CONSTANT uuid    := '00000000000000000000000000000002';
+        member_tina_id      CONSTANT uuid    := '00000000000000000000000000000003';
+        member_yan_id       CONSTANT uuid    := '00000000000000000000000000000004';
+        member_rose_id      CONSTANT uuid    := '00000000000000000000000000000005';
+        member_jess_id      CONSTANT uuid    := '00000000000000000000000000000006';
+        member_maryam_id    CONSTANT uuid    := '00000000000000000000000000000007';
+        member_monty_id     CONSTANT uuid    := '00000000000000000000000000000008';
+        member_gerald_id    CONSTANT uuid    := '00000000000000000000000000000009';
+        member_rochelle_id  CONSTANT uuid    := '00000000000000000000000000000010';
+        member_lamar_id     CONSTANT uuid    := '00000000000000000000000000000011';
+        member_maxine_id    CONSTANT uuid    := '00000000000000000000000000000012';
+        member_ethel_id     CONSTANT uuid    := '00000000000000000000000000000013';
+        member_hattie_id    CONSTANT uuid    := '00000000000000000000000000000014';
+        member_zahraa_id    CONSTANT uuid    := '00000000000000000000000000000015';
+        member_shantelle_id CONSTANT uuid    := '00000000000000000000000000000016';
+        member_ezra_id      CONSTANT uuid    := '00000000000000000000000000000017';
+        member_romany_id    CONSTANT uuid    := '00000000000000000000000000000018';
+        iteration_370_id    CONSTANT uuid    := '00000000000000000000000000000001';
+        iteration_371_id    CONSTANT uuid    := '00000000000000000000000000000002';
+        iteration_372_id    CONSTANT uuid    := '00000000000000000000000000000003';
+        iteration_373_id    CONSTANT uuid    := '00000000000000000000000000000004';
+        iteration_374_id    CONSTANT uuid    := '00000000000000000000000000000005';
+        iteration_375_id    CONSTANT uuid    := '00000000000000000000000000000006';
+        iteration_376_id    CONSTANT uuid    := '00000000000000000000000000000007';
+        color_red           CONSTANT INTEGER := '-1407643904';
+        color_yellow        CONSTANT INTEGER := '-171882752';
+        color_green         CONSTANT INTEGER := '1655133696';
+        color_grey          CONSTANT INTEGER := '-858993664';
+        color_blue          CONSTANT INTEGER := '5476608';
+        color_purple        CONSTANT INTEGER := '1733141504';
     BEGIN
         -- Tribes
-        insert into tribe (tribe_id, name)
-        values (tribe_bannock_id, 'The Bannock')
+        insert into tribe (tribe_id, name, color)
+        values (tribe_bannock_id, 'The Bannock', color_blue)
         ON CONFLICT (tribe_id) DO NOTHING;
 
         -- Squads
-        insert into squad (squad_id, name, tribe)
-        values (squad_metropolitan_id, 'Metropolitan', tribe_bannock_id)
-             , (squad_circle_id, 'Circle', tribe_bannock_id)
-             , (squad_district_id, 'District', tribe_bannock_id)
+        insert into squad (squad_id, name, color, tribe)
+        values (squad_metropolitan_id, 'Metropolitan', color_red, tribe_bannock_id)
+             , (squad_circle_id, 'Circle', color_yellow, tribe_bannock_id)
+             , (squad_district_id, 'District', color_green, tribe_bannock_id)
         ON CONFLICT (squad_id) DO NOTHING;
 
         -- Chapters
-        insert into chapter (chapter_id, name)
-        values (chapter_lead_id, 'LEAD')
-             , (chapter_ba_id, 'BA')
-             , (chapter_tester_id, 'TESTER')
-             , (chapter_float_id, 'FLOAT')
-             , (chapter_dev_id, 'DEV')
-             , (chapter_intern_id, 'INTERN')
+        insert into chapter (chapter_id, name, color)
+        values (chapter_lead_id, 'LEAD', color_red)
+             , (chapter_ba_id, 'BA', color_yellow)
+             , (chapter_tester_id, 'TESTER', color_green)
+             , (chapter_float_id, 'FLOAT', color_grey)
+             , (chapter_dev_id, 'DEV', color_blue)
+             , (chapter_intern_id, 'INTERN', color_purple)
         ON CONFLICT (chapter_id) DO NOTHING;
 
         -- Members

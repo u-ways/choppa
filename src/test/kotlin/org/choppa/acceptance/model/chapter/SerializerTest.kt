@@ -10,12 +10,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class SerializerTest {
+    private val blue = 65280
     private lateinit var chapter: Chapter
     private lateinit var mapper: ObjectMapper
 
     @BeforeEach
     internal fun setUp() {
-        chapter = Chapter()
+        chapter = Chapter(color = blue)
         mapper = ObjectMapper()
     }
 
@@ -26,9 +27,11 @@ internal class SerializerTest {
         val id = uniformDto?.read<String>("$.id")
         val name = uniformDto?.read<String>("$.name")
         val members = uniformDto?.read<String>("$.members")
+        val color = uniformDto?.read<String>("$.color")
 
         assertThat(id, equalTo("chapters/${chapter.id}"))
         assertThat(name, equalTo(chapter.name))
         assertThat(members, equalTo("members?chapter=${chapter.id}"))
+        assertThat(color, equalTo("#0000ff00"))
     }
 }

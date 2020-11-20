@@ -10,6 +10,7 @@ import org.choppa.model.member.Member
 import org.choppa.model.member.Member.Companion.NO_MEMBERS
 import org.choppa.model.tribe.Tribe
 import org.choppa.model.tribe.Tribe.Companion.UNASSIGNED_TRIBE
+import org.choppa.utils.Color.Companion.GREY
 import org.hibernate.annotations.GenericGenerator
 import java.util.UUID
 import java.util.UUID.fromString
@@ -39,6 +40,10 @@ data class Squad @JsonCreator constructor(
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
     @JsonProperty("name")
     val name: String = "SQ-$id".substring(0, 15),
+
+    @Column(name = "color", columnDefinition = "INTEGER")
+    @JsonProperty("color")
+    val color: Int = GREY,
 
     @ManyToOne
     @JsonIgnore

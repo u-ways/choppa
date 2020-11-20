@@ -13,7 +13,12 @@ class Deserializer(supportedClass: Class<Chapter>? = null) : BaseDeserializer<Ch
             return when (node.size()) {
                 0 -> Chapter(node.extractUUID())
                 1 -> Chapter(node["id"].extractUUID())
-                else -> Chapter(node["id"].extractUUID(), node["name"].textValue())
+                else -> {
+                    val id = node["id"].extractUUID()
+                    val name = node["name"].textValue()
+                    val color = node.extractColor()
+                    Chapter(id, name, color)
+                }
             }
         } catch (e: Exception) {
             throw UnprocessableEntityException("Unable to parse requested chapter entity.", e)

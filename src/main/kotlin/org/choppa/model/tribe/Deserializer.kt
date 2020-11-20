@@ -16,7 +16,8 @@ class Deserializer(supportedClass: Class<Tribe>? = null) : BaseDeserializer<Trib
                 else -> {
                     val id = node["id"].extractUUID()
                     val name = node["name"].textValue()
-                    Tribe(id, name)
+                    val color = node.extractColor()
+                    Tribe(id, name, color)
                 }
             }
         } catch (e: Exception) {

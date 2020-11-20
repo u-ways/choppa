@@ -12,12 +12,13 @@ import org.junit.jupiter.api.Test
 import java.util.UUID.randomUUID
 
 internal class DeserializerTest {
+    private val white = -256
     private lateinit var squad: Squad
     private lateinit var mapper: ObjectMapper
 
     @BeforeEach
     internal fun setUp() {
-        squad = Squad()
+        squad = Squad(color = white)
         mapper = ObjectMapper()
     }
 
@@ -28,6 +29,7 @@ internal class DeserializerTest {
             {
                 "id": "squads/${squad.id}",
                 "name": "${squad.name}",
+                "color": "#ffffff",
                 "tribe": {
                     "id": "tribes/${squad.tribe.id}",
                     "name": "${squad.tribe.name}"
@@ -53,6 +55,7 @@ internal class DeserializerTest {
 
         assertThat(dao.id, equalTo(squad.id))
         assertThat(dao.name, equalTo(squad.name))
+        assertThat(dao.color, equalTo(squad.color))
     }
 
     @Test
@@ -118,6 +121,22 @@ internal class DeserializerTest {
     @Test
     fun `Given invalid entity DTO, when deserialize, then it should throw UnprocessableEntityException`() {
         val invalidDto = "{ invalidDto }"
+
+        assertThrows(UnprocessableEntityException::class.java) {
+            mapper.readValue(invalidDto, Squad::class.java)
+        }
+    }
+
+    @Test
+    fun `Given invalid color in entity DTO, when deserialize, then it it should throw UnprocessableEntityException`() {
+        val invalidDto =
+            """
+            {
+                "id": "squads/${squad.id}",
+                "name": "${squad.name}",
+                "color": "#00ff0"
+            }
+            """.trimIndent()
 
         assertThrows(UnprocessableEntityException::class.java) {
             mapper.readValue(invalidDto, Squad::class.java)

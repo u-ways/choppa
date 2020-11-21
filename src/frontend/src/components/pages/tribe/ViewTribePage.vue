@@ -36,9 +36,10 @@ export default {
   },
   async mounted() {
     this.tribe = await getTribe({
-      id: "00000000-0000-0000-0000-000000000001",
+      id: this.$route.params.id,
       loadSquads: true,
     });
+
     this.isLoaded = true;
   },
 };

@@ -2,7 +2,7 @@
 DO
 $$
     DECLARE
-        color_grey            CONSTANT INTEGER := '-858993664';
+        color_grey            CONSTANT INTEGER := '-858993409';
         tribe_unassigned_id   CONSTANT uuid    := '00000000000000000000000000000000';
         squad_unassigned_id   CONSTANT uuid    := '00000000000000000000000000000000';
         chapter_unassigned_id CONSTANT uuid    := '00000000000000000000000000000000';

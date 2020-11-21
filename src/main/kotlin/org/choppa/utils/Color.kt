@@ -4,7 +4,7 @@ import java.lang.Integer.toHexString
 
 class Color {
     companion object {
-        const val GREY = -858993664
+        const val GREY = -858993409
 
         /**
          * Convert an Integer to be an expanded RGB hexadecimal color.
@@ -27,7 +27,7 @@ class Color {
             .substring(1)
             .let {
                 when (it.length) {
-                    6 -> "${it}00".toLong(16).toInt()
+                    6 -> "${it}ff".toLong(16).toInt()
                     8 -> it.toLong(16).toInt()
                     else -> throw IllegalArgumentException("Hex [$this] value is invalid.")
                 }

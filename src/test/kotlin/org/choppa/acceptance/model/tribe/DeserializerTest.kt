@@ -11,13 +11,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class DeserializerTest {
-    private val white = 16777215
+    private val black = 255
     private lateinit var tribe: Tribe
     private lateinit var mapper: ObjectMapper
 
     @BeforeEach
     internal fun setUp() {
-        tribe = Tribe(color = white)
+        tribe = Tribe(color = black)
         mapper = ObjectMapper()
     }
 
@@ -28,7 +28,7 @@ internal class DeserializerTest {
             {
                 "id": "tribes/${tribe.id}",
                 "name": "${tribe.name}",
-                "color": "#ffffff00",
+                "color": "#000000",
                 "squads": "squads?tribe=${tribe.id}",
                 "iterations": "iterations?tribe=${tribe.id}",
                 "history": "history?tribe=${tribe.id}"
@@ -39,6 +39,7 @@ internal class DeserializerTest {
 
         assertThat(dao.id, equalTo(tribe.id))
         assertThat(dao.name, equalTo(tribe.name))
+        assertThat(dao.color, equalTo(tribe.color))
     }
 
     @Test

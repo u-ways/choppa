@@ -1,7 +1,7 @@
 package org.choppa.support.factory
 
-import org.choppa.model.history.History
-import org.choppa.model.tribe.Tribe
+import org.choppa.domain.history.History
+import org.choppa.domain.tribe.Tribe
 
 class TribeFactory {
     @Suppress("MemberVisibilityCanBePrivate")

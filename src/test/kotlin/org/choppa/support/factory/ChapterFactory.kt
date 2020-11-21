@@ -1,6 +1,6 @@
 package org.choppa.support.factory
 
-import org.choppa.model.chapter.Chapter
+import org.choppa.domain.chapter.Chapter
 
 class ChapterFactory {
     @Suppress("MemberVisibilityCanBePrivate")

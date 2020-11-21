@@ -1,6 +1,6 @@
 <template>
   <FixedWidthWithNavbarTemplate css="pt-3">
-    <div class="edit-tribe mb-5">
+    <div class="edit-tribe mb-5" v-if="isLoaded">
       <div class="edit-tribe__header text-center">
         Edit Tribe
       </div>
@@ -153,6 +153,15 @@
         </div>
       </div>
     </div>
+    <div class="" v-else>
+      <div class="row pt-3 mx-0">
+        <div class="col-12 text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </FixedWidthWithNavbarTemplate>
 </template>
 
@@ -164,6 +173,7 @@ import { v4 as uuidv4 } from "uuid";
 import Member from "@/data/types/member";
 import Squad from "@/data/types/squad";
 import Chapter from "@/data/types/chapter";
+import getTribe from "@/config/api/tribe.api";
 
 export default {
   name: "EditTribePage",
@@ -174,13 +184,20 @@ export default {
   },
   data() {
     return {
-      tribe: this.$root.$data.testTribeOne,
+      tribe: undefined,
       currentlyExpandedMemberRow: undefined,
       currentChapters: [],
+      isLoaded: false,
     };
   },
-  mounted() {
+  async mounted() {
+    this.tribe = await getTribe({
+      id: "00000000-0000-0000-0000-000000000001",
+      loadSquads: true,
+    });
+
     this.currentChapters = this.tribe.allDistinctChapters();
+    this.isLoaded = true;
   },
   methods: {
     nameInputId(squadId) {

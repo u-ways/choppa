@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class DeserializerTest {
-    private val white = -256
+    private val white = -1
     private lateinit var chapter: Chapter
     private lateinit var mapper: ObjectMapper
 

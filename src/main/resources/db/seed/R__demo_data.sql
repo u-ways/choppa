@@ -40,12 +40,12 @@ $$
         iteration_374_id    CONSTANT uuid    := '00000000000000000000000000000005';
         iteration_375_id    CONSTANT uuid    := '00000000000000000000000000000006';
         iteration_376_id    CONSTANT uuid    := '00000000000000000000000000000007';
-        color_red           CONSTANT INTEGER := '-1407643904';
-        color_yellow        CONSTANT INTEGER := '-171882752';
-        color_green         CONSTANT INTEGER := '1655133696';
-        color_grey          CONSTANT INTEGER := '-858993664';
-        color_blue          CONSTANT INTEGER := '5476608';
-        color_purple        CONSTANT INTEGER := '1733141504';
+        color_red           CONSTANT INTEGER := '-1407643649';
+        color_yellow        CONSTANT INTEGER := '-171882497';
+        color_green         CONSTANT INTEGER := '1655133951';
+        color_grey          CONSTANT INTEGER := '-858993409';
+        color_blue          CONSTANT INTEGER := '5476863';
+        color_purple        CONSTANT INTEGER := '1733141759';
     BEGIN
         -- Tribes
         insert into tribe (tribe_id, name, color)

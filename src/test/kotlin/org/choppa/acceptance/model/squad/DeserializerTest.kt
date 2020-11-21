@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import java.util.UUID.randomUUID
 
 internal class DeserializerTest {
-    private val white = -256
+    private val white = -1
     private lateinit var squad: Squad
     private lateinit var mapper: ObjectMapper
 

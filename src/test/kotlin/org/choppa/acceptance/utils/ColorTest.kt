@@ -58,11 +58,11 @@ internal class ColorTest {
         @JvmStatic
         fun rgbHexStringToRgbaIntTestArgs(): Stream<Arguments?>? {
             return Stream.of(
-                arguments("#ffffff", -256),
-                arguments("#ff0000", -16777216),
-                arguments("#00ff00", 16711680),
-                arguments("#0000ff", 65280),
-                arguments("#000000", 0),
+                arguments("#ffffff", -1),
+                arguments("#ff0000", -16776961),
+                arguments("#00ff00", 16711935),
+                arguments("#0000ff", 65535),
+                arguments("#000000", 255),
             )
         }
     }

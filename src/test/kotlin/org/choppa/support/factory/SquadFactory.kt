@@ -1,6 +1,6 @@
 package org.choppa.support.factory
 
-import org.choppa.model.squad.Squad
+import org.choppa.domain.squad.Squad
 
 class SquadFactory {
     @Suppress("MemberVisibilityCanBePrivate")

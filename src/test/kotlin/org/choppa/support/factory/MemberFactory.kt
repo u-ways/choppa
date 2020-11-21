@@ -1,8 +1,8 @@
 package org.choppa.support.factory
 
-import org.choppa.model.chapter.Chapter
-import org.choppa.model.chapter.Chapter.Companion.UNASSIGNED_ROLE
-import org.choppa.model.member.Member
+import org.choppa.domain.chapter.Chapter
+import org.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
+import org.choppa.domain.member.Member
 
 class MemberFactory {
     @Suppress("MemberVisibilityCanBePrivate")

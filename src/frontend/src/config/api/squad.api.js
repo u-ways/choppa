@@ -2,12 +2,6 @@ import httpClient from "@/config/api/http-client";
 import Squad from "@/data/types/squad";
 import getMember from "@/config/api/member.api";
 
-function getUrlOrId(config) {
-  return Object.prototype.hasOwnProperty.call(config, "url")
-    ? config.url
-    : `squads/${config.id}`;
-}
-
 async function deserializeSquad(config, json) {
   let members = [];
   if (!Object.prototype.hasOwnProperty.call(config, "loadMembers") || config.loadMembers) {
@@ -23,11 +17,11 @@ async function deserializeSquad(config, json) {
 }
 
 async function getSquads(config) {
-  const response = await httpClient.get(getUrlOrId(config));
+  const response = await httpClient.get("squads");
 
-  return Promise.all(
-    response.data.map((squad) => deserializeSquad(config, squad)),
-  );
+  // TODO: Once API has been finished this should be implemented correctly with the api and support url and id
+  return Promise.all(response.data.filter((squad) => squad.tribe === config.tribeId)
+    .map((squad) => deserializeSquad(config, squad)));
 }
 
 export default getSquads;

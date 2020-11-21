@@ -11,7 +11,7 @@ function getUrlOrId(config) {
 async function deserializeTribe(config, json) {
   let squads = [];
   if (!Object.prototype.hasOwnProperty.call(config, "loadSquads") || config.loadSquads) {
-    squads = await getSquads({ url: json.squads, loadMembers: true });
+    squads = await getSquads({ tribeId: json.id, loadMembers: true });
   }
 
   return new Tribe({

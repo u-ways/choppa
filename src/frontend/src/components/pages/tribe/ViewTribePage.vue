@@ -1,8 +1,19 @@
 <template>
   <FullWidthWithNavbarTemplate>
-    <div class="pt-3">
-      <TribeOrganism :tribe="tribe" />
-    </div>
+    <template v-if="isLoaded">
+      <div class="pt-3">
+        <TribeOrganism :tribe="tribe" />
+      </div>
+    </template>
+    <template v-else>
+      <div class="row pt-3 mx-0">
+        <div class="col-12 text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </template>
   </FullWidthWithNavbarTemplate>
 </template>
 
@@ -20,6 +31,7 @@ export default {
   data() {
     return {
       tribe: this.$root.$data.testTribeOne,
+      isLoaded: false,
     };
   },
   async mounted() {
@@ -27,6 +39,7 @@ export default {
       id: "00000000-0000-0000-0000-000000000001",
       loadSquads: true,
     });
+    this.isLoaded = true;
   },
 };
 </script>

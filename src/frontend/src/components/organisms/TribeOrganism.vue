@@ -12,7 +12,7 @@
             <div class="col tribe__header-underneath text-center p-0">
               {{ tribe.squads.length }} Squads
               | {{ tribe.allDistinctMembers().length }} Distinct Members
-              | <router-link to="/tribe/1/edit">Edit</router-link>
+              | <router-link to="edit">Edit</router-link>
             </div>
           </div>
         </div>

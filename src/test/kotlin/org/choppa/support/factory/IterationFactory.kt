@@ -1,6 +1,6 @@
 package org.choppa.support.factory
 
-import org.choppa.model.iteration.Iteration
+import org.choppa.domain.iteration.Iteration
 
 class IterationFactory {
     @Suppress("MemberVisibilityCanBePrivate")

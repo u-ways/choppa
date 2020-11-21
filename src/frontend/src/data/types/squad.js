@@ -1,10 +1,12 @@
 import Chapter from "@/data/types/chapter";
 
+const DEFAULT_SQUAD_COLOR = "#3068c2";
+
 export default class Squad {
   constructor(config) {
     this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : "";
     this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
-    this._colour = "#FF00FF"; // TODO: COLOUR
+    this._color = Object.prototype.hasOwnProperty.call(config, "color") ? config.color : DEFAULT_SQUAD_COLOR;
     this._members = Object.prototype.hasOwnProperty.call(config, "members") ? config.members : [];
   }
 
@@ -20,22 +22,22 @@ export default class Squad {
     this._name = newName;
   }
 
-  get colour() {
-    return this._colour;
+  get color() {
+    return this._color;
   }
 
-  set colour(newColour) {
-    this._colour = newColour;
+  set color(newColor) {
+    this._color = newColor;
   }
 
   get members() {
     return this._members;
   }
 
-  updateChapter(id, name, colour) {
+  updateChapter(id, name, color) {
     this.members.forEach((member, index) => {
       if (member.chapter && member.chapter.id === id) {
-        this.members[index].chapter = new Chapter(member.chapter.id, name, colour);
+        this.members[index].chapter = new Chapter(member.chapter.id, name, color);
       }
     });
   }

@@ -8,7 +8,7 @@ function getUrlOrId(config) {
     : `tribes/${config.id}`;
 }
 
-async function deserialiseTribe(config, json) {
+async function deserializeTribe(config, json) {
   let squads = [];
   if (!Object.prototype.hasOwnProperty.call(config, "loadSquads") || config.loadSquads) {
     squads = await getSquads({ url: json.squads, loadMembers: true });
@@ -23,7 +23,7 @@ async function deserialiseTribe(config, json) {
 
 async function getTribe(config) {
   const response = await httpClient.get(getUrlOrId(config));
-  return deserialiseTribe(config, response.data);
+  return deserializeTribe(config, response.data);
 }
 
 export default getTribe;

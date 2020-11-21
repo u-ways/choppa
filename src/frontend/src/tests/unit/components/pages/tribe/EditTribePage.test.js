@@ -56,19 +56,19 @@ describe("Edit Tribe Page test", () => {
     jest.restoreAllMocks();
   });
 
-  it("onSquadColourChanged", async () => {
-    const squad = new Squad("250", "Test Colour Squad", "old colour", []);
+  it("onSquadColorChanged", async () => {
+    const squad = new Squad("250", "Test Color Squad", "old color", []);
     jest.spyOn(Tribe.prototype, "findSquadById").mockReturnValue(squad);
 
     const wrapper = mountComponent();
-    wrapper.vm.onSquadColourChanged({
+    wrapper.vm.onSquadColorChanged({
       squadId: 5,
-      colour: {
-        hex: "new colour",
+      color: {
+        hex: "new color",
       },
     });
 
-    expect(squad.colour).toEqual("new colour");
+    expect(squad.color).toEqual("new color");
     jest.restoreAllMocks();
   });
 

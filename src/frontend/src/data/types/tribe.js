@@ -58,8 +58,8 @@ export default class Tribe {
     return result[0];
   }
 
-  updateChapter(id, name, colour) {
-    this.squads.forEach((squad) => squad.updateChapter(id, name, colour));
+  updateChapter(id, name, color) {
+    this.squads.forEach((squad) => squad.updateChapter(id, name, color));
   }
 
   deleteChapter(id) {

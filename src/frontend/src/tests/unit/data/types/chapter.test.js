@@ -6,6 +6,6 @@ describe("Chapter test", () => {
     const chapter = new Chapter(1, "Developer", "#FF00FF");
     expect(chapter.id).toBe(1);
     expect(chapter.name).toBe("Developer");
-    expect(chapter.colour).toBe("#FF00FF");
+    expect(chapter.color).toBe("#FF00FF");
   });
 });

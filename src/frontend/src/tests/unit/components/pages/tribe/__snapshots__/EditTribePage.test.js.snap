@@ -43,7 +43,7 @@ exports[`Edit Tribe Page test Renders correctly 1`] = `
               <div class=\\"row\\">
                 <div class=\\"col-8 p-0 pl-3 pl-md-0\\"><input id=\\"squad-name-1024\\" class=\\"form-control\\"></div>
                 <div class=\\"col-2 px-1 px-md-3\\">
-                  <coloursquaremolecule-stub startingcolour=\\"#FFFFFF\\" returnevent=\\"[object Object]\\"></coloursquaremolecule-stub>
+                  <colorsquaremolecule-stub startingcolor=\\"#FFFFFF\\" returnevent=\\"[object Object]\\"></colorsquaremolecule-stub>
                 </div>
                 <div class=\\"col-2 p-0\\"><button type=\\"button\\" class=\\"btn btn-outline-dark\\">
                     <font-awesome-icon-stub icon=\\"trash\\"></font-awesome-icon-stub>
@@ -83,7 +83,7 @@ exports[`Edit Tribe Page test Renders correctly 1`] = `
               <div class=\\"row\\">
                 <div class=\\"col-8 p-0 pl-3 pl-md-0\\"><input id=\\"squad-name-2048\\" class=\\"form-control\\"></div>
                 <div class=\\"col-2 px-1 px-md-3\\">
-                  <coloursquaremolecule-stub startingcolour=\\"#FFFFFF\\" returnevent=\\"[object Object]\\"></coloursquaremolecule-stub>
+                  <colorsquaremolecule-stub startingcolor=\\"#FFFFFF\\" returnevent=\\"[object Object]\\"></colorsquaremolecule-stub>
                 </div>
                 <div class=\\"col-2 p-0\\"><button type=\\"button\\" class=\\"btn btn-outline-dark\\">
                     <font-awesome-icon-stub icon=\\"trash\\"></font-awesome-icon-stub>

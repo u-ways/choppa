@@ -5,7 +5,7 @@
 </template>
 
 <style lang="scss">
-@import "src/assets/scss/colours";
+@import "src/assets/scss/colors";
 @import "src/assets/scss/typography";
 
 body {

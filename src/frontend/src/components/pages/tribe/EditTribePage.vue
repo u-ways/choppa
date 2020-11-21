@@ -37,9 +37,9 @@
                     >
                   </div>
                   <div class="col-2 px-1 px-md-3">
-                    <ColourSquareMolecule
-                      :startingColour="chapter.colour"
-                      @colourChanged="onChapterColourChanged(chapter, $event)"
+                    <ColorSquareMolecule
+                      :startingColor="chapter.color"
+                      @colorChanged="onChapterColorChanged(chapter, $event)"
                       :returnEvent="{ chapter: chapter }"
                     />
                   </div>
@@ -81,9 +81,9 @@
                     >
                   </div>
                   <div class="col-2 px-1 px-md-3">
-                    <ColourSquareMolecule
-                      :startingColour="tribe.findSquadById(squad.id).colour"
-                      @colourChanged="onSquadColourChanged"
+                    <ColorSquareMolecule
+                      :startingColor="tribe.findSquadById(squad.id).color"
+                      @colorChanged="onSquadColorChanged"
                       :returnEvent="{ squadId: squad.id }"
                     />
                   </div>
@@ -157,10 +157,8 @@
 </template>
 
 <script>
-/* eslint-disable */
-
 import FixedWidthWithNavbarTemplate from "@/components/templates/FixedWidthWithNavbarTemplate";
-import ColourSquareMolecule from "@/components/molecules/ColourSquareMolecule";
+import ColorSquareMolecule from "@/components/molecules/ColorSquareMolecule";
 import EditTribeMemberRow from "@/components/molecules/EditTribeMemberRow";
 import { v4 as uuidv4 } from "uuid";
 import Member from "@/data/types/member";
@@ -171,7 +169,7 @@ export default {
   name: "EditTribePage",
   components: {
     EditTribeMemberRow,
-    ColourSquareMolecule,
+    ColorSquareMolecule,
     FixedWidthWithNavbarTemplate,
   },
   data() {
@@ -197,18 +195,18 @@ export default {
     deleteSquad(squadId) {
       this.tribe.removeSquadById(squadId);
     },
-    onSquadColourChanged(eventData) {
-      this.tribe.findSquadById(eventData.squadId).colour = eventData.colour.hex;
+    onSquadColorChanged(eventData) {
+      this.tribe.findSquadById(eventData.squadId).color = eventData.color.hex;
     },
     getLocalChapter(chapterId) {
       return this.currentChapters.filter((c) => c.id === chapterId)[0];
     },
-    onChapterColourChanged(chapter, eventData) {
-      this.tribe.updateChapter(eventData.chapter.id, eventData.chapter.name, eventData.colour.hex);
-      this.getLocalChapter(chapter.id).colour = eventData.colour.hex;
+    onChapterColorChanged(chapter, eventData) {
+      this.tribe.updateChapter(eventData.chapter.id, eventData.chapter.name, eventData.color.hex);
+      this.getLocalChapter(chapter.id).color = eventData.color.hex;
     },
     onChapterNameChanged(chapter, eventData) {
-      this.tribe.updateChapter(chapter.id, eventData.target.value, chapter.colour);
+      this.tribe.updateChapter(chapter.id, eventData.target.value, chapter.color);
       this.getLocalChapter(chapter.id).name = eventData.target.value;
     },
     onMemberRowExpanded(memberRow) {
@@ -241,7 +239,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "src/assets/scss/colours";
+@import "src/assets/scss/colors";
 @import "src/assets/scss/typography";
 
 .edit-tribe {

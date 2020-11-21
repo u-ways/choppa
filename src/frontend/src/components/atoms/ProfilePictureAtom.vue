@@ -46,7 +46,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../assets/scss/colours";
+@import "src/assets/scss/colors";
 @import "../../assets/scss/typography";
 
 .profile-picture {

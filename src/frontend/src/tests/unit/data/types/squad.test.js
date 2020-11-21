@@ -13,7 +13,7 @@ describe("Squad test", () => {
     const squad = new Squad(21, "Choppa Squad", "#FF00FF", members);
     expect(squad.id).toBe(21);
     expect(squad.name).toBe("Choppa Squad");
-    expect(squad.colour).toBe("#FF00FF");
+    expect(squad.color).toBe("#FF00FF");
     expect(squad.members).toBe(members);
   });
 });

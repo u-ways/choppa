@@ -1,8 +1,10 @@
+const DEFAULT_CHAPTER_COLOR = "#3068c2";
+
 export default class Chapter {
   constructor(config) {
     this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : "";
     this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
-    this._colour = "#FF00FF"; // TODO: COLOUR
+    this._color = Object.prototype.hasOwnProperty.call(config, "color") ? config.color : DEFAULT_CHAPTER_COLOR;
   }
 
   get id() {
@@ -17,11 +19,11 @@ export default class Chapter {
     this._name = newName;
   }
 
-  get colour() {
-    return this._colour;
+  get color() {
+    return this._color;
   }
 
-  set colour(newColour) {
-    this._colour = newColour;
+  set color(newColor) {
+    this._color = newColor;
   }
 }

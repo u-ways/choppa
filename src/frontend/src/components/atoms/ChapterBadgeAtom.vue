@@ -13,7 +13,7 @@ export default {
   computed: {
     cssVars() {
       return {
-        "--bg-colour": this.chapter.colour,
+        "--bg-color": this.chapter.color,
       };
     },
   },
@@ -23,6 +23,6 @@ export default {
 <style scoped>
 
 .background {
-  background-color: var(--bg-colour);
+  background-color: var(--bg-color);
 }
 </style>

@@ -15,7 +15,7 @@ export default {
   computed: {
     cssVars() {
       return {
-        "--bg-colour": this.chapter.colour,
+        "--bg-color": this.chapter.color,
       };
     },
   },
@@ -29,7 +29,7 @@ export default {
   border: 3px solid black;
   border-radius: 5px 0 5px 0;
   padding: 0.15rem;
-  background-color: var(--bg-colour);
+  background-color: var(--bg-color);
   width: 100%;
 }
 </style>

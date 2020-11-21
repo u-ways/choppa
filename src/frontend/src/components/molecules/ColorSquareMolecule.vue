@@ -1,11 +1,11 @@
 <template>
   <div class="h-100" ref="target">
-    <b-button class="colour-square" :style="reactiveStyle" />
+    <b-button class="color-square" :style="reactiveStyle" />
     <b-popover v-if="this.$refs.target"
                :target="this.$refs.target"
-               custom-class="colour-picker-popover"
+               custom-class="color-picker-popover"
                triggers="focus">
-      <ColourPicker v-model="colour"/>
+      <ColorPicker v-model="color"/>
     </b-popover>
   </div>
 </template>
@@ -13,40 +13,40 @@
 <script>
 import { Chrome } from "vue-color";
 
-const STARTING_COLOUR = "#3068c2";
+const STARTING_COLOR = "#3068c2";
 
 export default {
-  name: "ColourSquareMolecule",
+  name: "ColorSquareMolecule",
   components: {
-    ColourPicker: Chrome,
+    ColorPicker: Chrome,
   },
   props: {
-    startingColour: String,
+    startingColor: String,
     returnEvent: {},
   },
   data() {
     return {
-      colour: { hex: "" },
+      color: { hex: "" },
     };
   },
   mounted() {
-    if (this.startingColour === undefined) {
-      this.colour.hex = STARTING_COLOUR;
+    if (this.startingColor === undefined) {
+      this.color.hex = STARTING_COLOR;
     } else {
-      this.colour.hex = this.startingColour;
+      this.color.hex = this.startingColor;
     }
   },
   computed: {
     reactiveStyle() {
       return {
-        background: this.colour.hex,
+        background: this.color.hex,
       };
     },
   },
   watch: {
-    colour(newColour) {
-      this.$emit("colourChanged", {
-        colour: newColour,
+    color(newColor) {
+      this.$emit("colorChanged", {
+        color: newColor,
         ...this.returnEvent,
       });
     },
@@ -55,9 +55,9 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../assets/scss/colours";
+@import "src/assets/scss/colors";
 
-.colour-square {
+.color-square {
   width: 100%;
   height: 100%;
   border: 1px solid $white-border;

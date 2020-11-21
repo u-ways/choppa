@@ -8,7 +8,7 @@ function getUrlOrId(config) {
     : `members/${config.id}`;
 }
 
-async function deserialiseMember(config, json) {
+async function deserializeMember(config, json) {
   return new Member({
     id: json.id,
     name: json.name,
@@ -19,7 +19,7 @@ async function deserialiseMember(config, json) {
 
 async function getMember(config) {
   const response = await httpClient.get(getUrlOrId(config));
-  return deserialiseMember(config, response.data);
+  return deserializeMember(config, response.data);
 }
 
 export default getMember;

@@ -7,16 +7,17 @@ function getUrlOrId(config) {
     : `chapters/${config.id}`;
 }
 
-async function deserialiseChapter(config, json) {
+async function deserializeChapter(config, json) {
   return new Chapter({
     id: json.id,
     name: json.name,
+    color: json.color,
   });
 }
 
 async function getChapter(config) {
   const response = await httpClient.get(getUrlOrId(config));
-  return deserialiseChapter(config, response.data);
+  return deserializeChapter(config, response.data);
 }
 
 export default getChapter;

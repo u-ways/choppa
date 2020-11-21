@@ -1,6 +1,6 @@
 <template>
   <div class="squad">
-    <div class="squad__header" :style="{ 'border-top-color': squad.colour }">
+    <div class="squad__header" :style="{ 'border-top-color': squad.color }">
       <h1 class="squad__header-name m-0"><span class="squad__header-name--light">Squad</span> {{ squad.name }}</h1>
       <div class="row align-items-center m-0 pt-1">
         <div class="squad__header-member-count">
@@ -52,7 +52,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../assets/scss/colours";
+@import "src/assets/scss/colors";
 @import "../../assets/scss/typography";
 
 .squad {

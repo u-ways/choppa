@@ -33,7 +33,8 @@ class BaseRotation {
             }
 
             Collections.rotate(
-                newPositions, if (clockWise) {
+                newPositions,
+                if (clockWise) {
                     1
                 } else {
                     -1
@@ -79,7 +80,8 @@ class BaseRotation {
 
             val randomisedMembers = (0 until removedMembers.count()).map { x ->
                 removedMembers[x].map {
-                    y -> Triple(random(), x, y)
+                    y ->
+                    Triple(random(), x, y)
                 }.toMutableList()
             }.flatten().sortedBy { it.first }.toMutableList()
 

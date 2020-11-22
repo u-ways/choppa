@@ -63,8 +63,8 @@ class BaseRotationTest {
         assert(uniquesSquadOne == 1)
         assert(uniquesSquadTwo == 1)
         assert(uniquesSquadThree == 1)
-        assert(testTribe.squads[0].members.count() == 2)
-        assert(testTribe.squads[1].members.count() == 2)
-        assert(testTribe.squads[2].members.count() == 2)
+        assert(rotatedTribe.squads[0].members.count() == 2)
+        assert(rotatedTribe.squads[1].members.count() == 2)
+        assert(rotatedTribe.squads[2].members.count() == 2)
     }
 }

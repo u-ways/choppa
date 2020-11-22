@@ -1,6 +1,8 @@
+import { v4 as uuidv4 } from "uuid";
+
 export default class Tribe {
   constructor(config) {
-    this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : "";
+    this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : `tribes/${uuidv4()}`;
     this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
     this._squads = Object.prototype.hasOwnProperty.call(config, "squads") ? config.squads : [];
   }

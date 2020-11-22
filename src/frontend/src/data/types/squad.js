@@ -1,5 +1,3 @@
-import Chapter from "@/data/types/chapter";
-
 const DEFAULT_SQUAD_COLOR = "#3068c2";
 
 export default class Squad {
@@ -37,7 +35,8 @@ export default class Squad {
   updateChapter(id, name, color) {
     this.members.forEach((member, index) => {
       if (member.chapter && member.chapter.id === id) {
-        this.members[index].chapter = new Chapter(member.chapter.id, name, color);
+        this.members[index].chapter.name = name;
+        this.members[index].chapter.color = color;
       }
     });
   }

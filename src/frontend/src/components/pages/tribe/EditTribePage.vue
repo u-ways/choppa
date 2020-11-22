@@ -243,13 +243,26 @@ export default {
       this.tribe.deleteChapter(chapterId);
     },
     addNewChapter() {
-      this.currentChapters.push(new Chapter(uuidv4(), "New Chapter", "#ff00ff"));
+      this.currentChapters.push(new Chapter({
+        id: uuidv4(),
+        name: "New Chapter",
+        color: "#ff00ff",
+      }));
     },
     addNewMember(squad) {
-      squad.addMember(new Member(uuidv4(), "New Member", undefined));
+      squad.addMember(new Member({
+        id: uuidv4(),
+        name: "New Member",
+        chapter: null,
+      }));
     },
     addNewSquad() {
-      this.tribe.addSquad(new Squad(uuidv4(), "New Squad", "#ff00ff", []));
+      this.tribe.addSquad(new Squad({
+        id: uuidv4(),
+        name: "New Squad",
+        color: "#ff00ff",
+        members: [],
+      }));
     },
   },
 };

@@ -40,7 +40,6 @@
                     <ColorSquareMolecule
                       :startingColor="chapter.color"
                       @colorChanged="onChapterColorChanged(chapter, $event)"
-                      :returnEvent="{ chapter: chapter }"
                     />
                   </div>
                   <div class="col-2 p-0">
@@ -83,8 +82,7 @@
                   <div class="col-2 px-1 px-md-3">
                     <ColorSquareMolecule
                       :startingColor="tribe.findSquadById(squad.id).color"
-                      @colorChanged="onSquadColorChanged"
-                      :returnEvent="{ squadId: squad.id }"
+                      @colorChanged="onSquadColorChanged(squad, $event)"
                     />
                   </div>
                   <div class="col-2 p-0">
@@ -212,15 +210,15 @@ export default {
     deleteSquad(squadId) {
       this.tribe.removeSquadById(squadId);
     },
-    onSquadColorChanged(eventData) {
-      this.tribe.findSquadById(eventData.squadId).color = eventData.color.hex;
+    onSquadColorChanged(squad, newColor) {
+      this.tribe.findSquadById(squad.id).color = newColor;
     },
     getLocalChapter(chapterId) {
       return this.currentChapters.filter((c) => c.id === chapterId)[0];
     },
-    onChapterColorChanged(chapter, eventData) {
-      this.tribe.updateChapter(eventData.chapter.id, eventData.chapter.name, eventData.color.hex);
-      this.getLocalChapter(chapter.id).color = eventData.color.hex;
+    onChapterColorChanged(chapter, newColor) {
+      this.tribe.updateChapter(chapter.id, chapter.name, newColor);
+      this.getLocalChapter(chapter.id).color = newColor;
     },
     onChapterNameChanged(chapter, eventData) {
       this.tribe.updateChapter(chapter.id, eventData.target.value, chapter.color);

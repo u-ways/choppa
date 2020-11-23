@@ -19,11 +19,11 @@ class MemberFactory {
          * Create X amount of members that can have a mutual or non-mutual roles
          *
          * @param amount Int the number of members to create.
-         * @param chapter Chapter the members shared role. (default = UNASSIGNED_ROLE)
+         * @param sharedChapter Chapter the members shared role. (default = UNASSIGNED_ROLE)
          * @return MutableList<Member>
          */
-        fun create(amount: Int, chapter: Chapter = UNASSIGNED_ROLE): MutableList<Member> {
-            return (0 until amount).map { this.create(chapter) }.toMutableList()
+        fun create(amount: Int, sharedChapter: Chapter = UNASSIGNED_ROLE): MutableList<Member> {
+            return (0 until amount).map { this.create(sharedChapter) }.toMutableList()
         }
     }
 }

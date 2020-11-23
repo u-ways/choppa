@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.choppa.utils.Color.Companion.toRGBAHex
 
-class Serializer(supportedClass: Class<Tribe>? = null) : StdSerializer<Tribe>(supportedClass) {
+class TribeSerializer(supportedClass: Class<Tribe>? = null) : StdSerializer<Tribe>(supportedClass) {
     override fun serialize(tribe: Tribe, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
 

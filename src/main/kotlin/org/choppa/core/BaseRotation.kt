@@ -7,9 +7,6 @@ import org.choppa.domain.tribe.Tribe
 import java.lang.Math.floorDiv
 import java.lang.Math.random
 import java.util.Collections
-import kotlin.math.ceil
-import kotlin.math.floor
-import kotlin.math.min
 
 class BaseRotation {
     companion object {
@@ -38,10 +35,7 @@ class BaseRotation {
             if (tribe.squads.count() < 2) return tribe
 
             val removedMembers =
-                tribe.squads.map { squad ->
-                    val candidates = squad.members.filterMembersBy(chapter)
-                    candidates.take(amountOfMembersToRotate)
-                }
+                tribe.squads.map { it.members.filterMembersBy(chapter).take(amountOfMembersToRotate) }
 
             val rotated = floorDiv(removedMembers.flatten().count(), removedMembers.count())
 

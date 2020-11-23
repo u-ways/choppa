@@ -5,6 +5,10 @@ import org.choppa.domain.chapter.Chapter
 import org.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
 import org.choppa.support.factory.TribeFactory
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
 class BaseRotationTest {
     @Test
@@ -47,24 +51,30 @@ class BaseRotationTest {
         assert(rotatedTribe.squads[1].members.contains(oldestMemberSquadThree))
         assert(rotatedTribe.squads[2].members.contains(oldestMemberSquadOne))
     }
+    @ParameterizedTest(name = "Given Tribe with {0} squads with {1} members each, when tribe rotates {2} members randomly, squad compositions should change by an equal amount.")
+    @MethodSource("randomArguments")
+    internal fun `Given Tribe with X squads with Y members each, when tribe rotates Z members randomly, squad compositions should change by an equal amount`(
+        squadAmount: Int,
+        squadMemberAmount: Int,
+        squadRotationAmount: Int
+    ) {
+        val testTribe = TribeFactory.create(squadAmount, squadMemberAmount)
+        val rotatedTribe = BaseRotation.randomRotate(testTribe, UNASSIGNED_ROLE, squadRotationAmount)
 
-    @Test
-    internal fun `Given Tribe with 3 squads with 2 members each, when tribe rotates randomly, squad compositions should change`() {
-        val testTribe = TribeFactory.create(3, 2)
-        val rotatedTribe = BaseRotation.randomRotate(testTribe, UNASSIGNED_ROLE)
+        val distinctRotatedMemberCounts = testTribe.squads.mapIndexed { index, squad ->
+            squad.members.filter { !rotatedTribe.squads[index].members.contains(it) }.count()
+        }.distinct()
 
-        val uniquesSquadOne =
-            testTribe.squads[0].members.filter { member -> rotatedTribe.squads[0].members.contains(member) }.count()
-        val uniquesSquadTwo =
-            testTribe.squads[1].members.filter { member -> rotatedTribe.squads[1].members.contains(member) }.count()
-        val uniquesSquadThree =
-            testTribe.squads[2].members.filter { member -> rotatedTribe.squads[2].members.contains(member) }.count()
+        assert(distinctRotatedMemberCounts.count() == 1)
+        assert(distinctRotatedMemberCounts[0] == squadRotationAmount)
+    }
 
-        assert(uniquesSquadOne == 1)
-        assert(uniquesSquadTwo == 1)
-        assert(uniquesSquadThree == 1)
-        assert(rotatedTribe.squads[0].members.count() == 2)
-        assert(rotatedTribe.squads[1].members.count() == 2)
-        assert(rotatedTribe.squads[2].members.count() == 2)
+    companion object {
+        @JvmStatic
+        fun randomArguments() = Stream.of(
+            Arguments.of(3, 2, 1),
+            Arguments.of(5, 5, 5),
+            Arguments.of(10, 20, 15)
+        )
     }
 }

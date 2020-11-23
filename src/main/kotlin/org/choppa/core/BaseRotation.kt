@@ -4,8 +4,10 @@ import org.choppa.domain.chapter.Chapter
 import org.choppa.domain.member.Member
 import org.choppa.domain.squad.Squad
 import org.choppa.domain.tribe.Tribe
+import java.lang.Math.floorDiv
 import java.lang.Math.random
 import java.util.Collections
+import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.min
 
@@ -14,40 +16,19 @@ class BaseRotation {
         fun rotate(tribe: Tribe, chapter: Chapter, amountOfMembersToRotate: Int = 1, clockWise: Boolean): Tribe {
             if (tribe.squads.count() < 2) return tribe
 
-            val squadCandidatesToRotate =
+            val newList = mutableListOf<List<Member>>()
+            val newPositions =
                 tribe.squads.map { squad ->
-                    val candidates = squad.members
-                        .filter { member -> member.chapter == chapter && member.history.isNotEmpty() }.toMutableList()
-                    if (candidates.count() > 1) candidates.sortBy { member -> member.history.last().iteration.startDate }
-                    Pair(squad, candidates)
+                    val candidates = squad.members.filterMembersBy(chapter).sortByOldestMemberFirst()
+                    newList.add(candidates.take(amountOfMembersToRotate))
+                    candidates.minus(newList.last())
                 }
 
-            val squadCount = tribe.squads.count()
-            val newPositions = mutableListOf<List<Member>>()
+            Collections.rotate(newList, if (clockWise) 1 else -1)
 
-            squadCandidatesToRotate.forEach {
-                val members = it.second
-                val plannedRotations = min(amountOfMembersToRotate, members.count())
-                val newMembers = (0 until plannedRotations).map { memberIndex -> members.removeAt(memberIndex) }
-                newPositions.add(newMembers)
-            }
-
-            Collections.rotate(
-                newPositions,
-                if (clockWise) {
-                    1
-                } else {
-                    -1
-                }
-            )
-
-            (0 until squadCount).map { squadIndex ->
-                val (_, members) = squadCandidatesToRotate[squadIndex]
-                members.addAll(newPositions[squadIndex])
-            }
-
-            val newSquads = squadCandidatesToRotate.map { (squad, members) ->
-                Squad(squad.id, squad.name, squad.color, squad.tribe, members, squad.history)
+            val newSquads = newPositions.mapIndexed { index, newSquads ->
+                val squad = tribe.squads[index]
+                Squad(squad.id, squad.name, squad.color, squad.tribe, newSquads.plus(newList[index]).toMutableList(), squad.history)
             }.toMutableList()
 
             return Tribe(tribe.id, tribe.name, tribe.color, newSquads, tribe.history)
@@ -56,70 +37,54 @@ class BaseRotation {
         fun randomRotate(tribe: Tribe, chapter: Chapter, amountOfMembersToRotate: Int = 1): Tribe {
             if (tribe.squads.count() < 2) return tribe
 
-            val squadCandidatesToRotate =
+            val removedMembers =
                 tribe.squads.map { squad ->
-                    val candidates = squad.members
-                        .filter { member -> member.chapter == chapter && member.history.isNotEmpty() }.toMutableList()
-                    if (candidates.count() > 1) candidates.sortBy { member -> member.history.last().iteration.startDate }
-                    Pair(squad, candidates)
+                    val candidates = squad.members.filterMembersBy(chapter)
+                    candidates.take(amountOfMembersToRotate)
                 }
 
-            val squadCount = tribe.squads.count()
-            val removedMembers = mutableListOf<MutableList<Member>>()
+            val rotated = floorDiv(removedMembers.flatten().count(), removedMembers.count())
 
-            squadCandidatesToRotate.forEach {
-                val members = it.second
-                val plannedRotations = min(amountOfMembersToRotate, members.count())
-                val movedMembers =
-                    (0 until plannedRotations).map { memberIndex -> members.removeAt(memberIndex) }.toMutableList()
-                removedMembers.add(movedMembers)
-            }
+            val randomisedMembers =
+                removedMembers.asSequence().mapIndexed { position, memberList ->
+                    memberList.map { y -> Triple(random(), position, y) }
+                }.flatten().sortedBy { it.first }.toMutableList()
 
-            val removedMemberAmount = removedMembers.flatten().count()
-            val removedTeamsCount = removedMembers.count()
-
-            val randomisedMembers = (0 until removedMembers.count()).map { x ->
-                removedMembers[x].map {
-                    y ->
-                    Triple(random(), x, y)
-                }.toMutableList()
-            }.flatten().sortedBy { it.first }.toMutableList()
-
-            (0 until randomisedMembers.count()).forEach { i ->
-                val temp = randomisedMembers[i]
-                val theoreticallyAssignedSquad = floor((i.toDouble() / removedMemberAmount) * removedTeamsCount).toInt()
-                if (theoreticallyAssignedSquad == temp.second) {
+            randomisedMembers.forEachIndexed { position, member ->
+                val theoreticallyAssignedSquad = floorDiv(position, rotated)
+                if (theoreticallyAssignedSquad == member.second) {
                     val swapper = (0 until randomisedMembers.count()).first { j ->
-                        val mem = randomisedMembers[j]
-                        val rotatedPosition = floor((j.toDouble() / removedMemberAmount) * removedTeamsCount).toInt()
-                        rotatedPosition != theoreticallyAssignedSquad && mem.second != theoreticallyAssignedSquad
+                        val tempAssignedSquad = floorDiv(j, rotated)
+                        tempAssignedSquad != theoreticallyAssignedSquad && randomisedMembers[j].second != theoreticallyAssignedSquad
                     }
                     val swapperVal = randomisedMembers[swapper]
                     val tempDouble = swapperVal.first
-                    randomisedMembers[i] = Triple(temp.first, swapperVal.second, swapperVal.third)
-                    randomisedMembers[swapper] = Triple(tempDouble, temp.second, temp.third)
+                    randomisedMembers[position] = Triple(member.first, swapperVal.second, swapperVal.third)
+                    randomisedMembers[swapper] = Triple(tempDouble, member.second, member.third)
                 }
             }
 
-            val newMembers = mutableListOf<MutableList<Member>>()
-            (0 until squadCount).forEach { _ -> newMembers.add(mutableListOf()) }
+            val finalMembers = randomisedMembers.map { it.third }.windowed(rotated, rotated).toMutableList()
 
-            (0 until randomisedMembers.count()).forEach { i ->
-                val temp = randomisedMembers[i]
-                val theoreticallyAssignedSquad = floor((i.toDouble() / removedMemberAmount) * removedTeamsCount).toInt()
-                newMembers[theoreticallyAssignedSquad].add(temp.third)
-            }
-
-            (0 until squadCount).map { squadIndex ->
-                val (_, members) = squadCandidatesToRotate[squadIndex]
-                members.addAll(newMembers[squadIndex])
-            }
-
-            val newSquads = squadCandidatesToRotate.map { (squad, members) ->
-                Squad(squad.id, squad.name, squad.color, squad.tribe, members, squad.history)
+            val newSquads = finalMembers.mapIndexed { squadIndex, members ->
+                val squad = tribe.squads[squadIndex]
+                val squadMembers = squad.members.toMutableList()
+                squadMembers.removeAll(removedMembers[squadIndex])
+                squadMembers.addAll(members)
+                Squad(squad.id, squad.name, squad.color, squad.tribe, squadMembers, squad.history)
             }.toMutableList()
 
             return Tribe(tribe.id, tribe.name, tribe.color, newSquads, tribe.history)
+        }
+
+        private fun MutableList<Member>.filterMembersBy(chapter: Chapter): MutableList<Member> {
+            return this.filter { it.chapter == chapter }.toMutableList()
+        }
+
+        private fun MutableList<Member>.sortByOldestMemberFirst(): MutableList<Member> {
+            return this.apply {
+                if (this.count() > 1) this.sortBy { it.history.last().iteration.startDate }
+            }
         }
     }
 }

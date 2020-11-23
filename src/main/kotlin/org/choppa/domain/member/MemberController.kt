@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -24,8 +25,18 @@ class MemberController(
 ) {
 
     @GetMapping
-    fun listMembers(): ResponseEntity<List<Member>> =
-        ok().body(memberService.find())
+    fun listMembers(
+        @RequestParam(name = "chapter", required = false) chapterId: UUID?,
+        @RequestParam(name = "squad", required = false) squadId: UUID?,
+        @RequestParam(name = "tribe", required = false) tribeId: UUID?,
+    ): ResponseEntity<List<Member>> = ok().body(
+        when {
+            chapterId is UUID -> memberService.findRelatedByChapter(chapterId)
+            squadId is UUID -> memberService.findRelatedBySquad(squadId)
+            tribeId is UUID -> memberService.findRelatedByTribe(tribeId)
+            else -> memberService.find()
+        }
+    )
 
     @GetMapping(ID_PATH)
     fun getMember(@PathVariable id: UUID): ResponseEntity<Member> =

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -22,8 +23,16 @@ import java.util.UUID
 class ChapterController(@Autowired private val chapterService: ChapterService) {
 
     @GetMapping
-    fun listChapters(): ResponseEntity<List<Chapter>> =
-        ok().body(chapterService.find())
+    fun listChapters(
+        @RequestParam(name = "squad", required = false) squadId: UUID?,
+        @RequestParam(name = "tribe", required = false) tribeId: UUID?,
+    ): ResponseEntity<List<Chapter>> = ok().body(
+        when {
+            squadId is UUID -> chapterService.findRelatedBySquad(squadId)
+            tribeId is UUID -> chapterService.findRelatedByTribe(tribeId)
+            else -> chapterService.find()
+        }
+    )
 
     @GetMapping(ID_PATH)
     fun getChapter(@PathVariable id: UUID): ResponseEntity<Chapter> =

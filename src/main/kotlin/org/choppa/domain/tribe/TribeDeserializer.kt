@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.choppa.domain.base.BaseDeserializer
 import org.choppa.exception.UnprocessableEntityException
 
-class Deserializer(supportedClass: Class<Tribe>? = null) : BaseDeserializer<Tribe>(supportedClass) {
+class TribeDeserializer(supportedClass: Class<Tribe>? = null) : BaseDeserializer<Tribe>(supportedClass) {
     override fun deserialize(parser: JsonParser, ctx: DeserializationContext): Tribe {
         try {
             val node: JsonNode = parser.codec.readTree(parser)

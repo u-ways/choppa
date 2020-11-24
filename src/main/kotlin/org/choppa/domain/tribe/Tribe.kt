@@ -21,8 +21,8 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "tribe")
-@JsonSerialize(using = Serializer::class)
-@JsonDeserialize(using = Deserializer::class)
+@JsonSerialize(using = TribeSerializer::class)
+@JsonDeserialize(using = TribeDeserializer::class)
 data class Tribe @JsonCreator constructor(
     @Id
     @Column(name = "tribe_id", columnDefinition = "uuid")

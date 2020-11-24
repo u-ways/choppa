@@ -1,42 +1,35 @@
 package org.choppa.domain.tribe
 
-import org.choppa.exception.EmptyListException
+import org.choppa.domain.base.BaseService
 import org.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
 class TribeService(
     @Autowired private val tribeRepository: TribeRepository,
-) {
-    fun find(id: UUID): Tribe {
-        return tribeRepository.findById(id).orElseThrow {
-            throw EntityNotFoundException("Tribe with id [$id] does not exist.")
-        }
-    }
+) : BaseService() {
+    fun find(id: UUID): Tribe = tribeRepository
+        .findById(id)
+        .orElseThrow { throw EntityNotFoundException("Tribe with id [$id] does not exist.") }
 
-    fun find(): List<Tribe> {
-        val tribes = tribeRepository.findAll()
-        return if (tribes.isEmpty()) throw EmptyListException("No tribes exist yet.") else tribes
-    }
+    fun find(): List<Tribe> = tribeRepository
+        .findAll()
+        .orElseThrow { throw EntityNotFoundException("No tribes exist yet.") }
 
-    fun find(ids: List<UUID>): List<Tribe> {
-        return tribeRepository.findAllById(ids)
-    }
+    fun find(ids: List<UUID>): List<Tribe> = tribeRepository
+        .findAllById(ids)
+        .orElseThrow { throw EntityNotFoundException("No tribes found with given ids.") }
 
-    @Transactional
     fun save(tribe: Tribe): Tribe {
         return tribeRepository.save(tribe)
     }
 
-    @Transactional
     fun save(tribes: List<Tribe>): List<Tribe> {
         return tribeRepository.saveAll(tribes)
     }
 
-    @Transactional
     fun save(vararg tribes: Tribe): List<Tribe> {
         return save(tribes.toMutableList())
     }

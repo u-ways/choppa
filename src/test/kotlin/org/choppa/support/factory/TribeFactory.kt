@@ -9,24 +9,28 @@ class TribeFactory {
         /**
          * Creates a random Tribe with X amount of squads and Y amount of members per squad.
          *
-         * @param SquadAmount Int the number of squads each tribe has. (default = 0)
+         * @param squadAmount Int the number of squads each tribe has. (default = 0)
          * @param membersPerSquadAmount Int the number of members per squad. (default = 0)
          * @return Tribe
          */
         fun create(
-            SquadAmount: Int = 0,
+            squadAmount: Int = 0,
             membersPerSquadAmount: Int = 0
-        ): Tribe = Tribe(squads = SquadFactory.create(SquadAmount, membersPerSquadAmount)).apply {
-            this.squads.forEach { squad ->
-                squad.members.forEach { member ->
-                    member.history.add(
-                        History(
-                            iteration = IterationFactory.create(),
-                            squad = squad,
-                            member = member,
-                            tribe = this
+        ): Tribe {
+            val squads = SquadFactory.create(squadAmount, membersPerSquadAmount)
+            return Tribe(squads = squads).apply {
+                this.squads.forEach { squad ->
+                    squad.members.forEach { member ->
+                        /* FIXME(u-ways) #124 this could be greatly simplified when the history factory is created. */
+                        member.history.add(
+                            History(
+                                iteration = IterationFactory.create(),
+                                squad = squad,
+                                member = member,
+                                tribe = this
+                            )
                         )
-                    )
+                    }
                 }
             }
         }

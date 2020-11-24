@@ -1,8 +1,8 @@
 package org.choppa.domain.squad
 
+import org.choppa.domain.base.BaseService
 import org.choppa.domain.member.MemberService
 import org.choppa.domain.tribe.TribeService
-import org.choppa.exception.EmptyListException
 import org.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -14,24 +14,30 @@ class SquadService(
     @Autowired private val squadRepository: SquadRepository,
     @Autowired private val tribeService: TribeService,
     @Autowired private val memberService: MemberService,
-) {
-    fun find(id: UUID): Squad {
-        return squadRepository.findById(id).orElseThrow {
-            throw EntityNotFoundException("Squad with id [$id] does not exist.")
-        }
-    }
+) : BaseService() {
+    fun find(id: UUID): Squad = squadRepository
+        .findById(id)
+        .orElseThrow { throw EntityNotFoundException("Squad with id [$id] does not exist.") }
 
-    fun find(): List<Squad> {
-        val squads = squadRepository.findAll()
-        return if (squads.isEmpty()) throw EmptyListException("No squads exist yet.") else squads
-    }
+    fun find(): List<Squad> = squadRepository
+        .findAll()
+        .orElseThrow { throw EntityNotFoundException("No squads exist yet.") }
 
-    fun find(ids: List<UUID>): List<Squad> {
-        return squadRepository.findAllById(ids)
-    }
+    fun findRelatedByMember(memberId: UUID): List<Squad> = squadRepository
+        .findAllByMemberId(memberId)
+        .orElseThrow { throw EntityNotFoundException("No squads found joined by member [$memberId] yet.") }
+
+    fun findRelatedByTribe(tribeId: UUID): List<Squad> = squadRepository
+        .findAllByTribeId(tribeId)
+        .orElseThrow { throw EntityNotFoundException("No squads found belonging to tribe [$tribeId] yet.") }
+
+    fun find(ids: List<UUID>): List<Squad> = squadRepository
+        .findAllById(ids)
+        .orElseThrow { throw EntityNotFoundException("No squads found with given ids.") }
 
     // NOTE(u-ways) #55 Squad is the owning map of tribe and members.
-    //                  Therefore, service ensure they exist before relating tribe and members accordingly.
+    //                  Therefore, service ensures they exist before relating tribe and members accordingly.
+    //                  This avoids invalid foreign key inserts.
     @Transactional
     fun save(squad: Squad): Squad {
         val tribe = tribeService.find(squad.tribe.id)

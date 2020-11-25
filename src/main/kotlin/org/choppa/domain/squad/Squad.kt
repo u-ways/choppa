@@ -30,6 +30,7 @@ import javax.persistence.Table
 @Table(name = "squad")
 @JsonSerialize(using = SquadSerializer::class)
 @JsonDeserialize(using = SquadDeserializer::class)
+@Suppress("EqualsOrHashCode")
 data class Squad @JsonCreator constructor(
     @Id
     @Column(name = "squad_id", columnDefinition = "uuid")
@@ -64,6 +65,7 @@ data class Squad @JsonCreator constructor(
     val history: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
+    override fun hashCode(): Int = id.hashCode()
 
     companion object {
         val UNASSIGNED_SQUAD = Squad(fromString("00000000-0000-0000-0000-000000000000"), "Unassigned Members")

@@ -25,6 +25,7 @@ import javax.persistence.Table
 @Table(name = "member")
 @JsonSerialize(using = MemberSerializer::class)
 @JsonDeserialize(using = MemberDeserializer::class)
+@Suppress("EqualsOrHashCode")
 data class Member @JsonCreator constructor(
     @Id
     @Column(name = "member_id", columnDefinition = "uuid")
@@ -50,6 +51,7 @@ data class Member @JsonCreator constructor(
     val history: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
+    override fun hashCode(): Int = id.hashCode()
 
     companion object {
         val NO_MEMBERS get() = mutableListOf<Member>()

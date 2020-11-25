@@ -23,6 +23,7 @@ import javax.persistence.Table
 @Table(name = "tribe")
 @JsonSerialize(using = TribeSerializer::class)
 @JsonDeserialize(using = TribeDeserializer::class)
+@Suppress("EqualsOrHashCode")
 data class Tribe @JsonCreator constructor(
     @Id
     @Column(name = "tribe_id", columnDefinition = "uuid")
@@ -47,6 +48,7 @@ data class Tribe @JsonCreator constructor(
     val history: MutableList<History> = mutableListOf()
 ) {
     override fun toString() = "Tribe(id=$id, name=$name)"
+    override fun hashCode(): Int = id.hashCode()
 
     companion object {
         val UNASSIGNED_TRIBE = Tribe(UUID.fromString("00000000-0000-0000-0000-000000000000"), "Unassigned Squad")

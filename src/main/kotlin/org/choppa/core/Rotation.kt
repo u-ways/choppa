@@ -16,8 +16,7 @@ class Rotation {
                 .map { squad ->
                     squad.members
                         .find(options.chapter)
-                        .run { options.filter.invoke(this) }
-                        .take(options.amount)
+                        .run { options.filter.invoke(this, options.amount) }
                         .apply { oldMembers.add(this) }
                 }.run {
                     options.strategy.invoke(this)

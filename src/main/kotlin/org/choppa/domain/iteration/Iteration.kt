@@ -20,7 +20,6 @@ import kotlin.Int.Companion.MAX_VALUE
 @Table(name = "iteration")
 @JsonSerialize(using = IterationSerializer::class)
 @JsonDeserialize(using = IterationDeserializer::class)
-@Suppress("EqualsOrHashCode")
 data class Iteration @JsonCreator constructor(
     @Id
     @Column(name = "iteration_id", columnDefinition = "uuid")
@@ -41,5 +40,14 @@ data class Iteration @JsonCreator constructor(
     val endDate: Instant = startDate.plus(14, DAYS)
 ) {
     override fun toString() = "Iteration(id=$id, number=$number, startDate=$startDate, endDate=$endDate)"
+
     override fun hashCode(): Int = id.hashCode()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Iteration
+        if (id != other.id) return false
+        return true
+    }
 }

@@ -20,7 +20,6 @@ import javax.persistence.Table
 @Table(name = "chapter")
 @JsonSerialize(using = ChapterSerializer::class)
 @JsonDeserialize(using = ChapterDeserializer::class)
-@Suppress("EqualsOrHashCode")
 data class Chapter @JsonCreator constructor(
     @Id
     @Column(name = "chapter_id", columnDefinition = "uuid")
@@ -41,7 +40,16 @@ data class Chapter @JsonCreator constructor(
     val members: MutableList<Member> = mutableListOf(),
 ) {
     override fun toString() = "Chapter(id=$id, name=$name)"
+
     override fun hashCode(): Int = id.hashCode()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Chapter
+        if (id != other.id) return false
+        return true
+    }
 
     companion object {
         val UNASSIGNED_ROLE = Chapter(UUID.fromString("00000000-0000-0000-0000-000000000000"), "Unassigned")

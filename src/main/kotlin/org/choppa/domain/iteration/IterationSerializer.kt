@@ -3,16 +3,15 @@ package org.choppa.domain.iteration
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import org.choppa.utils.ReverseRouter.Companion.route
 
 class IterationSerializer(supportedClass: Class<Iteration>? = null) : StdSerializer<Iteration>(supportedClass) {
     override fun serialize(iteration: Iteration, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
-
-        gen.writeStringField("id", "iterations/${iteration.id}")
+        gen.writeStringField("id", route(IterationController::class, iteration.id))
         gen.writeNumberField("number", iteration.number)
         gen.writeNumberField("startDate", iteration.startDate.toEpochMilli())
         gen.writeNumberField("endDate", iteration.endDate.toEpochMilli())
-
         gen.writeEndObject()
     }
 }

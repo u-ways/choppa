@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import org.choppa.domain.base.BaseModel
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import java.time.Instant.now
@@ -25,7 +26,7 @@ data class Iteration @JsonCreator constructor(
     @Column(name = "iteration_id", columnDefinition = "uuid")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JsonProperty("id")
-    val id: UUID = randomUUID(),
+    override val id: UUID = randomUUID(),
 
     @Column(name = "number", columnDefinition = "INTEGER", nullable = false)
     @JsonProperty("number")
@@ -38,7 +39,7 @@ data class Iteration @JsonCreator constructor(
     @Column(name = "end_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
     @JsonProperty("endDate")
     val endDate: Instant = startDate.plus(14, DAYS)
-) {
+): BaseModel {
     override fun toString() = "Iteration(id=$id, number=$number, startDate=$startDate, endDate=$endDate)"
 
     override fun hashCode(): Int = id.hashCode()

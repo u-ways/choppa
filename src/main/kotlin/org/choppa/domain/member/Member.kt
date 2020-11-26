@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import org.choppa.domain.base.BaseModel
 import org.choppa.domain.chapter.Chapter
 import org.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
 import org.choppa.domain.history.History
@@ -30,7 +31,7 @@ data class Member @JsonCreator constructor(
     @Column(name = "member_id", columnDefinition = "uuid")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JsonProperty("id")
-    val id: UUID = randomUUID(),
+    override val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
     @JsonProperty("name")
@@ -48,7 +49,7 @@ data class Member @JsonCreator constructor(
     @OneToMany(mappedBy = "member")
     @JsonIgnore
     val history: MutableList<History> = mutableListOf()
-) {
+): BaseModel {
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
 
     override fun hashCode(): Int = id.hashCode()

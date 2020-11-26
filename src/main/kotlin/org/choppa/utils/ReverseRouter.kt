@@ -1,12 +1,14 @@
 package org.choppa.utils
 
 import org.choppa.domain.base.BaseController.Companion.API_PREFIX
+import org.choppa.domain.base.BaseModel
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -16,37 +18,37 @@ class ReverseRouter {
     companion object {
         private val routeCache: ConcurrentHashMap<KClass<*>, String> = ConcurrentHashMap()
 
-        fun route(clazz: KClass<*>): String = when {
+        internal fun route(clazz: KClass<*>): String = when {
             routeCache.contains(clazz) -> routeCache[clazz]!!
             else -> getRequestMappingValue(clazz.annotations).apply { routeCache[clazz] = this }
         }
 
-        fun route(clazz: KClass<*>, function: KFunction<*>): String = route(clazz).let {
+        internal fun route(clazz: KClass<*>, function: KFunction<*>): String = route(clazz).let {
             val method = getRequestMappingValue(function.annotations)
             if (method.isNotEmpty()) "$it/$method" else it
         }
 
-        fun route(clazz: KClass<*>, function: KFunction<*>, type: KClass<*>): String {
-            val requestParam = function.parameters.extractParameterBy(type).ifEmpty {
-                throw IllegalStateException("Expected a function parameter with @QueryComponent type: [${type.simpleName}]")
-            }.last() as RequestParam
+        internal fun route(clazz: KClass<*>, function: KFunction<*>, type: KClass<out BaseModel>): String {
+            val requestParam = function.parameters
+                .extractParameterBy(type)
+                .last() as RequestParam
 
             val className = type.simpleName!!.decapitalize()
             val relatedEntity = requestParam.name
 
-            check(relatedEntity == className) { "Expected @RequestParam name to be [$className]" }
+            check(relatedEntity == className) { "Expected @RequestParam name [$relatedEntity] to be [$className]" }
 
             return "${route(clazz, function)}?$relatedEntity"
         }
 
-        fun route(clazz: KClass<*>, id: Any) =
+        internal fun route(clazz: KClass<*>, id: UUID) =
             "${route(clazz)}/$id"
 
-        fun route(clazz: KClass<*>, function: KFunction<*>, id: Any) =
-            "${route(clazz, function)}/$id"
+        internal fun route(clazz: KClass<*>, function: KFunction<*>, type: BaseModel) =
+            "${route(clazz, function)}/${type.id}"
 
-        fun route(clazz: KClass<*>, function: KFunction<*>, type: KClass<*>, id: Any) =
-            "${route(clazz, function, type)}=$id"
+        internal fun queryComponent(clazz: KClass<*>, function: KFunction<*>, type: BaseModel) =
+            "${route(clazz, function, type::class)}=${type.id}"
 
         private fun getRequestMappingValue(annotations: List<Annotation>): String = annotations.let {
             when (
@@ -69,10 +71,13 @@ class ReverseRouter {
             .let { if (it.isNotEmpty()) it.first() else "" }
             .removePrefix("$API_PREFIX/")
 
-        private fun List<KParameter>.extractParameterBy(type: KClass<*>): List<Annotation> = this
-            .drop(1)
-            .map { parameter -> parameter.annotations }
-            .first { annotations -> annotations.hasAMatching(type) }
+        private fun List<KParameter>.extractParameterBy(type: KClass<*>): List<Annotation> = this.runCatching {
+            this.drop(1)
+                .map { parameter -> parameter.annotations }
+                .first { annotations -> annotations.hasAMatching(type) }
+        }.getOrElse {
+            throw IllegalStateException("Expected to find a function parameter with @QueryComponent type: [${type.simpleName}]")
+        }
 
         private fun List<Annotation>.hasAMatching(type: KClass<*>): Boolean {
             return this.any { it is QueryComponent && it.type == type }

@@ -1,7 +1,11 @@
 package org.choppa.domain.chapter
 
+import org.choppa.domain.base.BaseController.Companion.API_PREFIX
 import org.choppa.domain.base.BaseController.Companion.ID_PATH
 import org.choppa.domain.base.BaseController.Companion.location
+import org.choppa.domain.squad.Squad
+import org.choppa.domain.tribe.Tribe
+import org.choppa.utils.QueryComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.created
@@ -19,13 +23,13 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("api/chapters")
+@RequestMapping("$API_PREFIX/chapters")
 class ChapterController(@Autowired private val chapterService: ChapterService) {
 
     @GetMapping
     fun listChapters(
-        @RequestParam(name = "squad", required = false) squadId: UUID?,
-        @RequestParam(name = "tribe", required = false) tribeId: UUID?,
+        @QueryComponent(Squad::class) @RequestParam(name = "squad", required = false) squadId: UUID?,
+        @QueryComponent(Tribe::class) @RequestParam(name = "tribe", required = false) tribeId: UUID?,
     ): ResponseEntity<List<Chapter>> = ok().body(
         when {
             squadId is UUID -> chapterService.findRelatedBySquad(squadId)

@@ -2,6 +2,10 @@ package org.choppa.domain.iteration
 
 import org.choppa.domain.base.BaseController
 import org.choppa.domain.base.BaseController.Companion.ID_PATH
+import org.choppa.domain.member.Member
+import org.choppa.domain.squad.Squad
+import org.choppa.domain.tribe.Tribe
+import org.choppa.utils.QueryComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.created
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
@@ -24,7 +29,11 @@ class IterationController(
 ) {
 
     @GetMapping
-    fun listIterations(): ResponseEntity<List<Iteration>> =
+    fun listIterations(
+        @QueryComponent(Member::class) @RequestParam(name = "member", required = false) memberId: UUID?,
+        @QueryComponent(Squad::class) @RequestParam(name = "squad", required = false) squadId: UUID?,
+        @QueryComponent(Tribe::class) @RequestParam(name = "tribe", required = false) tribeId: UUID?,
+    ): ResponseEntity<List<Iteration>> =
         ok().body(iterationService.find())
 
     @GetMapping(ID_PATH)

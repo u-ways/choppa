@@ -6,22 +6,26 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.choppa.domain.chapter.ChapterController
 import org.choppa.domain.iteration.IterationController
 import org.choppa.domain.squad.SquadController
-import org.choppa.utils.ReverseRouter.Companion.queryComponent
-import org.choppa.utils.ReverseRouter.Companion.route
+import org.choppa.utils.ReverseRouter
+import org.springframework.beans.factory.annotation.Autowired
 
-class MemberSerializer(supportedClass: Class<Member>? = null) : StdSerializer<Member>(supportedClass) {
+class MemberSerializer(
+    supportedClass: Class<Member>? = null,
+    @Autowired private val reverseRouter: ReverseRouter = ReverseRouter(),
+) : StdSerializer<Member>(supportedClass) {
+
     override fun serialize(member: Member, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
-        gen.writeStringField("id", route(MemberController::class, member.id))
+        gen.writeStringField("id", reverseRouter.route(MemberController::class, member.id))
         gen.writeStringField("name", member.name)
-        gen.writeStringField("chapter", route(ChapterController::class, member.chapter.id))
+        gen.writeStringField("chapter", reverseRouter.route(ChapterController::class, member.chapter.id))
         gen.writeStringField(
             "squads",
-            queryComponent(SquadController::class, SquadController::listSquads, member)
+            reverseRouter.queryComponent(SquadController::class, SquadController::listSquads, member)
         )
         gen.writeStringField(
             "iterations",
-            queryComponent(IterationController::class, IterationController::listIterations, member)
+            reverseRouter.queryComponent(IterationController::class, IterationController::listIterations, member)
         )
         gen.writeStringField("history", "history?member=${member.id}")
         gen.writeEndObject()

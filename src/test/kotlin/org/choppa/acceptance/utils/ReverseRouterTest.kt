@@ -3,8 +3,7 @@ package org.choppa.acceptance.utils
 import org.amshove.kluent.shouldBeEqualTo
 import org.choppa.domain.base.BaseModel
 import org.choppa.utils.QueryComponent
-import org.choppa.utils.ReverseRouter.Companion.queryComponent
-import org.choppa.utils.ReverseRouter.Companion.route
+import org.choppa.utils.ReverseRouter
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -20,13 +19,15 @@ import kotlin.reflect.KFunction
 
 internal class ReverseRouterTest {
 
+    private val reverseRouter = ReverseRouter()
+
     @ParameterizedTest
     @MethodSource("routeClassTests")
     fun `Given controller, when mapping route reversed, path should match expected`(
         clazz: KClass<*>,
         expected: String,
     ) {
-        route(clazz) shouldBeEqualTo expected
+        reverseRouter.route(clazz) shouldBeEqualTo expected
     }
 
     @ParameterizedTest
@@ -36,7 +37,7 @@ internal class ReverseRouterTest {
         function: KFunction<*>,
         expected: String,
     ) {
-        route(clazz, function) shouldBeEqualTo expected
+        reverseRouter.route(clazz, function) shouldBeEqualTo expected
     }
 
     @ParameterizedTest
@@ -47,13 +48,13 @@ internal class ReverseRouterTest {
         entity: BaseModel,
         expected: String,
     ) {
-        queryComponent(clazz, function, entity) shouldBeEqualTo expected
+        reverseRouter.queryComponent(clazz, function, entity) shouldBeEqualTo expected
     }
 
     @Test
     fun `Given controller with no query component, when query component mapping route reversed, route should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            queryComponent(UnderTest::class, UnderTest::requestEndpointIndexMapping, EntityOne())
+            reverseRouter.queryComponent(UnderTest::class, UnderTest::requestEndpointIndexMapping, EntityOne())
         }
     }
 
@@ -61,56 +62,56 @@ internal class ReverseRouterTest {
     fun `Given controller with invalid query component, when query component mapping route reversed, route should throw IllegalStateException`() {
         val unsupportedEntity = EntityTwo()
         assertThrows<IllegalStateException> {
-            queryComponent(UnderTest::class, UnderTest::getEndpointSingleParameter, unsupportedEntity)
+            reverseRouter.queryComponent(UnderTest::class, UnderTest::getEndpointSingleParameter, unsupportedEntity)
         }
     }
 
     @Test
     fun `Given controller which is not annotated as a RequestMapping, when mapping route reversed, route should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            route(UnderTestNoRequestMapping::class)
+            reverseRouter.route(UnderTestNoRequestMapping::class)
         }
     }
 
     @Test
     fun `Given controller with a non-request method, when mapping route reversed, route should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            route(UnderTest::class, UnderTest::noMapping)
+            reverseRouter.route(UnderTest::class, UnderTest::noMapping)
         }
     }
 
     @Test
     fun `Given controller with a non-request method and a valid query component, when mapping route reversed, should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            route(UnderTest::class, UnderTest::noMappingValidQueryComponent, EntityOne())
+            reverseRouter.route(UnderTest::class, UnderTest::noMappingValidQueryComponent, EntityOne())
         }
     }
 
     @Test
     fun `Given controller with a QueryComponent that is different to the RequestParam, when query component mapping route reversed, should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            queryComponent(UnderTest::class, UnderTest::getEndpointIncorrectRequestParamName, EntityOne())
+            reverseRouter.queryComponent(UnderTest::class, UnderTest::getEndpointIncorrectRequestParamName, EntityOne())
         }.message shouldBeEqualTo "Expected @RequestParam name [invalidName] to be [entityOne]"
     }
 
     @Test
     fun `Given controller with a parameter annotated with QueryComponent but not RequestParam, when query component mapping route reversed, should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            queryComponent(UnderTest::class, UnderTest::getEndpointWithQueryComponentNoRequestParam, EntityOne())
+            reverseRouter.queryComponent(UnderTest::class, UnderTest::getEndpointWithQueryComponentNoRequestParam, EntityOne())
         }.message shouldBeEqualTo "Expected to find two function parameters: 1. @QueryComponent with type: [EntityOne] 2. @RequestParam with name [entityOne]"
     }
 
     @Test
     fun `Given controller has query params in different order, when mapping route reversed, path should match expected`() {
         val entityOne = EntityOne()
-        queryComponent(
+        reverseRouter.queryComponent(
             UnderTest::class,
             UnderTest::getEndpointWithQueryComponentOrderedDifferently,
             entityOne
         ) shouldBeEqualTo "underTest?entityOne=${entityOne.id}"
 
         val entityTwo = EntityTwo()
-        queryComponent(
+        reverseRouter.queryComponent(
             UnderTest::class,
             UnderTest::getEndpointWithQueryComponentOrderedDifferently,
             entityTwo
@@ -120,14 +121,14 @@ internal class ReverseRouterTest {
     @Test
     fun `Given controller has not got a RequestParam annotation but the method does, when mapping route reversed, should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            route(UnderTestNoRequestMapping::class, UnderTestNoRequestMapping::getEndpointNoParameter)
+            reverseRouter.route(UnderTestNoRequestMapping::class, UnderTestNoRequestMapping::getEndpointNoParameter)
         }
     }
 
     @Test
     fun `Given controller has not got a RequestParam annotation but the method does and has a valid query param, when query component mapping route reversed, should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            queryComponent(UnderTestNoRequestMapping::class, UnderTestNoRequestMapping::getEndpointNoParameter, EntityOne())
+            reverseRouter.queryComponent(UnderTestNoRequestMapping::class, UnderTestNoRequestMapping::getEndpointNoParameter, EntityOne())
         }
     }
 

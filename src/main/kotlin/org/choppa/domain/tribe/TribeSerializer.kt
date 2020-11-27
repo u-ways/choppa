@@ -8,30 +8,34 @@ import org.choppa.domain.iteration.IterationController
 import org.choppa.domain.member.MemberController
 import org.choppa.domain.squad.SquadController
 import org.choppa.utils.Color.Companion.toRGBAHex
-import org.choppa.utils.ReverseRouter.Companion.queryComponent
-import org.choppa.utils.ReverseRouter.Companion.route
+import org.choppa.utils.ReverseRouter
+import org.springframework.beans.factory.annotation.Autowired
 
-class TribeSerializer(supportedClass: Class<Tribe>? = null) : StdSerializer<Tribe>(supportedClass) {
+class TribeSerializer(
+    supportedClass: Class<Tribe>? = null,
+    @Autowired private val reverseRouter: ReverseRouter = ReverseRouter(),
+) : StdSerializer<Tribe>(supportedClass) {
+
     override fun serialize(tribe: Tribe, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
-        gen.writeStringField("id", route(TribeController::class, tribe.id))
+        gen.writeStringField("id", reverseRouter.route(TribeController::class, tribe.id))
         gen.writeStringField("name", tribe.name)
         gen.writeStringField("color", tribe.color.toRGBAHex())
         gen.writeStringField(
             "chapters",
-            queryComponent(ChapterController::class, ChapterController::listChapters, tribe)
+            reverseRouter.queryComponent(ChapterController::class, ChapterController::listChapters, tribe)
         )
         gen.writeStringField(
             "members",
-            queryComponent(MemberController::class, MemberController::listMembers, tribe)
+            reverseRouter.queryComponent(MemberController::class, MemberController::listMembers, tribe)
         )
         gen.writeStringField(
             "squads",
-            queryComponent(SquadController::class, SquadController::listSquads, tribe)
+            reverseRouter.queryComponent(SquadController::class, SquadController::listSquads, tribe)
         )
         gen.writeStringField(
             "iterations",
-            queryComponent(IterationController::class, IterationController::listIterations, tribe)
+            reverseRouter.queryComponent(IterationController::class, IterationController::listIterations, tribe)
         )
         gen.writeStringField("history", "history?tribe=${tribe.id}")
         gen.writeEndObject()

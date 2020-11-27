@@ -8,26 +8,30 @@ import org.choppa.domain.iteration.IterationController
 import org.choppa.domain.member.MemberController
 import org.choppa.domain.tribe.TribeController
 import org.choppa.utils.Color.Companion.toRGBAHex
-import org.choppa.utils.ReverseRouter.Companion.queryComponent
-import org.choppa.utils.ReverseRouter.Companion.route
+import org.choppa.utils.ReverseRouter
+import org.springframework.beans.factory.annotation.Autowired
 
-class SquadSerializer(supportedClass: Class<Squad>? = null) : StdSerializer<Squad>(supportedClass) {
+class SquadSerializer(
+    supportedClass: Class<Squad>? = null,
+    @Autowired private val reverseRouter: ReverseRouter = ReverseRouter(),
+) : StdSerializer<Squad>(supportedClass) {
+
     override fun serialize(squad: Squad, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
-        gen.writeStringField("id", route(SquadController::class, squad.id))
+        gen.writeStringField("id", reverseRouter.route(SquadController::class, squad.id))
         gen.writeStringField("name", squad.name)
         gen.writeStringField("color", squad.color.toRGBAHex())
-        gen.writeStringField("tribe", route(TribeController::class, squad.tribe.id))
+        gen.writeStringField("tribe", reverseRouter.route(TribeController::class, squad.tribe.id))
         gen.writeArrayFieldStart("members")
-        squad.members.forEach { gen.writeString(route(MemberController::class, it.id)) }
+        squad.members.forEach { gen.writeString(reverseRouter.route(MemberController::class, it.id)) }
         gen.writeEndArray()
         gen.writeStringField(
             "chapters",
-            queryComponent(ChapterController::class, ChapterController::listChapters, squad)
+            reverseRouter.queryComponent(ChapterController::class, ChapterController::listChapters, squad)
         )
         gen.writeStringField(
             "iterations",
-            queryComponent(IterationController::class, IterationController::listIterations, squad)
+            reverseRouter.queryComponent(IterationController::class, IterationController::listIterations, squad)
         )
         gen.writeStringField("history", "history?squad=${squad.id}")
         gen.writeEndObject()

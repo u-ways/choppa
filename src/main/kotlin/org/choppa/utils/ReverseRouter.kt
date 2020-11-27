@@ -21,27 +21,75 @@ class ReverseRouter(
     private val routeCache: ConcurrentHashMap<ReverseRouteCacheElement, String> = ConcurrentHashMap(),
 ) {
 
+    /**
+     * Generates a URI representing the class that has been passed in.
+     * The class should be annotated with @RequestMapping or one of its aliases such as @GetMapping or @PostMapping
+     *
+     * If the class' RequestMapping starts with BaseController.API_PREFIX, the result will not contain this
+     * For example a controller class annotated with @RequestMapping("myEndpoint") would return a path "myEndpoint"
+     * While a class annotated with @RequestMapping("${BaseController.API_PREFIX}/myEndpoint") would also return the path "myEndpoint"
+     *
+     * @param clazz The class that is annotated with RequestMapping
+     * @return A string containing the path that is set in the clazz's @RequestMapping
+     */
     internal fun route(clazz: KClass<*>): String = when {
         routeCache.containsKey(ReverseRouteCacheElement(clazz)) -> routeCache[ReverseRouteCacheElement(clazz)]!!
         else -> routeAndAddToCache(clazz)
     }
 
-    private fun routeAndAddToCache(clazz: KClass<*>): String =
-        getRequestMappingValue(clazz.annotations).apply { routeCache[ReverseRouteCacheElement(clazz)] = this }
-
+    /**
+     * Generates a URI representing the function that has been targeted
+     * The function should be annotated with @RequestMapping or one of its aliases such as @GetMapping or @PostMapping
+     * The class that the function is inside should also be annotated with @RequestMapping
+     *
+     * The notes notes for {@code route(KClass<*>)} also applies.
+     *
+     * For example a function annotated with @GetMapping("myMethod")
+     * inside a class that is annotated with @RequestMapping("myEndpoint")
+     * would return "myEndpoint/myMethod"
+     *
+     * @param clazz The class that is annotated with RequestMapping
+     * @param function The method reference that is annotated with RequestingMapping or one of its aliases.
+     * @return A string containing the path that is set in the clazz's @RequestMapping appended with the function's @RequestMapping value.
+     */
     internal fun route(clazz: KClass<*>, function: KFunction<*>): String = when {
         routeCache.containsKey(ReverseRouteCacheElement(clazz, function)) -> routeCache[ReverseRouteCacheElement(clazz, function)]!!
         else -> routeAndAddToCache(clazz, function)
     }
 
-    private fun routeAndAddToCache(clazz: KClass<*>, function: KFunction<*>): String = route(clazz).let {
-        val method = getRequestMappingValue(function.annotations)
-        (if (method.isNotEmpty()) "$it/$method" else it).apply { routeCache[ReverseRouteCacheElement(clazz, function)] = this }
-    }
-
+    /**
+     * Generates a URI representing the queryParam that has been targeted.
+     * The type should represent the type inside the @QueryComponent that the request parameter is annotated with.
+     * The function should be annotated with @RequestMapping or one of its aliases such as @GetMapping or @PostMapping
+     * The class that the function is inside should also be annotated with @RequestMapping
+     *
+     * The @RequestParam value must match the @QueryType type class name with the initial character in lowercase.
+     * For example The @QueryComponent(MyDataType::class) expects @RequestParam(name = "myDataType")
+     *
+     * The notes notes for {@code route(KClass<*>)} and {@code route(KClass<*>, KFunction<*>)} also applies.
+     *
+     * For example a function annotated with @GetMapping("myMethod")
+     * that also has a parameter annotated with @QueryType(MyClass::class) @RequestParam("myClass")
+     * inside a class that is annotated with @RequestMapping("myEndpoint")
+     * would return "myEndpoint/myMethod?myClass"
+     *
+     * @param clazz The class that is annotated with RequestMapping
+     * @param function The method reference that is annotated with RequestingMapping or one of its aliases.
+     * @param type The type that matches what is inside @QueryComponent on the parameter.
+     * @return A string containing the path that is set in the clazz's @RequestMapping appended with the function's @RequestMapping value
+     * appended with the parameter's @RequestParam value
+     */
     internal fun route(clazz: KClass<*>, function: KFunction<*>, type: KClass<out BaseModel>): String = when {
         routeCache.containsKey(ReverseRouteCacheElement(clazz, function, type)) -> routeCache[ReverseRouteCacheElement(clazz, function, type)]!!
         else -> routeAndAddToCache(clazz, function, type)
+    }
+
+    private fun routeAndAddToCache(clazz: KClass<*>): String =
+        getRequestMappingValue(clazz.annotations).apply { routeCache[ReverseRouteCacheElement(clazz)] = this }
+
+    private fun routeAndAddToCache(clazz: KClass<*>, function: KFunction<*>): String = route(clazz).let {
+        val method = getRequestMappingValue(function.annotations)
+        (if (method.isNotEmpty()) "$it/$method" else it).apply { routeCache[ReverseRouteCacheElement(clazz, function)] = this }
     }
 
     private fun routeAndAddToCache(clazz: KClass<*>, function: KFunction<*>, type: KClass<out BaseModel>): String {

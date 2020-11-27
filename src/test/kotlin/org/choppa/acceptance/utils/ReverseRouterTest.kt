@@ -1,9 +1,12 @@
 package org.choppa.acceptance.utils
 
 import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldContain
 import org.choppa.domain.base.BaseModel
 import org.choppa.utils.QueryComponent
+import org.choppa.utils.ReverseRouteCacheElement
 import org.choppa.utils.ReverseRouter
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -13,13 +16,19 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import java.util.UUID.randomUUID
+import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Stream
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 internal class ReverseRouterTest {
 
-    private val reverseRouter = ReverseRouter()
+    private lateinit var reverseRouter: ReverseRouter
+
+    @BeforeEach
+    internal fun setUp() {
+        reverseRouter = ReverseRouter()
+    }
 
     @ParameterizedTest
     @MethodSource("routeClassTests")
@@ -130,6 +139,72 @@ internal class ReverseRouterTest {
         assertThrows<IllegalStateException> {
             reverseRouter.queryComponent(UnderTestNoRequestMapping::class, UnderTestNoRequestMapping::getEndpointNoParameter, EntityOne())
         }
+    }
+
+    @Test
+    fun `Given controller, when mapping route reversed, the cache should be updated with the calculated path`() {
+        val cache = ConcurrentHashMap<ReverseRouteCacheElement, String>()
+        reverseRouter = ReverseRouter(cache)
+        reverseRouter.route(UnderTest::class)
+
+        cache shouldContain (ReverseRouteCacheElement(UnderTest::class) to "underTest")
+    }
+
+    @Test
+    fun `Given controller and the reverse router has the path in the cache, when mapping route reversed, the result should be read from the cache`() {
+        reverseRouter = ReverseRouter(
+            ConcurrentHashMap(
+                mapOf(
+                    ReverseRouteCacheElement(UnderTest::class) to "ACachedResultOfAController"
+                )
+            )
+        )
+
+        reverseRouter.route(UnderTest::class) shouldBeEqualTo "ACachedResultOfAController"
+    }
+
+    @Test
+    fun `Given controller and function, when mapping route reversed, the cache should be updated with the calculated path`() {
+        val cache = ConcurrentHashMap<ReverseRouteCacheElement, String>()
+        reverseRouter = ReverseRouter(cache)
+        reverseRouter.route(UnderTest::class, UnderTest::requestEndpointSubMapping)
+
+        cache shouldContain (ReverseRouteCacheElement(UnderTest::class, UnderTest::requestEndpointSubMapping) to "underTest/subMapping")
+    }
+
+    @Test
+    fun `Given controller and function and the reverse router has the path in the cache, when mapping route reversed, the result should be read from the cache`() {
+        reverseRouter = ReverseRouter(
+            ConcurrentHashMap(
+                mapOf(
+                    ReverseRouteCacheElement(UnderTest::class, UnderTest::requestEndpointSubMapping) to "ACachedResultOfAControllerAndFunction"
+                )
+            )
+        )
+
+        reverseRouter.route(UnderTest::class, UnderTest::requestEndpointSubMapping) shouldBeEqualTo "ACachedResultOfAControllerAndFunction"
+    }
+
+    @Test
+    fun `Given query param, when mapping route reversed, the cache should be updated with the calculated path`() {
+        val cache = ConcurrentHashMap<ReverseRouteCacheElement, String>()
+        reverseRouter = ReverseRouter(cache)
+        reverseRouter.route(UnderTest::class, UnderTest::putEndpointMultiParameter, EntityOne::class)
+
+        cache shouldContain (ReverseRouteCacheElement(UnderTest::class, UnderTest::putEndpointMultiParameter, EntityOne::class) to "underTest/putEndpointMultiParameter?entityOne")
+    }
+
+    @Test
+    fun `Given query param and the reverse router has the path in the cache, when mapping route reversed, the result should be read from the cache`() {
+        reverseRouter = ReverseRouter(
+            ConcurrentHashMap(
+                mapOf(
+                    ReverseRouteCacheElement(UnderTest::class, UnderTest::requestEndpointSubMapping, EntityOne::class) to "ACachedResultOfAQueryParam"
+                )
+            )
+        )
+
+        reverseRouter.route(UnderTest::class, UnderTest::requestEndpointSubMapping, EntityOne::class) shouldBeEqualTo "ACachedResultOfAQueryParam"
     }
 
     @Suppress("unused")

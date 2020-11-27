@@ -10,22 +10,41 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 
+data class ReverseRouteCacheElement(
+    private val clazz: KClass<*>,
+    private val function: KFunction<*>? = null,
+    private val type: KClass<out BaseModel>? = null,
+)
+
 @Component
 class ReverseRouter(
-    private val routeCache: ConcurrentHashMap<KClass<*>, String> = ConcurrentHashMap(),
+    private val routeCache: ConcurrentHashMap<ReverseRouteCacheElement, String> = ConcurrentHashMap(),
 ) {
 
     internal fun route(clazz: KClass<*>): String = when {
-        routeCache.contains(clazz) -> routeCache[clazz]!!
-        else -> getRequestMappingValue(clazz.annotations).apply { routeCache[clazz] = this }
+        routeCache.containsKey(ReverseRouteCacheElement(clazz)) -> routeCache[ReverseRouteCacheElement(clazz)]!!
+        else -> routeAndAddToCache(clazz)
     }
 
-    internal fun route(clazz: KClass<*>, function: KFunction<*>): String = route(clazz).let {
+    private fun routeAndAddToCache(clazz: KClass<*>): String =
+        getRequestMappingValue(clazz.annotations).apply { routeCache[ReverseRouteCacheElement(clazz)] = this }
+
+    internal fun route(clazz: KClass<*>, function: KFunction<*>): String = when {
+        routeCache.containsKey(ReverseRouteCacheElement(clazz, function)) -> routeCache[ReverseRouteCacheElement(clazz, function)]!!
+        else -> routeAndAddToCache(clazz, function)
+    }
+
+    private fun routeAndAddToCache(clazz: KClass<*>, function: KFunction<*>): String = route(clazz).let {
         val method = getRequestMappingValue(function.annotations)
-        if (method.isNotEmpty()) "$it/$method" else it
+        (if (method.isNotEmpty()) "$it/$method" else it).apply { routeCache[ReverseRouteCacheElement(clazz, function)] = this }
     }
 
-    internal fun route(clazz: KClass<*>, function: KFunction<*>, type: KClass<out BaseModel>): String {
+    internal fun route(clazz: KClass<*>, function: KFunction<*>, type: KClass<out BaseModel>): String = when {
+        routeCache.containsKey(ReverseRouteCacheElement(clazz, function, type)) -> routeCache[ReverseRouteCacheElement(clazz, function, type)]!!
+        else -> routeAndAddToCache(clazz, function, type)
+    }
+
+    private fun routeAndAddToCache(clazz: KClass<*>, function: KFunction<*>, type: KClass<out BaseModel>): String {
         val requestParam = function.parameters
             .extractParameterBy(type)
             .find { it is RequestParam } as RequestParam
@@ -35,7 +54,7 @@ class ReverseRouter(
 
         check(relatedEntity == className) { "Expected @RequestParam name [$relatedEntity] to be [$className]" }
 
-        return "${route(clazz, function)}?$relatedEntity"
+        return "${route(clazz, function)}?$relatedEntity".apply { routeCache[ReverseRouteCacheElement(clazz, function, type)] = this }
     }
 
     internal fun route(clazz: KClass<*>, id: UUID) =

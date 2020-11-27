@@ -49,7 +49,7 @@ data class Member @JsonCreator constructor(
     @OneToMany(mappedBy = "member")
     @JsonIgnore
     val history: MutableList<History> = mutableListOf()
-): BaseModel {
+) : BaseModel {
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
 
     override fun hashCode(): Int = id.hashCode()

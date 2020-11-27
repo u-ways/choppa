@@ -11,13 +11,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import java.util.UUID
+import org.springframework.web.bind.annotation.*
+import java.util.*
 import java.util.UUID.randomUUID
 import java.util.stream.Stream
 import kotlin.reflect.KClass
@@ -29,7 +24,7 @@ internal class ReverseRouterTest {
     @MethodSource("routeClassTests")
     fun `Given controller, when mapping route reversed, path should match expected`(
         clazz: KClass<*>,
-        expected: String
+        expected: String,
     ) {
         route(clazz) shouldBeEqualTo expected
     }
@@ -39,7 +34,7 @@ internal class ReverseRouterTest {
     fun `Given controller with function, when mapping route reversed, path should match expected`(
         clazz: KClass<*>,
         function: KFunction<*>,
-        expected: String
+        expected: String,
     ) {
         route(clazz, function) shouldBeEqualTo expected
     }
@@ -50,7 +45,7 @@ internal class ReverseRouterTest {
         clazz: KClass<*>,
         function: KFunction<*>,
         entity: BaseModel,
-        expected: String
+        expected: String,
     ) {
         queryComponent(clazz, function, entity) shouldBeEqualTo expected
     }
@@ -70,6 +65,73 @@ internal class ReverseRouterTest {
         }
     }
 
+    @Test
+    fun `Given controller which is not annotated as a RequestMapping, when mapping route reversed, route should throw IllegalStateException`() {
+        assertThrows<IllegalStateException> {
+            route(UnderTestNoRequestMapping::class)
+        }
+    }
+
+    @Test
+    fun `Given controller with a non-request method, when mapping route reversed, route should throw IllegalStateException`() {
+        assertThrows<IllegalStateException> {
+            route(UnderTest::class, UnderTest::noMapping)
+        }
+    }
+
+    @Test
+    fun `Given controller with a non-request method and a valid query component, when mapping route reversed, should throw IllegalStateException`() {
+        assertThrows<IllegalStateException> {
+            route(UnderTest::class, UnderTest::noMappingValidQueryComponent, EntityOne())
+        }
+    }
+
+    @Test
+    fun `Given controller with a QueryComponent that is different to the RequestParam, when query component mapping route reversed, should throw IllegalStateException`() {
+        assertThrows<IllegalStateException> {
+            queryComponent(UnderTest::class, UnderTest::getEndpointIncorrectRequestParamName, EntityOne())
+        }.message shouldBeEqualTo "Expected @RequestParam name [invalidName] to be [entityOne]"
+    }
+
+    @Test
+    fun `Given controller with a parameter annotated with QueryComponent but not RequestParam, when query component mapping route reversed, should throw IllegalStateException`() {
+        assertThrows<IllegalStateException> {
+            queryComponent(UnderTest::class, UnderTest::getEndpointWithQueryComponentNoRequestParam, EntityOne())
+        }.message shouldBeEqualTo "Expected to find two function parameters: 1. @QueryComponent with type: [EntityOne] 2. @RequestParam with name [entityOne]"
+    }
+
+    @Test
+    fun `Given controller has query params in different order, when mapping route reversed, path should match expected`() {
+        val entityOne = EntityOne()
+        queryComponent(
+            UnderTest::class,
+            UnderTest::getEndpointWithQueryComponentOrderedDifferently,
+            entityOne
+        ) shouldBeEqualTo "underTest?entityOne=${entityOne.id}"
+
+        val entityTwo = EntityTwo()
+        queryComponent(
+            UnderTest::class,
+            UnderTest::getEndpointWithQueryComponentOrderedDifferently,
+            entityTwo
+        ) shouldBeEqualTo "underTest?entityTwo=${entityTwo.id}"
+    }
+
+    @Test
+    fun `Given controller has not got a RequestParam annotation but the method does, when mapping route reversed, should throw IllegalStateException`() {
+        assertThrows<IllegalStateException> {
+            route(UnderTestNoRequestMapping::class, UnderTestNoRequestMapping::getEndpointNoParameter)
+        }
+    }
+
+    @Test
+    fun `Given controller has not got a RequestParam annotation but the method does and has a valid query param, when query component mapping route reversed, should throw IllegalStateException`() {
+        assertThrows<IllegalStateException> {
+            queryComponent(UnderTestNoRequestMapping::class, UnderTestNoRequestMapping::getEndpointNoParameter, EntityOne())
+        }
+    }
+
+    @Suppress("unused")
     companion object {
         @JvmStatic
         fun routeClassTests(): Stream<Arguments?>? {
@@ -184,6 +246,45 @@ internal class ReverseRouterTest {
             @QueryComponent(EntityOne::class) @RequestParam(name = "entityOne", required = false) entityOne: UUID?,
             @QueryComponent(EntityTwo::class) @RequestParam(name = "entityTwo", required = false) entityTwo: UUID?,
             @QueryComponent(EntityThree::class) @RequestParam(name = "entityThree", required = false) entityThree: UUID?,
+        ) {
+        }
+
+        fun noMapping() {
+        }
+
+        fun noMappingValidQueryComponent(
+            @QueryComponent(EntityOne::class) @RequestParam(name = "entityOne", required = false) entityOne: UUID?,
+        ) {
+        }
+
+        @GetMapping
+        fun getEndpointIncorrectRequestParamName(
+            @QueryComponent(EntityOne::class) @RequestParam(name = "invalidName", required = false) entityOne: UUID?,
+        ) {
+        }
+
+        @GetMapping
+        fun getEndpointWithQueryComponentNoRequestParam(
+            @QueryComponent(EntityOne::class) entityOne: UUID?,
+        ) {
+        }
+
+        @GetMapping
+        fun getEndpointWithQueryComponentOrderedDifferently(
+            @QueryComponent(EntityOne::class) @RequestParam(name = "entityOne", required = false) entityOne: UUID?,
+            @RequestParam(name = "entityTwo", required = false) @QueryComponent(EntityTwo::class) entityTwo: UUID?,
+        ) {
+        }
+    }
+
+    internal class UnderTestNoRequestMapping {
+        @GetMapping("getEndpointNoParameter")
+        fun getEndpointNoParameter() {
+        }
+
+        @GetMapping("getEndpointSingleParameter")
+        fun getEndpointSingleParameter(
+            @QueryComponent(EntityOne::class) @RequestParam(name = "entityOne", required = false) entityOne: UUID?,
         ) {
         }
     }

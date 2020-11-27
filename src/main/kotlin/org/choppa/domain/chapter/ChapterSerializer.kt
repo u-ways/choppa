@@ -16,7 +16,8 @@ class ChapterSerializer(supportedClass: Class<Chapter>? = null) : StdSerializer<
         gen.writeStringField("color", chapter.color.toRGBAHex())
         gen.writeStringField(
             "members",
-            queryComponent(MemberController::class, MemberController::listMembers, chapter))
+            queryComponent(MemberController::class, MemberController::listMembers, chapter)
+        )
         gen.writeEndObject()
     }
 }

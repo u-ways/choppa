@@ -2,13 +2,8 @@ package org.choppa.utils
 
 import org.choppa.domain.base.BaseController.Companion.API_PREFIX
 import org.choppa.domain.base.BaseModel
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import java.util.UUID
+import org.springframework.web.bind.annotation.*
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -31,7 +26,7 @@ class ReverseRouter {
         internal fun route(clazz: KClass<*>, function: KFunction<*>, type: KClass<out BaseModel>): String {
             val requestParam = function.parameters
                 .extractParameterBy(type)
-                .last() as RequestParam
+                .find { it is RequestParam } as RequestParam
 
             val className = type.simpleName!!.decapitalize()
             val relatedEntity = requestParam.name
@@ -75,8 +70,15 @@ class ReverseRouter {
             this.drop(1)
                 .map { parameter -> parameter.annotations }
                 .first { annotations -> annotations.hasAMatching(type) }
+                .apply {
+                    check(this.any { it is RequestParam })
+                }
         }.getOrElse {
-            throw IllegalStateException("Expected to find a function parameter with @QueryComponent type: [${type.simpleName}]")
+            throw IllegalStateException(
+                "Expected to find two function parameters: " +
+                    "1. @QueryComponent with type: [${type.simpleName}] " +
+                    "2. @RequestParam with name [${type.simpleName!!.decapitalize()}]"
+            )
         }
 
         private fun List<Annotation>.hasAMatching(type: KClass<*>): Boolean {

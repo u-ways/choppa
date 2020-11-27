@@ -39,7 +39,7 @@ data class Chapter @JsonCreator constructor(
     @OneToMany(mappedBy = "chapter")
     @JsonIgnore
     val members: MutableList<Member> = mutableListOf(),
-): BaseModel {
+) : BaseModel {
     override fun toString() = "Chapter(id=$id, name=$name)"
 
     override fun hashCode(): Int = id.hashCode()

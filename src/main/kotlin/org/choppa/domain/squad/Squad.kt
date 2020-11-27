@@ -63,7 +63,7 @@ data class Squad @JsonCreator constructor(
     @OneToMany(mappedBy = "squad")
     @JsonIgnore
     val history: MutableList<History> = mutableListOf()
-): BaseModel {
+) : BaseModel {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 
     override fun hashCode(): Int = id.hashCode()

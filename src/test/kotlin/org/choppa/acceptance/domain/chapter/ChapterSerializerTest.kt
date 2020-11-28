@@ -26,12 +26,12 @@ internal class ChapterSerializerTest {
 
         val id = uniformDto?.read<String>("$.id")
         val name = uniformDto?.read<String>("$.name")
-        val members = uniformDto?.read<String>("$.members")
         val color = uniformDto?.read<String>("$.color")
+        val members = uniformDto?.read<String>("$.members")
 
         assertThat(id, equalTo("chapters/${chapter.id}"))
         assertThat(name, equalTo(chapter.name))
-        assertThat(members, equalTo("members?chapter=${chapter.id}"))
         assertThat(color, equalTo("#0000ff00"))
+        assertThat(members, equalTo("members?chapter=${chapter.id}"))
     }
 }

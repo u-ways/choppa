@@ -1,7 +1,11 @@
 package org.choppa.domain.squad
 
+import org.choppa.domain.base.BaseController.Companion.API_PREFIX
 import org.choppa.domain.base.BaseController.Companion.ID_PATH
 import org.choppa.domain.base.BaseController.Companion.location
+import org.choppa.domain.member.Member
+import org.choppa.domain.tribe.Tribe
+import org.choppa.utils.QueryComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.created
@@ -19,15 +23,15 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("api/squads")
+@RequestMapping("$API_PREFIX/squads")
 class SquadController(
-    @Autowired private val squadService: SquadService
+    @Autowired private val squadService: SquadService,
 ) {
 
     @GetMapping
     fun listSquads(
-        @RequestParam(name = "member", required = false) memberId: UUID?,
-        @RequestParam(name = "tribe", required = false) tribeId: UUID?,
+        @QueryComponent(Member::class) @RequestParam(name = "member", required = false) memberId: UUID?,
+        @QueryComponent(Tribe::class) @RequestParam(name = "tribe", required = false) tribeId: UUID?,
     ): ResponseEntity<List<Squad>> = ok().body(
         when {
             memberId is UUID -> squadService.findRelatedByMember(memberId)

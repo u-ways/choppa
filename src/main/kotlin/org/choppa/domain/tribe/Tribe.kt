@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import org.choppa.domain.base.BaseModel
 import org.choppa.domain.history.History
 import org.choppa.domain.squad.Squad
 import org.choppa.utils.Color.Companion.GREY
@@ -28,7 +29,7 @@ data class Tribe @JsonCreator constructor(
     @Column(name = "tribe_id", columnDefinition = "uuid")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JsonProperty("id")
-    val id: UUID = randomUUID(),
+    override val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
     @JsonProperty("name")
@@ -45,8 +46,18 @@ data class Tribe @JsonCreator constructor(
     @OneToMany(mappedBy = "tribe", fetch = LAZY)
     @JsonIgnore
     val history: MutableList<History> = mutableListOf()
-) {
+) : BaseModel {
     override fun toString() = "Tribe(id=$id, name=$name)"
+
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Tribe
+        if (id != other.id) return false
+        return true
+    }
 
     companion object {
         val UNASSIGNED_TRIBE = Tribe(UUID.fromString("00000000-0000-0000-0000-000000000000"), "Unassigned Squad")

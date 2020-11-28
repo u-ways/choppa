@@ -22,6 +22,11 @@ import java.time.Instant.now
 class BaseController {
     companion object {
         /**
+         * Standard prefix for an API endpoint
+         */
+        const val API_PREFIX: String = "api"
+
+        /**
          * Standard path for an identification of a singular resource.
          */
         const val ID_PATH: String = "{id}"

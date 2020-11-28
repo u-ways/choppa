@@ -1,6 +1,6 @@
 import { createLocalVue, describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
 import VueRouter from "vue-router";
-import TribeOrganism from "@/components/organisms/TribeOrganism";
+import TribeOrganism from "@/_old/components/organisms/TribeOrganism";
 import Tribe from "@/data/types/tribe";
 import Squad from "@/data/types/squad";
 import Member from "@/data/types/member";

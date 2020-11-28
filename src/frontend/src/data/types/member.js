@@ -5,6 +5,7 @@ export default class Member {
     this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : `members/${uuidv4()}`;
     this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
     this._chapter = Object.prototype.hasOwnProperty.call(config, "chapter") ? config.chapter : null;
+    this._newlyCreated = Object.prototype.hasOwnProperty.call(config, "newlyCreated") ? config.newlyCreated : false;
   }
 
   get id() {
@@ -25,5 +26,9 @@ export default class Member {
 
   get chapter() {
     return this._chapter;
+  }
+
+  get newlyCreated() {
+    return this._newlyCreated;
   }
 }

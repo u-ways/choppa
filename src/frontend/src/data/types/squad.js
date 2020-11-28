@@ -8,6 +8,7 @@ export default class Squad {
     this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
     this._color = Object.prototype.hasOwnProperty.call(config, "color") ? config.color : DEFAULT_SQUAD_COLOR;
     this._members = Object.prototype.hasOwnProperty.call(config, "members") ? config.members : [];
+    this._newlyCreated = Object.prototype.hasOwnProperty.call(config, "newlyCreated") ? config.newlyCreated : false;
   }
 
   get id() {
@@ -32,6 +33,10 @@ export default class Squad {
 
   get members() {
     return this._members;
+  }
+
+  get newlyCreated() {
+    return this._newlyCreated;
   }
 
   updateChapter(id, name, color) {

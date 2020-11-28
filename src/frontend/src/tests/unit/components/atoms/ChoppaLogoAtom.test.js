@@ -1,5 +1,5 @@
 import { describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
-import ChoppaLogoAtom from "@/components/atoms/ChoppaLogoAtom";
+import ChoppaLogoAtom from "@/_old/components/atoms/ChoppaLogoAtom";
 
 describe("Choppa Logo Atom test", () => {
   it("Renders correctly", async () => {

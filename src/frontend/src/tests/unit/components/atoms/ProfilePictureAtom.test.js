@@ -3,7 +3,7 @@ jest.mock("jdenticon"); // eslint-disable-line no-undef
 
 import * as jdenticon from "jdenticon";
 import { describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
-import ProfilePictureAtom from "@/components/atoms/ProfilePictureAtom";
+import ProfilePictureAtom from "@/_old/components/atoms/ProfilePictureAtom";
 import Member from "@/data/types/member";
 
 const member = new Member(1, "Taylor");

@@ -1,6 +1,6 @@
 import { createLocalVue, describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
 import VueRouter from "vue-router";
-import NavbarOrganism from "@/components/organisms/NavbarOrganism";
+import NavbarOrganism from "@/_old/components/organisms/NavbarOrganism";
 
 describe("Navbar Organism test", () => {
   it("Renders correctly", async () => {

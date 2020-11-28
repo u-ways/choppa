@@ -1,5 +1,5 @@
 import { describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
-import FixedWidthWithNavbarTemplate from "@/components/templates/FixedWidthWithNavbarTemplate";
+import FixedWidthWithNavbarTemplate from "@/_old/components/templates/FixedWidthWithNavbarTemplate";
 
 describe("Fixed Width With Navbar Template test", () => {
   it("Renders correctly", async () => {

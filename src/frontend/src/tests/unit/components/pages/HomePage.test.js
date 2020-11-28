@@ -1,5 +1,5 @@
 import { createLocalVue, describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
-import HomePage from "@/components/pages/HomePage";
+import HomePage from "@/_old/components/pages/HomePage";
 import VueRouter from "vue-router";
 
 describe("Home Page test", () => {

@@ -1,6 +1,6 @@
 import { createLocalVue, describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
 import VueRouter from "vue-router";
-import ViewTribePage from "@/components/pages/tribe/ViewTribePage";
+import ViewTribePage from "@/_old/components/pages/tribe/ViewTribePage";
 import Tribe from "@/data/types/tribe";
 import Squad from "@/data/types/squad";
 import Member from "@/data/types/member";

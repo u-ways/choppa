@@ -1,6 +1,6 @@
 import { createLocalVue, describe, expect, it, shallowMount } from "@/tests/unit/test-imports";
 import VueRouter from "vue-router";
-import NotFoundPage from "@/components/pages/NotFoundPage";
+import NotFoundPage from "@/_old/components/pages/NotFoundPage";
 
 describe("Not Found Page test", () => {
   it("Renders correctly", async () => {

@@ -1,6 +1,6 @@
 import httpClient from "@/config/api/http-client";
 import Member from "@/data/types/member";
-import getChapter from "@/config/api/chapter.api";
+import { getChapter } from "@/config/api/chapter.api";
 
 function getUrlOrId(config) {
   return Object.prototype.hasOwnProperty.call(config, "url")
@@ -17,9 +17,32 @@ async function deserializeMember(config, json) {
   });
 }
 
-async function getMember(config) {
+function serializeMember(config) {
+  return {
+    id: config.member.id,
+    name: config.member.name,
+    chapter: config.member.chapter ? config.member.chapter.id : "",
+  };
+}
+
+export async function getMember(config) {
   const response = await httpClient.get(getUrlOrId(config));
   return deserializeMember(config, response.data);
 }
 
-export default getMember;
+async function saveExistingMember(config) {
+  await httpClient.put(config.member.id, serializeMember(config));
+}
+
+async function createNewMember(config) {
+  console.log(config);
+  await httpClient.post("members", serializeMember(config));
+}
+
+export async function saveMember(config) {
+  if (config.member.newlyCreated) {
+    await createNewMember(config);
+  } else {
+    await saveExistingMember(config);
+  }
+}

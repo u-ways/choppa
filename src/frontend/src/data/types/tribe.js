@@ -5,6 +5,7 @@ export default class Tribe {
     this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : `tribes/${uuidv4()}`;
     this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
     this._squads = Object.prototype.hasOwnProperty.call(config, "squads") ? config.squads : [];
+    this._deletedSquads = [];
   }
 
   get id() {
@@ -21,6 +22,10 @@ export default class Tribe {
 
   get squads() {
     return this._squads;
+  }
+
+  get deletedSquads() {
+    return this._deletedSquads;
   }
 
   allDistinctChapters() {
@@ -48,6 +53,7 @@ export default class Tribe {
   }
 
   removeSquadById(squadId) {
+    this._deletedSquads.push(this.squads.filter((squad) => squad.id === squadId)[0]);
     this._squads = this.squads.filter((squad) => squad.id !== squadId);
   }
 

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./config/router";
+import "./assets/_style.css";
 
 library.add(faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus);
 Vue.component("font-awesome-icon", FontAwesomeIcon);

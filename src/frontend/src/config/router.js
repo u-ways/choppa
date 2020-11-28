@@ -5,8 +5,12 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/",
-    component: () => import("@/components/HelloWorld"),
+    path: "",
+    component: () => import("@/pages/HomePage"),
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import("@/pages/NotFoundPage"),
   },
 ];
 

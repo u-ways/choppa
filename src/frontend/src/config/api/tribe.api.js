@@ -1,5 +1,5 @@
 import httpClient from "@/config/api/http-client";
-import Tribe from "@/data/types/tribe";
+import Tribe from "@/models/tribe";
 import { deleteSquad, getSquads, saveSquad } from "@/config/api/squad.api";
 
 function getUrlOrId(config) {

@@ -1,8 +1,13 @@
+/* eslint-disable import/no-extraneous-dependencies */
+const autoprefixer = require("autoprefixer");
+const postCssImport = require("postcss-import");
+const tailwindcss = require("tailwindcss");
+
 module.exports = {
   plugins: [
     // Order matters
-    require("postcss-import"),
-    require("tailwindcss"),
-    require("autoprefixer"),
+    postCssImport,
+    tailwindcss,
+    autoprefixer,
   ],
 };

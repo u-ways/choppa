@@ -1,0 +1,19 @@
+@layer base {
+  @font-face {
+    font-family: "Open Sans";
+    src: url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap") format("ttf");
+  }
+
+  body {
+    @apply
+      font-open-sans
+      text-gray-800
+      bg-white
+      dark:text-gray-200
+      dark:bg-gray-800;
+  }
+
+  a {
+    @apply link;
+  }
+}

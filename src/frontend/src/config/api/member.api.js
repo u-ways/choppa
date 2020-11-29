@@ -1,5 +1,5 @@
 import httpClient from "@/config/api/http-client";
-import Member from "@/data/types/member";
+import Member from "@/models/member";
 import { getChapter } from "@/config/api/chapter.api";
 
 function getUrlOrId(config) {
@@ -35,7 +35,6 @@ async function saveExistingMember(config) {
 }
 
 async function createNewMember(config) {
-  console.log(config);
   await httpClient.post("members", serializeMember(config));
 }
 

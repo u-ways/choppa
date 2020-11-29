@@ -1,5 +1,5 @@
 import httpClient from "@/config/api/http-client";
-import Squad from "@/data/types/squad";
+import Squad from "@/models/squad";
 import { getMember, saveMember } from "@/config/api/member.api";
 
 async function deserializeSquad(config, json) {
@@ -55,6 +55,5 @@ export async function saveSquad(config) {
 }
 
 export async function deleteSquad(config) {
-  console.log(config);
   await httpClient.delete(config.squad.id);
 }

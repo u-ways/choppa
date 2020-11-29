@@ -1,0 +1,8 @@
+.btn {
+}
+
+.btn-link {
+  @apply
+    btn
+    link;
+}

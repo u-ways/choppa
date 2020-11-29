@@ -1,5 +1,5 @@
 import httpClient from "@/config/api/http-client";
-import Chapter from "@/data/types/chapter";
+import Chapter from "@/models/chapter";
 
 function getUrlOrId(config) {
   return Object.prototype.hasOwnProperty.call(config, "url")

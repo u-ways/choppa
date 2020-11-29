@@ -5,6 +5,9 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./config/router";
 import "./assets/_style.css";
+import { applyTheme } from "./utils/darkMode";
+
+applyTheme();
 
 library.add(faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus);
 Vue.component("font-awesome-icon", FontAwesomeIcon);

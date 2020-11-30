@@ -24,6 +24,18 @@ class IterationService(
         .findAll()
         .orElseThrow { throw EntityNotFoundException("No iterations exist yet.") }
 
+    fun findRelatedByMember(memberId: UUID): List<Iteration> = iterationRepository
+        .findAllByMemberId(memberId)
+        .orElseThrow { throw EntityNotFoundException("No iterations found for member [$memberId].") }
+
+    fun findRelatedBySquad(squadId: UUID): List<Iteration> = iterationRepository
+        .findAllBySquadId(squadId)
+        .orElseThrow { throw EntityNotFoundException("No iterations found for squad [$squadId].") }
+
+    fun findRelatedByTribe(tribeId: UUID): List<Iteration> = iterationRepository
+        .findAllByTribeId(tribeId)
+        .orElseThrow { throw EntityNotFoundException("No iterations found for tribe [$tribeId].") }
+
     fun find(ids: List<UUID>): List<Iteration> = iterationRepository
         .findAllById(ids)
         .orElseThrow { throw EntityNotFoundException("No iterations found with given ids.") }

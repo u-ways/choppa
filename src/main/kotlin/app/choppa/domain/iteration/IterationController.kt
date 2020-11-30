@@ -25,6 +25,12 @@ class IterationController(
         @QueryComponent(Member::class) @RequestParam(name = "member", required = false) memberId: UUID?,
         @QueryComponent(Squad::class) @RequestParam(name = "squad", required = false) squadId: UUID?,
         @QueryComponent(Tribe::class) @RequestParam(name = "tribe", required = false) tribeId: UUID?,
-    ): ResponseEntity<List<Iteration>> =
-        ok().body(iterationService.find())
+    ): ResponseEntity<List<Iteration>> = ok().body(
+        when {
+            tribeId is UUID -> iterationService.findRelatedByTribe(tribeId)
+            squadId is UUID -> iterationService.findRelatedBySquad(squadId)
+            memberId is UUID -> iterationService.findRelatedByMember(memberId)
+            else -> iterationService.find()
+        }
+    )
 }

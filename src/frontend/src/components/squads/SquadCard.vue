@@ -31,7 +31,7 @@
             {{member.name}}
           </div>
         </div>
-        <div class="self-center">
+        <div class="self-center grid">
           <div v-if="member.chapter" :style="{ 'background': member.chapter.color }" class="inline-block text-sm
           bg-red-500 px-2 py-1 rounded overflow-ellipsis overflow-hidden lowercase text-gray-200
           text-center w-16 md:w-20 lg:w-24 shadow border border-gray-200 dark:border-gray-700">

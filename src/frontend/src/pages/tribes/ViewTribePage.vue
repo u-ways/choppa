@@ -54,7 +54,6 @@ export default {
       loadSquads: true,
     });
 
-    // setTimeout(() => { this.isLoaded = true; }, 2 * 1000);
     this.isLoaded = true;
   },
 };

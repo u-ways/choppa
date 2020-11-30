@@ -14,7 +14,7 @@ class ChapterSerializer(
         gen.writeStringField("id", reverseRouter.route(ChapterController::class, chapter.id))
         gen.writeStringField("name", chapter.name)
         gen.writeStringField("color", chapter.color.toRGBAHex())
-        gen.queryComponent(MEMBERS, chapter)
+        gen.writeQueryField(MEMBERS, chapter)
         gen.writeEndObject()
     }
 }

@@ -18,11 +18,11 @@ class TribeSerializer(
         gen.writeStringField("id", reverseRouter.route(TribeController::class, tribe.id))
         gen.writeStringField("name", tribe.name)
         gen.writeStringField("color", tribe.color.toRGBAHex())
-        gen.queryComponent(CHAPTERS, tribe)
-        gen.queryComponent(MEMBERS, tribe)
-        gen.queryComponent(SQUADS, tribe)
-        gen.queryComponent(ITERATIONS, tribe)
-        gen.queryComponent(HISTORY, tribe)
+        gen.writeQueryField(CHAPTERS, tribe)
+        gen.writeQueryField(MEMBERS, tribe)
+        gen.writeQueryField(SQUADS, tribe)
+        gen.writeQueryField(ITERATIONS, tribe)
+        gen.writeQueryField(HISTORY, tribe)
         gen.writeEndObject()
     }
 }

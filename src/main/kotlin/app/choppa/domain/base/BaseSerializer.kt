@@ -28,7 +28,7 @@ abstract class BaseSerializer<T>(
         HISTORY(HistoryController::class, HistoryController::listHistory),
     }
 
-    internal fun <T : BaseModel> JsonGenerator.queryComponent(queryType: QueryType, type: T) {
+    internal fun <T : BaseModel> JsonGenerator.writeQueryField(queryType: QueryType, type: T) {
         this.writeStringField(
             reverseRouter.route(queryType.controller),
             reverseRouter.queryComponent(queryType.controller, queryType.function, type)

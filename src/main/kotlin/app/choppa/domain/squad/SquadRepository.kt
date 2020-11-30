@@ -21,5 +21,5 @@ interface SquadRepository : JpaRepository<Squad, UUID> {
         """,
         nativeQuery = true
     )
-    fun findAllByMemberId(@Param("memberId") squadId: UUID): List<Squad>
+    fun findAllByMemberId(@Param("memberId") memberId: UUID): List<Squad>
 }

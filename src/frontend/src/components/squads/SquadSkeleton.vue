@@ -1,7 +1,7 @@
 <template>
   <div class="shadow ring-1 ring-black ring-opacity-5 border-choppa-light dark:border-choppa-dark border-t-4
-  bg-gray-100 dark:bg-blue-gray-600 dark:ring-bg-blue-gray-700">
-    <div class="bg-white dark:bg-blue-gray-700 p-5">
+  bg-gray-100 dark:bg-gray-600 dark:ring-bg-gray-700">
+    <div class="bg-white dark:bg-gray-700 p-5">
       <div class="animate-pulse bg-gray-400 rounded w-72 h-8"></div>
       <div class="animate-pulse bg-gray-400 rounded w-40 h-6 mt-2"></div>
     </div>

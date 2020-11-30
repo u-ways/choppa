@@ -1,7 +1,7 @@
 <template>
   <div class="shadow ring-1 ring-black ring-opacity-5 border-choppa-light dark:border-choppa-dark border-t-4
-  bg-gray-100 dark:bg-blue-gray-600 dark:ring-bg-blue-gray-700" :style="{ 'border-top-color': squad.color }">
-    <div class="bg-white dark:bg-blue-gray-700 p-5">
+  bg-gray-100 dark:bg-gray-600 dark:ring-bg-gray-700" :style="{ 'border-top-color': squad.color }">
+    <div class="bg-white dark:bg-gray-700 p-5">
       <p class="text-xl font-normal">Squad <span class="font-semibold">{{ squad.name }}</span></p>
       <div class="text-sm leading-8 flex flex-row gap-1">
         <div class="self-center">{{squad.members.length}} Members</div>
@@ -32,9 +32,9 @@
           </div>
         </div>
         <div class="self-center grid">
-          <div v-if="member.chapter" :style="{ 'background': member.chapter.color }" class="inline-block text-sm
-          bg-red-500 px-2 py-1 rounded overflow-ellipsis overflow-hidden lowercase text-gray-200
-          text-center w-16 md:w-20 lg:w-24 shadow border border-gray-200 dark:border-gray-700">
+          <div v-if="member.chapter" :style="{ 'border-color': member.chapter.color }"
+               class="inline-block text-sm px-2 py-1 rounded overflow-ellipsis overflow-hidden lowercase text-center
+               w-16 md:w-20 lg:w-24 shadow-sm border-l-8 bg-gray-50 dark:bg-gray-700 dark:shadow-none">
             {{member.chapter.name}}
           </div>
         </div>

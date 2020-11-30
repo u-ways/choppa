@@ -1,5 +1,5 @@
 <template>
-  <footer class="h-20 flex flex-row bg-gray-100 dark:bg-blue-gray-700 ring-1 ring-black ring-opacity-20">
+  <footer class="h-20 flex flex-row bg-gray-100 dark:bg-gray-700 ring-1 ring-black ring-opacity-20">
     <div class="pt-3 container mx-auto grid justify-items-center text-gray-600 dark:text-gray-300">
       <div class="justify-self-center">
         Support Choppa's development at
@@ -10,12 +10,12 @@
       <div class="justify-self-center flex flex-row flex-none h-6">
         <span class="pr-2">Theme</span>
         <IconButton icon="sun"
-                    class="hover:bg-gray-200 dark:hover:bg-blue-gray-600"
+                    class="hover:bg-gray-200 dark:hover:bg-choppa-dark"
                     screen-reader-text="Activate Light Theme"
                     @click="updateTheme(lightTheme)"
         />
         <IconButton icon="moon"
-                    class="hover:bg-gray-200 dark:hover:bg-blue-gray-600"
+                    class="hover:bg-gray-200 dark:hover:bg-choppa-dark"
                     screen-reader-text="Activate Dark Theme"
                     @click="updateTheme(darkTheme)"
         />

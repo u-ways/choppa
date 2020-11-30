@@ -11,8 +11,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "blue-gray": colors.blueGray,
+        gray: colors.coolGray,
         "choppa-light": {
+          extra: colors.emerald["500"],
           DEFAULT: colors.emerald["700"],
           hover: colors.emerald["800"],
         },

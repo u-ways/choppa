@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex">
+  <div class="min-h-screen flex">
     <div class="m-auto flex flex-col sm:flex-row">
       <div class="mr-5 flex-grow-0 self-center">
         <ChoppaLogo css="place-self-center text-4xl"/>

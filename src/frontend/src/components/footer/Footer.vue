@@ -9,8 +9,16 @@
       </div>
       <div class="justify-self-center flex flex-row flex-none h-6">
         <span class="pr-2">Theme</span>
-        <IconButton icon="sun" screen-reader-text="Activate Light Theme" @click="updateTheme(lightTheme)"/>
-        <IconButton icon="moon" screen-reader-text="Activate Dark Theme" @click="updateTheme(darkTheme)"/>
+        <IconButton icon="sun"
+                    class="hover:bg-gray-200 dark:hover:bg-blue-gray-600"
+                    screen-reader-text="Activate Light Theme"
+                    @click="updateTheme(lightTheme)"
+        />
+        <IconButton icon="moon"
+                    class="hover:bg-gray-200 dark:hover:bg-blue-gray-600"
+                    screen-reader-text="Activate Dark Theme"
+                    @click="updateTheme(darkTheme)"
+        />
       </div>
     </div>
   </footer>

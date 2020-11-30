@@ -9,10 +9,16 @@ import java.util.UUID
 @Service
 class ChapterService(
     @Autowired private val chapterRepository: ChapterRepository
-) : BaseService() {
-    fun find(id: UUID): Chapter = chapterRepository
+) : BaseService<Chapter> {
+    override fun find(id: UUID): Chapter = chapterRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Chapter with id [$id] does not exist.") }
+
+    override fun save(entity: Chapter): Chapter = chapterRepository
+        .save(entity)
+
+    override fun delete(entity: Chapter): Chapter = entity
+        .apply { chapterRepository.delete(entity) }
 
     fun find(): List<Chapter> = chapterRepository
         .findAll()
@@ -30,29 +36,15 @@ class ChapterService(
         .findAllById(ids)
         .orElseThrow { throw EntityNotFoundException("No chapters found with given ids.") }
 
-    fun save(chapter: Chapter): Chapter {
-        return chapterRepository.save(chapter)
-    }
+    fun save(chapters: List<Chapter>): List<Chapter> = chapterRepository
+        .saveAll(chapters)
 
-    fun save(chapters: List<Chapter>): List<Chapter> {
-        return chapterRepository.saveAll(chapters)
-    }
+    fun save(vararg chapters: Chapter): List<Chapter> = this
+        .save(chapters.toMutableList())
 
-    fun save(vararg chapters: Chapter): List<Chapter> {
-        return save(chapters.toMutableList())
-    }
+    fun delete(chapters: List<Chapter>): List<Chapter> = chapters
+        .apply { chapterRepository.deleteAll(chapters) }
 
-    fun delete(chapter: Chapter): Chapter {
-        chapterRepository.delete(chapter)
-        return chapter
-    }
-
-    fun delete(chapters: List<Chapter>): List<Chapter> {
-        chapterRepository.deleteAll(chapters)
-        return chapters
-    }
-
-    fun delete(vararg chapters: Chapter): List<Chapter> {
-        return delete(chapters.toMutableList())
-    }
+    fun delete(vararg chapters: Chapter): List<Chapter> = this
+        .delete(chapters.toMutableList())
 }

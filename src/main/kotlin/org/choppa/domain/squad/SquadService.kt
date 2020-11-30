@@ -14,10 +14,31 @@ class SquadService(
     @Autowired private val squadRepository: SquadRepository,
     @Autowired private val tribeService: TribeService,
     @Autowired private val memberService: MemberService,
-) : BaseService() {
-    fun find(id: UUID): Squad = squadRepository
+) : BaseService<Squad> {
+    override fun find(id: UUID): Squad = squadRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Squad with id [$id] does not exist.") }
+
+    // NOTE(u-ways) #55 Squad is the owning map of tribe and members.
+    //                  Therefore, service ensures they exist before relating tribe and members accordingly.
+    //                  This avoids invalid foreign key inserts.
+    @Transactional
+    override fun save(entity: Squad): Squad = squadRepository.save(
+        Squad(
+            entity.id,
+            entity.name,
+            entity.color,
+            tribeService.find(entity.tribe.id),
+            memberService.find(entity.members.map { it.id }).apply {
+                if (size != entity.members.size) {
+                    throw EntityNotFoundException("Persist operation on current squad members detected a member that doesn't exist in the database.")
+                }
+            }.toMutableList()
+        )
+    )
+
+    override fun delete(entity: Squad): Squad = entity
+        .apply { squadRepository.delete(entity) }
 
     fun find(): List<Squad> = squadRepository
         .findAll()
@@ -35,42 +56,16 @@ class SquadService(
         .findAllById(ids)
         .orElseThrow { throw EntityNotFoundException("No squads found with given ids.") }
 
-    // NOTE(u-ways) #55 Squad is the owning map of tribe and members.
-    //                  Therefore, service ensures they exist before relating tribe and members accordingly.
-    //                  This avoids invalid foreign key inserts.
     @Transactional
-    fun save(squad: Squad): Squad {
-        val tribe = tribeService.find(squad.tribe.id)
-        val members = memberService.find(squad.members.map { it.id }).apply {
-            if (this.size != squad.members.size) {
-                throw EntityNotFoundException("Persist operation on current squad members detected a member that doesn't exist in the database.")
-            }
-        }.toMutableList()
-
-        return squadRepository.save(Squad(squad.id, squad.name, squad.color, tribe, members))
-    }
+    fun save(squads: List<Squad>): List<Squad> = squads.map(::save)
 
     @Transactional
-    fun save(squads: List<Squad>): List<Squad> {
-        return squads.map(::save)
-    }
+    fun save(vararg squads: Squad): List<Squad> = this
+        .save(squads.toMutableList())
 
-    @Transactional
-    fun save(vararg squads: Squad): List<Squad> {
-        return save(squads.toMutableList())
-    }
+    fun delete(squads: List<Squad>): List<Squad> = squads
+        .apply { squadRepository.deleteAll(squads) }
 
-    fun delete(squad: Squad): Squad {
-        squadRepository.delete(squad)
-        return squad
-    }
-
-    fun delete(squads: List<Squad>): List<Squad> {
-        squadRepository.deleteAll(squads)
-        return squads
-    }
-
-    fun delete(vararg squads: Squad): List<Squad> {
-        return delete(squads.toMutableList())
-    }
+    fun delete(vararg squads: Squad): List<Squad> = this
+        .delete(squads.toMutableList())
 }

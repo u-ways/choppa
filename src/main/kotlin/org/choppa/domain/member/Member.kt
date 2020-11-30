@@ -1,8 +1,5 @@
 package org.choppa.domain.member
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.choppa.domain.base.BaseModel
@@ -26,28 +23,23 @@ import javax.persistence.Table
 @Table(name = "member")
 @JsonSerialize(using = MemberSerializer::class)
 @JsonDeserialize(using = MemberDeserializer::class)
-data class Member @JsonCreator constructor(
+data class Member(
     @Id
     @Column(name = "member_id", columnDefinition = "uuid")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @JsonProperty("id")
     override val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
-    @JsonProperty("name")
     val name: String = "ME-$id".substring(0, 15),
 
     @ManyToOne
-    @JsonProperty("chapter")
     @JoinColumn(name = "chapter", referencedColumnName = "chapter_id")
     val chapter: Chapter = UNASSIGNED_ROLE,
 
     @ManyToMany(mappedBy = "members")
-    @JsonIgnore
     val squads: MutableList<Squad> = mutableListOf(),
 
     @OneToMany(mappedBy = "member")
-    @JsonIgnore
     val history: MutableList<History> = mutableListOf()
 ) : BaseModel {
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"

@@ -1,8 +1,5 @@
 package org.choppa.domain.squad
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.choppa.domain.base.BaseModel
@@ -31,23 +28,19 @@ import javax.persistence.Table
 @Table(name = "squad")
 @JsonSerialize(using = SquadSerializer::class)
 @JsonDeserialize(using = SquadDeserializer::class)
-data class Squad @JsonCreator constructor(
+data class Squad(
     @Id
     @Column(name = "squad_id", columnDefinition = "uuid")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @JsonProperty("id")
     override val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
-    @JsonProperty("name")
     val name: String = "SQ-$id".substring(0, 15),
 
     @Column(name = "color", columnDefinition = "INTEGER")
-    @JsonProperty("color")
     val color: Int = GREY,
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "tribe", referencedColumnName = "tribe_id")
     val tribe: Tribe = UNASSIGNED_TRIBE,
 
@@ -57,11 +50,9 @@ data class Squad @JsonCreator constructor(
         joinColumns = [JoinColumn(name = "squad_id", referencedColumnName = "squad_id")],
         inverseJoinColumns = [JoinColumn(name = "member_id", referencedColumnName = "member_id")]
     )
-    @JsonIgnore
     val members: MutableList<Member> = NO_MEMBERS,
 
     @OneToMany(mappedBy = "squad")
-    @JsonIgnore
     val history: MutableList<History> = mutableListOf()
 ) : BaseModel {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"

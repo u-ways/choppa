@@ -1,6 +1,6 @@
 package org.choppa.domain.iteration
 
-import org.choppa.exception.EmptyListException
+import org.choppa.domain.base.BaseService
 import org.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -9,45 +9,34 @@ import java.util.UUID
 @Service
 class IterationService(
     @Autowired private val iterationRepository: IterationRepository
-) {
-    fun find(id: UUID): Iteration {
-        return iterationRepository.findById(id).orElseThrow {
-            throw EntityNotFoundException("Iteration with id [$id] does not exist.")
-        }
-    }
+) : BaseService<Iteration> {
+    override fun find(id: UUID): Iteration = iterationRepository
+        .findById(id)
+        .orElseThrow { throw EntityNotFoundException("Iteration with id [$id] does not exist.") }
 
-    fun find(): List<Iteration> {
-        val iterations = iterationRepository.findAll()
-        return if (iterations.isEmpty()) throw EmptyListException("No iterations exist yet.") else iterations
-    }
+    override fun save(entity: Iteration): Iteration = iterationRepository
+        .save(entity)
 
-    fun find(ids: List<UUID>): List<Iteration> {
-        return iterationRepository.findAllById(ids)
-    }
+    override fun delete(entity: Iteration): Iteration = entity
+        .apply { iterationRepository.delete(entity) }
 
-    fun save(iteration: Iteration): Iteration {
-        return iterationRepository.save(iteration)
-    }
+    fun find(): List<Iteration> = iterationRepository
+        .findAll()
+        .orElseThrow { throw EntityNotFoundException("No iterations exist yet.") }
 
-    fun save(iterations: List<Iteration>): List<Iteration> {
-        return iterationRepository.saveAll(iterations)
-    }
+    fun find(ids: List<UUID>): List<Iteration> = iterationRepository
+        .findAllById(ids)
+        .orElseThrow { throw EntityNotFoundException("No iterations found with given ids.") }
 
-    fun save(vararg iteration: Iteration): List<Iteration> {
-        return save(iteration.toMutableList())
-    }
+    fun save(iterations: List<Iteration>): List<Iteration> = iterationRepository
+        .saveAll(iterations)
 
-    fun delete(iteration: Iteration): Iteration {
-        iterationRepository.delete(iteration)
-        return iteration
-    }
+    fun save(vararg iteration: Iteration): List<Iteration> = this
+        .save(iteration.toMutableList())
 
-    fun delete(iterations: List<Iteration>): List<Iteration> {
-        iterationRepository.deleteAll(iterations)
-        return iterations
-    }
+    fun delete(iterations: List<Iteration>): List<Iteration> = iterations
+        .apply { iterationRepository.deleteAll(iterations) }
 
-    fun delete(vararg iterations: Iteration): List<Iteration> {
-        return delete(iterations.toMutableList())
-    }
+    fun delete(vararg iterations: Iteration): List<Iteration> = this
+        .delete(iterations.toMutableList())
 }

@@ -25,5 +25,6 @@ module.exports = {
     "no-underscore-dangle": "off",
     "import/prefer-default-export": "off",
     "object-curly-newline": ["error", { consistent: true }],
+    "no-use-before-define": "off",
   },
 };

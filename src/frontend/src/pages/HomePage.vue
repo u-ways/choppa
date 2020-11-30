@@ -8,7 +8,11 @@
       <router-link to="/not-found">404</router-link>
     </div>
     <div class="text-center">
-      <button class="btn-link" @click="onToggleThemeClicked">Toggle Dark Theme</button>
+      <button class="btn-link" @click="onToggleThemeClicked">Swap To {{toggleThemeButtonText}} Theme</button>
+      <template v-if="preferredTheme !== followOSTheme">
+        |
+        <button class="btn-link" @click="onRemoveThemePreferenceCLicked">Remove Theme Preference</button>
+      </template>
     </div>
   </div>
 </NoticePageTemplate>
@@ -16,17 +20,36 @@
 
 <script>
 import NoticePageTemplate from "@/components/templates/NoticePageTemplate";
-import { toggleTheme } from "@/utils/darkMode";
+import { mapActions, mapGetters } from "vuex";
+import { themeSetting } from "@/enums/themeSetting";
+import { UPDATE_PREFERRED_THEME } from "@/config/store/mutation-types";
 
 export default {
   name: "HomePage",
   components: {
     NoticePageTemplate,
   },
+  computed: {
+    toggleThemeButtonText() {
+      return this.currentTheme === themeSetting.DARK_THEME ? "Light" : "Dark";
+    },
+    ...mapGetters(["preferredTheme", "currentTheme"]),
+  },
+  data() {
+    return {
+      followOSTheme: themeSetting.FOLLOW_OS,
+    };
+  },
   methods: {
     onToggleThemeClicked() {
-      toggleTheme();
+      this.updateTheme(
+        this.currentTheme === themeSetting.DARK_THEME ? themeSetting.LIGHT_THEME : themeSetting.DARK_THEME,
+      );
     },
+    onRemoveThemePreferenceCLicked() {
+      this.$store.commit(UPDATE_PREFERRED_THEME, themeSetting.FOLLOW_OS);
+    },
+    ...mapActions(["updateTheme"]),
   },
 };
 </script>

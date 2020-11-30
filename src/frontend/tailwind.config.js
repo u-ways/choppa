@@ -1,9 +1,10 @@
-const colors = require("tailwindcss/colors"); // eslint-disable-line import/no-extraneous-dependencies
+const colors = require("tailwindcss/colors");
 
 module.exports = {
   purge: [
     "./public/**/*.html",
     "./src/**/*.vue",
+    "./src/**/*.css",
   ],
   darkMode: "class",
   theme: {

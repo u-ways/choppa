@@ -5,6 +5,7 @@ import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.tribe.Tribe
+import java.time.Instant
 import java.time.Instant.now
 
 class HistoryFactory {
@@ -44,9 +45,9 @@ class HistoryFactory {
             tribe: Tribe,
             currentIteration: Iteration = Iteration(
                 number = if (tribe.history.isEmpty()) 1 else tribe.history.last().iteration.number + 1
-            )
+            ),
+            createDate: Instant = now()
         ): MutableList<History> = tribe.apply {
-            val createDate = now()
             this.squads.forEach { squad ->
                 squad.members.forEach { member ->
                     History(currentIteration, tribe, squad, member, createDate).apply {

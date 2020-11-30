@@ -45,75 +45,70 @@ internal class HistoryServiceTest {
     fun `Given existing entities related by member, when service looks for existing entities by member id, then service should find using repository and return existing entities related by member`() {
         val relatedMember = Member()
         val existingRecord = History(Iteration(), Tribe(), Squad(), relatedMember)
-        val historyConsumerDTO = HistoryId(existingRecord.iteration.id, existingRecord.tribe.id, existingRecord.squad.id, existingRecord.member.id)
 
-        every { repository.findAllByMemberId(relatedMember.id) } returns listOf(historyConsumerDTO)
+        every { repository.findAllByMemberIdOrderByCreateDate(relatedMember.id) } returns listOf(existingRecord)
 
         val foundRecords = service.findRelatedByMember(relatedMember.id)
 
-        foundRecords shouldBeEqualTo listOf(historyConsumerDTO)
+        foundRecords shouldBeEqualTo listOf(existingRecord)
 
-        verify(exactly = 1) { repository.findAllByMemberId(relatedMember.id) }
+        verify(exactly = 1) { repository.findAllByMemberIdOrderByCreateDate(relatedMember.id) }
     }
 
     @Test
     fun `Given existing entities related by squad, when service looks for existing entities by squad id, then service should find using repository and return existing entities related by squad`() {
         val relatedSquad = Squad()
         val existingRecord = History(Iteration(), Tribe(), relatedSquad, Member())
-        val historyConsumerDTO = HistoryId(existingRecord.iteration.id, existingRecord.tribe.id, existingRecord.squad.id, existingRecord.member.id)
 
-        every { repository.findAllBySquadId(relatedSquad.id) } returns listOf(historyConsumerDTO)
+        every { repository.findAllBySquadIdOrderByCreateDate(relatedSquad.id) } returns listOf(existingRecord)
 
         val foundRecords = service.findRelatedBySquad(relatedSquad.id)
 
-        foundRecords shouldBeEqualTo listOf(historyConsumerDTO)
+        foundRecords shouldBeEqualTo listOf(existingRecord)
 
-        verify(exactly = 1) { repository.findAllBySquadId(relatedSquad.id) }
+        verify(exactly = 1) { repository.findAllBySquadIdOrderByCreateDate(relatedSquad.id) }
     }
 
     @Test
     fun `Given existing entities related by tribe, when service looks for existing entities by tribe id, then service should find using repository and return existing entities related by tribe`() {
         val relatedTribe = Tribe()
         val existingRecord = History(Iteration(), relatedTribe, Squad(), Member())
-        val historyConsumerDTO = HistoryId(existingRecord.iteration.id, existingRecord.tribe.id, existingRecord.squad.id, existingRecord.member.id)
 
-        every { repository.findAllByTribeId(relatedTribe.id) } returns listOf(historyConsumerDTO)
+        every { repository.findAllByTribeIdOrderByCreateDate(relatedTribe.id) } returns listOf(existingRecord)
 
         val foundRecords = service.findRelatedByTribe(relatedTribe.id)
 
-        foundRecords shouldBeEqualTo listOf(historyConsumerDTO)
+        foundRecords shouldBeEqualTo listOf(existingRecord)
 
-        verify(exactly = 1) { repository.findAllByTribeId(relatedTribe.id) }
+        verify(exactly = 1) { repository.findAllByTribeIdOrderByCreateDate(relatedTribe.id) }
     }
 
     @Test
     fun `Given existing entities related by iteration, when service looks for existing entities by iteration id, then service should find using repository and return existing entities related by iteration`() {
         val relatedIteration = Iteration()
         val existingRecord = History(relatedIteration, Tribe(), Squad(), Member())
-        val historyConsumerDTO = HistoryId(existingRecord.iteration.id, existingRecord.tribe.id, existingRecord.squad.id, existingRecord.member.id)
 
-        every { repository.findAllByIterationId(relatedIteration.id) } returns listOf(historyConsumerDTO)
+        every { repository.findAllByIterationIdOrderByCreateDate(relatedIteration.id) } returns listOf(existingRecord)
 
         val foundRecords = service.findRelatedByIteration(relatedIteration.id)
 
-        foundRecords shouldBeEqualTo listOf(historyConsumerDTO)
+        foundRecords shouldBeEqualTo listOf(existingRecord)
 
-        verify(exactly = 1) { repository.findAllByIterationId(relatedIteration.id) }
+        verify(exactly = 1) { repository.findAllByIterationIdOrderByCreateDate(relatedIteration.id) }
     }
 
     @Test
     fun `Given existing entities related by createDate, when service looks for existing entities by createDate id, then service should find using repository and return existing entities related by createDate`() {
         val createDate = now()
         val existingRecord = History(Iteration(), Tribe(), Squad(), Member(), createDate)
-        val historyConsumerDTO = HistoryId(existingRecord.iteration.id, existingRecord.tribe.id, existingRecord.squad.id, existingRecord.member.id, createDate)
 
-        every { repository.findAllByCreateDateBefore(createDate) } returns listOf(historyConsumerDTO)
+        every { repository.findAllByCreateDateBeforeOrderByCreateDate(createDate) } returns listOf(existingRecord)
 
         val foundRecords = service.findAllByCreateDateBefore(createDate)
 
-        foundRecords shouldBeEqualTo listOf(historyConsumerDTO)
+        foundRecords shouldBeEqualTo listOf(existingRecord)
 
-        verify(exactly = 1) { repository.findAllByCreateDateBefore(createDate) }
+        verify(exactly = 1) { repository.findAllByCreateDateBeforeOrderByCreateDate(createDate) }
     }
 
     @Test

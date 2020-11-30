@@ -22,9 +22,9 @@ class SquadSerializer(
         gen.writeArrayFieldStart("members")
         squad.members.forEach { gen.writeString(reverseRouter.route(MemberController::class, it.id)) }
         gen.writeEndArray()
-        gen.queryComponent(CHAPTERS, squad)
-        gen.queryComponent(ITERATIONS, squad)
-        gen.queryComponent(HISTORY, squad)
+        gen.writeQueryField(CHAPTERS, squad)
+        gen.writeQueryField(ITERATIONS, squad)
+        gen.writeQueryField(HISTORY, squad)
         gen.writeEndObject()
     }
 }

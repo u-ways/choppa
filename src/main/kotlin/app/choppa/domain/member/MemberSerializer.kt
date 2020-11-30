@@ -16,9 +16,9 @@ class MemberSerializer(
         gen.writeStringField("id", reverseRouter.route(MemberController::class, member.id))
         gen.writeStringField("name", member.name)
         gen.writeStringField("chapter", reverseRouter.route(ChapterController::class, member.chapter.id))
-        gen.queryComponent(SQUADS, member)
-        gen.queryComponent(ITERATIONS, member)
-        gen.queryComponent(HISTORY, member)
+        gen.writeQueryField(SQUADS, member)
+        gen.writeQueryField(ITERATIONS, member)
+        gen.writeQueryField(HISTORY, member)
         gen.writeEndObject()
     }
 }

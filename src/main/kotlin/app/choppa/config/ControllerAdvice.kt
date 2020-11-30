@@ -1,4 +1,4 @@
-package app.choppa.domain.base
+package app.choppa.config
 
 import app.choppa.exception.EmptyListException
 import app.choppa.exception.EntityNotFoundException

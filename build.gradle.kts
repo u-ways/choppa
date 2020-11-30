@@ -11,7 +11,7 @@ plugins {
     kotlin("jvm") version "1.4.10"
 }
 
-group = "org.choppa"
+group = "app.choppa"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
@@ -92,7 +92,7 @@ ktlint {
 /** Set noArg eligible annotations ************************/
 
 noArg {
-    annotation("org.choppa.utils.NoArg")
+    annotation("app.choppa.utils.NoArg")
     invokeInitializers = true
 }
 

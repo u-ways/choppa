@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import ChoppaLogo from "@/components/icons/ChoppaLogo";
+import ChoppaLogo from "@/components/atoms/ChoppaLogo";
 
 export default {
   name: "NoticePageTemplate",

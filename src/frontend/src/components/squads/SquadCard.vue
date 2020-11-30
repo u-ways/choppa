@@ -32,11 +32,11 @@
           </div>
         </div>
         <div class="self-center grid">
-          <div v-if="member.chapter" :style="{ 'border-color': member.chapter.color }"
-               class="inline-block text-sm px-2 py-1 rounded overflow-ellipsis overflow-hidden lowercase text-center
-               w-16 md:w-20 lg:w-24 shadow-sm border-l-8 bg-gray-50 dark:bg-gray-700 dark:shadow-none">
+          <Tag v-if="member.chapter" :style="{ 'border-left-color': member.chapter.color }"
+               class="lowercase overflow-ellipsis overflow-hidden w-16 md:w-20 lg:w-24 shadow-none border
+               dark:border-gray-600 border border-gray-200 dark:border-transparent">
             {{member.chapter.name}}
-          </div>
+          </Tag>
         </div>
       </div>
     </div>
@@ -47,11 +47,13 @@
 /* eslint-disable */
 import Squad from "@/models/squad";
 import Avatar from "@/components/member/Avatar";
+import Tag from "@/components/atoms/Tag";
 
 export default {
   name: "SquadCard",
   components: {
     Avatar,
+    Tag
   },
   props: {
     squad: {

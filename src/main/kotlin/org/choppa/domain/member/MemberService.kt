@@ -12,10 +12,22 @@ import java.util.UUID
 class MemberService(
     @Autowired private val memberRepository: MemberRepository,
     @Autowired private val chapterService: ChapterService
-) : BaseService() {
-    fun find(id: UUID): Member = memberRepository
+) : BaseService<Member> {
+    override fun find(id: UUID): Member = memberRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Member with id [$id] does not exist.") }
+
+    // NOTE(u-ways) #57 Member is the owning map of chapter.
+    //                  Therefore, service ensure chapter exist before relating chapter accordingly.
+    //                  This avoids invalid foreign key inserts.
+    @Transactional
+    override fun save(entity: Member): Member = chapterService
+        .find(entity.chapter.id).run {
+            memberRepository.save(Member(entity.id, entity.name, this))
+        }
+
+    override fun delete(entity: Member): Member = entity
+        .apply { memberRepository.delete(entity) }
 
     fun find(): List<Member> = memberRepository
         .findAll()
@@ -38,36 +50,16 @@ class MemberService(
     fun find(ids: List<UUID>): List<Member> = memberRepository
         .findAllById(ids)
 
-    // NOTE(u-ways) #57 Member is the owning map of chapter.
-    //                  Therefore, service ensure chapter exist before relating chapter accordingly.
-    //                  This avoids invalid foreign key inserts.
     @Transactional
-    fun save(member: Member): Member {
-        val chapter = chapterService.find(member.chapter.id)
-        return memberRepository.save(Member(member.id, member.name, chapter))
-    }
+    fun save(members: List<Member>): List<Member> = members.map(::save)
 
     @Transactional
-    fun save(members: List<Member>): List<Member> {
-        return members.map(::save)
-    }
+    fun save(vararg members: Member): List<Member> = this
+        .save(members.toMutableList())
 
-    @Transactional
-    fun save(vararg members: Member): List<Member> {
-        return save(members.toMutableList())
-    }
+    fun delete(members: List<Member>): List<Member> = members
+        .apply { memberRepository.deleteAll(members) }
 
-    fun delete(member: Member): Member {
-        memberRepository.delete(member)
-        return member
-    }
-
-    fun delete(members: List<Member>): List<Member> {
-        memberRepository.deleteAll(members)
-        return members
-    }
-
-    fun delete(vararg members: Member): List<Member> {
-        return delete(members.toMutableList())
-    }
+    fun delete(vararg members: Member): List<Member> = this
+        .delete(members.toMutableList())
 }

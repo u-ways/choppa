@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.choppa.domain.chapter.ChapterController
+import org.choppa.domain.history.HistoryController
 import org.choppa.domain.iteration.IterationController
 import org.choppa.domain.member.MemberController
 import org.choppa.domain.squad.SquadController
@@ -37,7 +38,10 @@ class TribeSerializer(
             "iterations",
             reverseRouter.queryComponent(IterationController::class, IterationController::listIterations, tribe)
         )
-        gen.writeStringField("history", "history?tribe=${tribe.id}")
+        gen.writeStringField(
+            "history",
+            reverseRouter.queryComponent(HistoryController::class, HistoryController::listHistory, tribe)
+        )
         gen.writeEndObject()
     }
 }

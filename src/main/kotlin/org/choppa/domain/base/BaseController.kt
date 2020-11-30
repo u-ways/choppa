@@ -1,25 +1,24 @@
 package org.choppa.domain.base
 
-import org.choppa.exception.EmptyListException
-import org.choppa.exception.EntityNotFoundException
-import org.choppa.exception.UnprocessableEntityException
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatus.NOT_FOUND
-import org.springframework.http.HttpStatus.NO_CONTENT
-import org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY
 import org.springframework.http.ResponseEntity
-import org.springframework.http.ResponseEntity.status
-import org.springframework.http.converter.HttpMessageNotReadableException
-import org.springframework.web.bind.annotation.ControllerAdvice
-import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.context.request.ServletWebRequest
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.http.ResponseEntity.created
+import org.springframework.http.ResponseEntity.noContent
+import org.springframework.http.ResponseEntity.ok
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest
 import java.net.URI
-import java.time.Instant.now
+import java.util.UUID
 
-@ControllerAdvice
-class BaseController {
+@RequestMapping
+abstract class BaseController<T : BaseModel>(
+    private val baseService: BaseService<T>
+) {
     companion object {
         /**
          * Standard prefix for an API endpoint
@@ -38,35 +37,25 @@ class BaseController {
             fromCurrentRequest().path("/$path").buildAndExpand(*uriVariableValues).toUri()
     }
 
-    @ExceptionHandler(value = [UnprocessableEntityException::class, HttpMessageNotReadableException::class])
-    fun invalidPayLoad(e: Exception, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
-        response(UNPROCESSABLE_ENTITY, "Invalid ${req.request.method} request payload.", req, e)
+    @GetMapping(ID_PATH)
+    fun find(@PathVariable id: UUID) = baseService
+        .find(id)
+        .run { ok().body(this) }
 
-    @ExceptionHandler(value = [EntityNotFoundException::class, MethodArgumentTypeMismatchException::class])
-    fun entityNotFound(e: Exception, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
-        response(NOT_FOUND, "${req.request.method} failed - entity does not exist.", req, e)
+    @PutMapping(ID_PATH)
+    fun update(@PathVariable id: UUID, @RequestBody updatedEntity: T): ResponseEntity<T> = baseService
+        .find(id)
+        .also { baseService.save(updatedEntity) }
+        .run { created(location(ID_PATH, id)).build() }
 
-    @ExceptionHandler(value = [EmptyListException::class])
-    fun emptyList(e: Exception, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
-        response(NO_CONTENT, "LIST failed - no entities exist for collection yet.", req, e)
+    @DeleteMapping(ID_PATH)
+    fun delete(@PathVariable id: UUID): ResponseEntity<T> = baseService
+        .find(id)
+        .also { baseService.delete(it) }
+        .run { noContent().build() }
 
-    private fun response(
-        status: HttpStatus,
-        message: String,
-        request: ServletWebRequest,
-        error: Exception
-    ): ResponseEntity<Map<String, Any>> {
-        val response: MutableMap<String, Any> = mutableMapOf()
-
-        response["status"] = status.value()
-        response["path"] = request.request.requestURI
-        response["timestamp"] = now()
-        response["message"] = message
-        response["error"] = when (error.cause) {
-            is Throwable -> error.cause!!.localizedMessage
-            else -> error.localizedMessage
-        }
-
-        return status(status).body(response)
-    }
+    @PostMapping
+    fun post(@RequestBody newEntity: T): ResponseEntity<T> = baseService
+        .save(newEntity)
+        .run { created(location(ID_PATH, this.id)).build() }
 }

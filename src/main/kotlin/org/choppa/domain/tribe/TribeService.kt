@@ -9,10 +9,16 @@ import java.util.UUID
 @Service
 class TribeService(
     @Autowired private val tribeRepository: TribeRepository,
-) : BaseService() {
-    fun find(id: UUID): Tribe = tribeRepository
+) : BaseService<Tribe> {
+    override fun find(id: UUID): Tribe = tribeRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Tribe with id [$id] does not exist.") }
+
+    override fun save(entity: Tribe): Tribe = tribeRepository
+        .save(entity)
+
+    override fun delete(entity: Tribe): Tribe = entity
+        .apply { tribeRepository.delete(entity) }
 
     fun find(): List<Tribe> = tribeRepository
         .findAll()
@@ -22,29 +28,15 @@ class TribeService(
         .findAllById(ids)
         .orElseThrow { throw EntityNotFoundException("No tribes found with given ids.") }
 
-    fun save(tribe: Tribe): Tribe {
-        return tribeRepository.save(tribe)
-    }
+    fun save(tribes: List<Tribe>): List<Tribe> = tribeRepository
+        .saveAll(tribes)
 
-    fun save(tribes: List<Tribe>): List<Tribe> {
-        return tribeRepository.saveAll(tribes)
-    }
+    fun save(vararg tribes: Tribe): List<Tribe> = this
+        .save(tribes.toMutableList())
 
-    fun save(vararg tribes: Tribe): List<Tribe> {
-        return save(tribes.toMutableList())
-    }
+    fun delete(tribes: List<Tribe>): List<Tribe> = tribes
+        .apply { tribeRepository.deleteAll(tribes) }
 
-    fun delete(tribe: Tribe): Tribe {
-        tribeRepository.delete(tribe)
-        return tribe
-    }
-
-    fun delete(tribes: List<Tribe>): List<Tribe> {
-        tribeRepository.deleteAll(tribes)
-        return tribes
-    }
-
-    fun delete(vararg tribes: Tribe): List<Tribe> {
-        return delete(tribes.toMutableList())
-    }
+    fun delete(vararg tribes: Tribe): List<Tribe> = this
+        .delete(tribes.toMutableList())
 }

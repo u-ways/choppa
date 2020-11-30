@@ -32,7 +32,6 @@ export const darkModeMutations = {
 
 export const darkModeActions = {
   updateTheme(context, newTheme) {
-    context.commit(UPDATE_CURRENT_THEME, newTheme);
     context.commit(UPDATE_PREFERRED_THEME, newTheme);
   },
 };

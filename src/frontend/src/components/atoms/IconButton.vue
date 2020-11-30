@@ -1,5 +1,5 @@
 <template>
-  <button @click="() => this.$emit('click', $event)" class="rounded-md p-2 inline-flex items-center justify-center
+  <button @click="() => this.$emit('click')" class="rounded-md p-2 inline-flex items-center justify-center
   bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-choppa-indigo-500">
     <span class="sr-only">{{ screenReaderText }}</span>
     <font-awesome-icon :icon="icon"
@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: "StyledButton",
+  name: "IconButton",
   props: {
     screenReaderText: {
       type: String,

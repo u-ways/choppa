@@ -10,7 +10,7 @@ const routes = [
   },
   {
     path: "/tribes/:id",
-    component: () => import("@/components/templates/StandardPageTemplate"),
+    component: () => import("@/pages/tribes/ViewTribePage"),
   },
   {
     path: "/external/github",

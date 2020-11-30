@@ -10,7 +10,7 @@
     <div class="text-center">
       <LinkButton @click="onToggleThemeClicked">Swap To {{toggleThemeButtonText}} Theme</LinkButton>
       <template v-if="preferredTheme !== followOSTheme">
-        | <LinkButton @click="onRemoveThemePreferenceCLicked">Remove Theme Preference</LinkButton>
+        | <LinkButton @click="onRemoveThemePreferenceClicked">Remove Theme Preference</LinkButton>
       </template>
     </div>
   </div>
@@ -49,7 +49,7 @@ export default {
         this.currentTheme === themeSetting.DARK_THEME ? themeSetting.LIGHT_THEME : themeSetting.DARK_THEME,
       );
     },
-    onRemoveThemePreferenceCLicked() {
+    onRemoveThemePreferenceClicked() {
       this.$store.commit(UPDATE_PREFERRED_THEME, themeSetting.FOLLOW_OS);
     },
     ...mapActions(["updateTheme"]),

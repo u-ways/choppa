@@ -1,5 +1,5 @@
 <template>
-    <nav class="py-3 lg:container mx-auto">
+    <nav class="py-3 container mx-auto">
       <div class="px-8 flex justify-between sm:justify-start">
         <NavbarLink url="/" css="sm:font-bold sm:text-lg">Choppa.app</NavbarLink>
         <IconButton class="sm:hidden" screenReaderText="Open Menu" icon="bars" @click="expandedMenu = true"/>
@@ -24,8 +24,6 @@
 </template>
 
 <script>
-/* eslint-disable */
-import NavbarElement from "@/components/navbar/NavbarElement";
 import NavbarLink from "@/components/navbar/NavbarLink";
 import ChoppaLogo from "@/components/atoms/ChoppaLogo";
 import IconButton from "@/components/atoms/IconButton";
@@ -36,7 +34,6 @@ export default {
     IconButton,
     ChoppaLogo,
     NavbarLink,
-    NavbarElement,
   },
   data() {
     return {

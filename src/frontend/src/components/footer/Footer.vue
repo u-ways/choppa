@@ -25,8 +25,8 @@
 </template>
 
 <script>
-import IconButton from "@/components/atoms/IconButton";
-import StyledLink from "@/components/atoms/StyledLink";
+import IconButton from "@/components/atoms/buttons/IconButton";
+import StyledLink from "@/components/atoms/links/StyledLink";
 import { themeSetting } from "@/enums/themeSetting";
 import { mapActions } from "vuex";
 

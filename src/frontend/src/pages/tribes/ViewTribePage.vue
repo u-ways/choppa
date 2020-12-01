@@ -1,9 +1,6 @@
 <template>
   <StandardPageTemplate>
-    <div v-if="loadingErrored">
-      bam errored
-    </div>
-    <template v-else>
+    <div class="flex-grow">
       <div class="text-center">
         <template v-if="isLoaded">
           <p class="text-3xl font-normal">Tribe <span class="font-semibold">{{ tribe.name }}</span></p>
@@ -23,18 +20,17 @@
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-3" v-if="tribe.squads.length > 0">
             <SquadCard v-for="squad in tribe.squads" :squad="squad" :key="squad.id"/>
           </div>
-          <div v-else class="container mx-auto mt-10 sm:mt-20 flex flex-col gap-4">
+          <div v-else class="container mx-auto mt-10 flex flex-col gap-4">
             <img src="src/assets/svg/squad.svg" alt="A representation of a squad" width="100%" height="100%"
                  class="h-44 w-auto mx-auto"/>
             <p class="place-self-center font-semibold text-md dark:text-gray-300">
               Create your first Squad for this Tribe.
             </p>
-            <router-link to="/edit/squad/create" class="rounded-md p-2 text-sm mx-auto font-semibold
-            text-gray-50 bg-purple-600 hover:ring focus:ring focus:outline-none ring-purple-600 ring-opacity-30
-            transform-gpu transition-transform transition-colors hover:-translate-y-0.5 focus:-translate-y-0.5
-            duration-100 motion-reduce:transition-none">
-              Create Squad
-            </router-link>
+            <div class="inline-block mx-auto">
+              <StyledButton type="link" link="/edit/squad/create" variant="primary">
+                Create Squad
+              </StyledButton>
+            </div>
           </div>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3" v-else>
@@ -44,20 +40,21 @@
           <SquadSkeleton class="hidden md:block" />
         </div>
       </div>
-    </template>
+    </div>
   </StandardPageTemplate>
 </template>
 
 <script>
-/* eslint-disable */
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import SquadSkeleton from "@/components/squads/SquadSkeleton";
 import { getTribe } from "@/config/api/tribe.api";
 import SquadCard from "@/components/squads/SquadCard";
+import StyledButton from "@/components/atoms/buttons/StyledButton";
 
 export default {
   name: "ViewTribePage",
   components: {
+    StyledButton,
     SquadCard,
     SquadSkeleton,
     StandardPageTemplate,
@@ -66,7 +63,6 @@ export default {
     return {
       isLoaded: false,
       tribe: undefined,
-      loadingErrored: false,
     };
   },
   async mounted() {
@@ -74,13 +70,12 @@ export default {
     try {
       this.tribe = await getTribe({
         id: this.$route.params.id,
-        loadSquads: true,
+        loadSquads: false,
       });
 
       this.isLoaded = true;
     } catch {
-      this.isLoaded = false;
-      this.loadingErrored = true;
+      await this.$router.replace("/not-found");
     }
   },
 };

@@ -24,6 +24,7 @@ module.exports = {
           DEFAULT: colors.emerald["500"],
           hover: colors.emerald["600"],
         },
+        "choppa-two": "#6762d9",
       },
       fontFamily: {
         "open-sans": ["Open\\ Sans", "sans-serif"],

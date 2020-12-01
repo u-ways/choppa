@@ -5,13 +5,8 @@
     <div class="text-center">
       <StyledLink link="/tribes/00000000-0000-0000-0000-000000000001">View Tribe</StyledLink> |
       <StyledLink link="/tribes/00000000-0000-0000-0000-000000000001/edit">Edit Tribe</StyledLink> |
-      <StyledLink link="/not-found">404</StyledLink> |
-    </div>
-    <div class="text-center">
-      <LinkButton @click="onToggleThemeClicked">Swap To {{toggleThemeButtonText}} Theme</LinkButton>
-      <template v-if="preferredTheme !== followOSTheme">
-        | <LinkButton @click="onRemoveThemePreferenceClicked">Remove Theme Preference</LinkButton>
-      </template>
+      <StyledLink link="/tribes/00000000-0000-0000-0000-dsgds">Broken Tribe Link</StyledLink> |
+      <StyledLink link="/not-found">404</StyledLink>
     </div>
   </div>
 </NoticePageTemplate>
@@ -19,40 +14,13 @@
 
 <script>
 import NoticePageTemplate from "@/components/templates/NoticePageTemplate";
-import { mapActions, mapGetters } from "vuex";
-import { themeSetting } from "@/enums/themeSetting";
-import { UPDATE_PREFERRED_THEME } from "@/config/store/mutation-types";
-import StyledLink from "@/components/atoms/StyledLink";
-import LinkButton from "@/components/atoms/LinkButton";
+import StyledLink from "@/components/atoms/links/StyledLink";
 
 export default {
   name: "HomePage",
   components: {
-    LinkButton,
     StyledLink,
     NoticePageTemplate,
-  },
-  computed: {
-    toggleThemeButtonText() {
-      return this.currentTheme === themeSetting.DARK_THEME ? "Light" : "Dark";
-    },
-    ...mapGetters(["preferredTheme", "currentTheme"]),
-  },
-  data() {
-    return {
-      followOSTheme: themeSetting.FOLLOW_OS,
-    };
-  },
-  methods: {
-    onToggleThemeClicked() {
-      this.updateTheme(
-        this.currentTheme === themeSetting.DARK_THEME ? themeSetting.LIGHT_THEME : themeSetting.DARK_THEME,
-      );
-    },
-    onRemoveThemePreferenceClicked() {
-      this.$store.commit(UPDATE_PREFERRED_THEME, themeSetting.FOLLOW_OS);
-    },
-    ...mapActions(["updateTheme"]),
   },
 };
 </script>

@@ -11,12 +11,9 @@
           sm:dark:bg-transparent sm:m-0 sm:p-0 sm:ml-4">
             <div class="flex justify-between mb-2 sm:hidden">
               <ChoppaLogo css="text-3xl text-gray-700 dark:text-gray-300"></ChoppaLogo>
-              <button>
-                <span class="sr-only">Close menu</span>
-                <IconButton class="sm:hidden hover:bg-gray-200 dark:hover:bg-gray-800"
-                            screenReaderText="Close Menu" icon="times" @click="expandedMenu = false"
-                />
-              </button>
+              <IconButton class="sm:hidden hover:bg-gray-200 dark:hover:bg-gray-800"
+                          screenReaderText="Close Menu" icon="times" @click="expandedMenu = false"
+              />
             </div>
             <NavbarLink url="/external/github">Github</NavbarLink>
             <NavbarLink url="/external/production">Production</NavbarLink>
@@ -30,7 +27,7 @@
 <script>
 import NavbarLink from "@/components/navbar/NavbarLink";
 import ChoppaLogo from "@/components/atoms/ChoppaLogo";
-import IconButton from "@/components/atoms/IconButton";
+import IconButton from "@/components/atoms/buttons/IconButton";
 
 export default {
   name: "Navbar",

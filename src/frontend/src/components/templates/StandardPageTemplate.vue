@@ -1,10 +1,14 @@
 <template>
   <div class="min-h-screen flex flex-col">
-    <Navbar/>
-    <div class="flex-grow">
+    <div class="flex-none">
+      <Navbar/>
+    </div>
+    <div class="flex-grow flex items-stretch">
       <slot></slot>
     </div>
-    <Footer/>
+    <div class="flex-none">
+      <Footer/>
+    </div>
   </div>
 </template>
 

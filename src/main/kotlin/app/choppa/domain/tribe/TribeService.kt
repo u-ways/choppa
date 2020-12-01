@@ -10,6 +10,14 @@ import java.util.UUID
 class TribeService(
     @Autowired private val tribeRepository: TribeRepository,
 ) : BaseService<Tribe> {
+    override fun find(): List<Tribe> = tribeRepository
+        .findAll()
+        .orElseThrow { throw EntityNotFoundException("No tribes exist yet.") }
+
+    override fun find(ids: List<UUID>): List<Tribe> = tribeRepository
+        .findAllById(ids)
+        .orElseThrow { throw EntityNotFoundException("No tribes found with given ids.") }
+
     override fun find(id: UUID): Tribe = tribeRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Tribe with id [$id] does not exist.") }
@@ -17,26 +25,12 @@ class TribeService(
     override fun save(entity: Tribe): Tribe = tribeRepository
         .save(entity)
 
+    override fun save(entities: List<Tribe>): List<Tribe> = tribeRepository
+        .saveAll(entities)
+
     override fun delete(entity: Tribe): Tribe = entity
         .apply { tribeRepository.delete(entity) }
 
-    fun find(): List<Tribe> = tribeRepository
-        .findAll()
-        .orElseThrow { throw EntityNotFoundException("No tribes exist yet.") }
-
-    fun find(ids: List<UUID>): List<Tribe> = tribeRepository
-        .findAllById(ids)
-        .orElseThrow { throw EntityNotFoundException("No tribes found with given ids.") }
-
-    fun save(tribes: List<Tribe>): List<Tribe> = tribeRepository
-        .saveAll(tribes)
-
-    fun save(vararg tribes: Tribe): List<Tribe> = this
-        .save(tribes.toMutableList())
-
-    fun delete(tribes: List<Tribe>): List<Tribe> = tribes
-        .apply { tribeRepository.deleteAll(tribes) }
-
-    fun delete(vararg tribes: Tribe): List<Tribe> = this
-        .delete(tribes.toMutableList())
+    override fun delete(entities: List<Tribe>): List<Tribe> = entities
+        .apply { tribeRepository.deleteAll(entities) }
 }

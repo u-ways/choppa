@@ -14,6 +14,18 @@ class HistoryService(
         .findAll()
         .orElseThrow { throw EntityNotFoundException("No history records exist yet.") }
 
+    fun save(history: History): History = historyRepository
+        .save(history)
+
+    fun save(history: List<History>): List<History> = historyRepository
+        .saveAll(history)
+
+    fun delete(history: History): History = history
+        .apply { historyRepository.delete(history) }
+
+    fun delete(history: List<History>): List<History> = history
+        .apply { historyRepository.deleteAll(history) }
+
     fun findRelatedByIteration(iterationId: UUID): List<History> = historyRepository
         .findAllByIterationIdOrderByCreateDate(iterationId)
         .orElseThrow { throw EntityNotFoundException("No history records found for iteration [$iterationId].") }
@@ -37,24 +49,6 @@ class HistoryService(
     fun findAllByCreateDateAfter(createDate: Instant): List<History> = historyRepository
         .findAllByCreateDateAfterOrderByCreateDate(createDate)
         .orElseThrow { throw EntityNotFoundException("No history records found after date [$createDate].") }
-
-    fun save(history: History): History = historyRepository
-        .save(history)
-
-    fun save(history: List<History>): List<History> = historyRepository
-        .saveAll(history)
-
-    fun save(vararg history: History): List<History> = this
-        .save(history.toMutableList())
-
-    fun delete(history: History): History = history
-        .apply { historyRepository.delete(history) }
-
-    fun delete(history: List<History>): List<History> = history
-        .apply { historyRepository.deleteAll(history) }
-
-    fun delete(vararg history: History): List<History> = this
-        .delete(history.toMutableList())
 
     private fun <E> List<E>.orElseThrow(exception: () -> Nothing): List<E> = when {
         this.isEmpty() -> exception.invoke()

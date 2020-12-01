@@ -45,8 +45,10 @@ internal class ChapterServiceRelatedEntitiesIT @Autowired constructor(
         val expectedRelatedTribeChapters = chapters.minus(chapters.first())
 
         val tribeSquadMembers = memberService.save(
-            Member(chapter = expectedRelatedTribeChapters[0]),
-            Member(chapter = expectedRelatedTribeChapters[1])
+            listOf(
+                Member(chapter = expectedRelatedTribeChapters[0]),
+                Member(chapter = expectedRelatedTribeChapters[1])
+            )
         ).toMutableList()
 
         squadService.save(Squad(tribe = relatedTribe, members = tribeSquadMembers))
@@ -63,9 +65,11 @@ internal class ChapterServiceRelatedEntitiesIT @Autowired constructor(
         val expectedRelatedSquadChapters = chapters.minus(chapters.first())
 
         val tribeSquadMembers = memberService.save(
-            Member(chapter = expectedRelatedSquadChapters[0]),
-            Member(chapter = expectedRelatedSquadChapters[1]),
-            Member(chapter = expectedRelatedSquadChapters[2])
+            listOf(
+                Member(chapter = expectedRelatedSquadChapters[0]),
+                Member(chapter = expectedRelatedSquadChapters[1]),
+                Member(chapter = expectedRelatedSquadChapters[2])
+            )
         ).toMutableList()
 
         val relatedSquad = squadService.save(Squad(members = tribeSquadMembers))

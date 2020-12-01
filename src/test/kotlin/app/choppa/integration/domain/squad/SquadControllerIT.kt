@@ -139,7 +139,7 @@ internal class SquadControllerIT @Autowired constructor(
                 )
             } returns newEntity
 
-            mvc.post("/api/squads") {
+            mvc.post("/api/squads/${newEntity.id}") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(newEntity)

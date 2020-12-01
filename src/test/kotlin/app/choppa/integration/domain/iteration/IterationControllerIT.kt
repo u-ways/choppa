@@ -135,7 +135,7 @@ internal class IterationControllerIT @Autowired constructor(
                 )
             } returns newEntity
 
-            mvc.post("/api/iterations") {
+            mvc.post("/api/iterations/${newEntity.id}") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(newEntity)

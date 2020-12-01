@@ -125,7 +125,7 @@ internal class MemberControllerIT @Autowired constructor(
 
             every { memberService.save(Member(member.id, member.name, Chapter(member.chapter.id))) } returns newEntity
 
-            mvc.post("/api/members") {
+            mvc.post("/api/members/${newEntity.id}") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(newEntity)

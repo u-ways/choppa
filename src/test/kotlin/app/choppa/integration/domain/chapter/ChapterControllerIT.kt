@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import java.util.UUID
+import java.util.UUID.randomUUID
 
 @WebMvcTest(controllers = [ChapterController::class])
 @ActiveProfiles("test")
@@ -116,7 +117,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
             every { chapterService.save(newEntity) } returns newEntity
 
-            mvc.post("/api/chapters") {
+            mvc.post("/api/chapters/${newEntity.id}") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(newEntity)
@@ -129,22 +130,9 @@ internal class ChapterControllerIT @Autowired constructor(
 
     @Nested
     inner class SadPath {
-
-        @Test
-        fun `LIST no content`() {
-            every { chapterService.find() } throws EmptyListException("No chapters exist yet")
-
-            mvc.get("/api/chapters") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-            }.andExpect {
-                status { isNoContent }
-            }
-        }
-
         @Test
         fun `GET UUID doesn't exist`() {
-            val randomUUID = UUID.randomUUID()
+            val randomUUID = randomUUID()
 
             every { chapterService.find(randomUUID) } throws EntityNotFoundException("Chapter with id [$randomUUID] does not exist.")
 
@@ -158,7 +146,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `PUT invalid payload`() {
-            val randomUUID = UUID.randomUUID()
+            val randomUUID = randomUUID()
 
             mvc.put("/api/chapters/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
@@ -171,7 +159,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `DELETE UUID doesn't exist`() {
-            val randomUUID = UUID.randomUUID()
+            val randomUUID = randomUUID()
 
             every { chapterService.find(randomUUID) } throws EntityNotFoundException("Chapter with id [$randomUUID] does not exist.")
 
@@ -185,7 +173,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `POST invalid payload`() {
-            mvc.post("/api/chapters") {
+            mvc.post("/api/chapters/${chapter.id}") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = "invalidPayload"
@@ -196,7 +184,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
         @Test
         fun `POST invalid color payload`() {
-            mvc.post("/api/chapters") {
+            mvc.post("/api/chapters/${chapter.id}") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content =

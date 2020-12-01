@@ -38,12 +38,12 @@ abstract class BaseController<T : BaseModel>(
     }
 
     @GetMapping(ID_PATH)
-    fun find(@PathVariable id: UUID) = baseService
+    fun get(@PathVariable id: UUID) = baseService
         .find(id)
         .run { ok().body(this) }
 
     @PutMapping(ID_PATH)
-    fun update(@PathVariable id: UUID, @RequestBody updatedEntity: T): ResponseEntity<T> = baseService
+    fun put(@PathVariable id: UUID, @RequestBody updatedEntity: T): ResponseEntity<T> = baseService
         .find(id)
         .also { baseService.save(updatedEntity) }
         .run { created(location(ID_PATH, id)).build() }
@@ -54,8 +54,8 @@ abstract class BaseController<T : BaseModel>(
         .also { baseService.delete(it) }
         .run { noContent().build() }
 
-    @PostMapping
-    fun post(@RequestBody newEntity: T): ResponseEntity<T> = baseService
+    @PostMapping(ID_PATH)
+    fun post(@PathVariable id: UUID, @RequestBody newEntity: T): ResponseEntity<T> = baseService
         .save(newEntity)
         .run { created(location(ID_PATH, this.id)).build() }
 }

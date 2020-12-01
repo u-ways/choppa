@@ -1,22 +1,18 @@
 package app.choppa.domain.iteration
 
-import app.choppa.utils.ReverseRouter
+import app.choppa.domain.base.BaseSerializer
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import org.springframework.beans.factory.annotation.Autowired
 
 class IterationSerializer(
-    supportedClass: Class<Iteration>? = null,
-    @Autowired private val reverseRouter: ReverseRouter = ReverseRouter(),
-) : StdSerializer<Iteration>(supportedClass) {
-
+    supportedClass: Class<Iteration>? = null
+) : BaseSerializer<Iteration>(supportedClass) {
     override fun serialize(iteration: Iteration, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
-        gen.writeStringField("id", reverseRouter.route(IterationController::class, iteration.id))
-        gen.writeNumberField("number", iteration.number)
-        gen.writeNumberField("startDate", iteration.startDate.toEpochMilli())
-        gen.writeNumberField("endDate", iteration.endDate.toEpochMilli())
+        gen.writeStringField(iteration::id.name, reverseRouter.route(IterationController::class, iteration.id))
+        gen.writeNumberField(iteration::number.name, iteration.number)
+        gen.writeNumberField(iteration::startDate.name, iteration.startDate.toEpochMilli())
+        gen.writeNumberField(iteration::endDate.name, iteration.endDate.toEpochMilli())
         gen.writeEndObject()
     }
 }

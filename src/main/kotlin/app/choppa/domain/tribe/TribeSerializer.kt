@@ -15,9 +15,9 @@ class TribeSerializer(
 ) : BaseSerializer<Tribe>(supportedClass) {
     override fun serialize(tribe: Tribe, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
-        gen.writeStringField("id", reverseRouter.route(TribeController::class, tribe.id))
-        gen.writeStringField("name", tribe.name)
-        gen.writeStringField("color", tribe.color.toRGBAHex())
+        gen.writeStringField(tribe::id.name, reverseRouter.route(TribeController::class, tribe.id))
+        gen.writeStringField(tribe::name.name, tribe.name)
+        gen.writeStringField(tribe::color.name, tribe.color.toRGBAHex())
         gen.writeQueryField(CHAPTERS, tribe)
         gen.writeQueryField(MEMBERS, tribe)
         gen.writeQueryField(SQUADS, tribe)

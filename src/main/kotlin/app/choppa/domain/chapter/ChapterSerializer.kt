@@ -11,9 +11,9 @@ class ChapterSerializer(
 ) : BaseSerializer<Chapter>(supportedClass) {
     override fun serialize(chapter: Chapter, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
-        gen.writeStringField("id", reverseRouter.route(ChapterController::class, chapter.id))
-        gen.writeStringField("name", chapter.name)
-        gen.writeStringField("color", chapter.color.toRGBAHex())
+        gen.writeStringField(chapter::id.name, reverseRouter.route(ChapterController::class, chapter.id))
+        gen.writeStringField(chapter::name.name, chapter.name)
+        gen.writeStringField(chapter::color.name, chapter.color.toRGBAHex())
         gen.writeQueryField(MEMBERS, chapter)
         gen.writeEndObject()
     }

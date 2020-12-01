@@ -2,7 +2,7 @@
     <nav class="py-3 container mx-auto">
       <div class="px-8 flex justify-between sm:justify-start">
         <NavbarLink url="/" css="sm:font-bold sm:text-lg">Choppa.app</NavbarLink>
-        <IconButton class="sm:hidden hover:bg-gray-200 dark:hover:bg-choppa-dark"
+        <IconButton class="sm:hidden hover:bg-gray-200 dark:hover:bg-gray-700"
                     screenReaderText="Open Menu" icon="bars" @click="expandedMenu = true"
         />
         <div class="absolute top-0 left-0 w-full sm:relative sm:block" :class="expandedMenu ? '' : 'hidden'">
@@ -13,7 +13,7 @@
               <ChoppaLogo css="text-3xl text-gray-700 dark:text-gray-300"></ChoppaLogo>
               <button>
                 <span class="sr-only">Close menu</span>
-                <IconButton class="sm:hidden hover:bg-gray-200 dark:hover:bg-choppa-dark"
+                <IconButton class="sm:hidden hover:bg-gray-200 dark:hover:bg-gray-800"
                             screenReaderText="Close Menu" icon="times" @click="expandedMenu = false"
                 />
               </button>

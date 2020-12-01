@@ -18,13 +18,14 @@
         </div>
       </div>
     </div>
-    <div class="pt-3 pb-2">
-      <div class="y-3 px-7 grid grid-cols-4 text-sm pb-1 dark:text-gray-200 text-gray-500">
+    <div>
+      <div class="grid grid-cols-4 text-sm leading-8 px-7 dark:text-gray-200 text-gray-500
+      bg-gray-100 dark:bg-gray-666">
         <div class="ml-10 col-span-3">Name</div>
         <div>Chapter</div>
       </div>
-      <div v-for="member in squad.members" :key="member.id" class="py-3 px-4 sm:px-7 grid grid-cols-4 border-t
-      border-gray-200 dark:border-gray-700">
+      <div v-for="member in squad.members" :key="member.id" class="py-3 px-4 sm:px-7 grid grid-cols-4
+      bg-gray-100 even:bg-gray-50 dark:bg-gray-666 dark:even:bg-gray-600">
         <div class="self-center flex flex-row gap-3 col-span-3">
           <Avatar class="self-center flex-shrink-0 w-8 h-8 text-2xl" :member="member"/>
           <div class="self-center flex-grow text-lg font-normal leading-8">

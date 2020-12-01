@@ -11,7 +11,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gray: colors.coolGray,
+        gray: {
+          "666": "#444e5d",
+          ...colors.coolGray
+        },
         "choppa-light": {
           extra: colors.emerald["500"],
           DEFAULT: colors.emerald["700"],
@@ -37,8 +40,10 @@ module.exports = {
   },
   variants: {
     extend: {
+      backgroundColor: ["even"],
       fontStyle: ["focus"],
       outline: ["active", "focus"],
+      ringWidth: ["hover", "focus", "active"],
     },
   },
   plugins: [

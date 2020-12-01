@@ -15,11 +15,11 @@ class SquadSerializer(
 ) : BaseSerializer<Squad>(supportedClass) {
     override fun serialize(squad: Squad, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
-        gen.writeStringField("id", reverseRouter.route(SquadController::class, squad.id))
-        gen.writeStringField("name", squad.name)
-        gen.writeStringField("color", squad.color.toRGBAHex())
-        gen.writeStringField("tribe", reverseRouter.route(TribeController::class, squad.tribe.id))
-        gen.writeArrayFieldStart("members")
+        gen.writeStringField(squad::id.name, reverseRouter.route(SquadController::class, squad.id))
+        gen.writeStringField(squad::name.name, squad.name)
+        gen.writeStringField(squad::color.name, squad.color.toRGBAHex())
+        gen.writeStringField(squad::tribe.name, reverseRouter.route(TribeController::class, squad.tribe.id))
+        gen.writeArrayFieldStart(squad::members.name)
         squad.members.forEach { gen.writeString(reverseRouter.route(MemberController::class, it.id)) }
         gen.writeEndArray()
         gen.writeQueryField(CHAPTERS, squad)

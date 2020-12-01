@@ -13,9 +13,9 @@ class MemberSerializer(
 ) : BaseSerializer<Member>(supportedClass) {
     override fun serialize(member: Member, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
-        gen.writeStringField("id", reverseRouter.route(MemberController::class, member.id))
-        gen.writeStringField("name", member.name)
-        gen.writeStringField("chapter", reverseRouter.route(ChapterController::class, member.chapter.id))
+        gen.writeStringField(member::id.name, reverseRouter.route(MemberController::class, member.id))
+        gen.writeStringField(member::name.name, member.name)
+        gen.writeStringField(member::chapter.name, reverseRouter.route(ChapterController::class, member.chapter.id))
         gen.writeQueryField(SQUADS, member)
         gen.writeQueryField(ITERATIONS, member)
         gen.writeQueryField(HISTORY, member)

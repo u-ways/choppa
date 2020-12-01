@@ -53,9 +53,11 @@ internal class SquadServiceRelatedEntitiesIT @Autowired constructor(
 
         val members = memberService.save(MemberFactory.create(2))
         val expectedRelatedMemberSquads = squadService.save(
-            Squad(members = members.toMutableList()),
-            Squad(members = members.toMutableList()),
-            Squad(members = members.toMutableList())
+            listOf(
+                Squad(members = members.toMutableList()),
+                Squad(members = members.toMutableList()),
+                Squad(members = members.toMutableList())
+            )
         )
 
         val actualRelatedMemberSquads = squadService.findRelatedByMember(members.first().id)

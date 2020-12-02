@@ -1,6 +1,7 @@
 <template>
-  <div class="inline-block">
-    <router-link v-if="type === 'link'" :to="link" :class="[sharedCss, getVariantCss, css]">
+  <div>
+    <router-link v-if="type === 'link'" :to="link" :class="[sharedCss, getVariantCss, css]" :replace="linkReplace"
+                 :append="linkAppend">
       <slot></slot>
     </router-link>
     <button v-if="type === 'button'" @click="() => this.$emit('click')" :class="[sharedCss, getVariantCss, css]">
@@ -10,7 +11,7 @@
 </template>
 
 <script>
-const SHARED_CSS = `rounded-md m-0 p-2 text-sm font-semibold text-white hover:ring focus:ring
+const SHARED_CSS = `rounded-md p-2 text-sm font-semibold text-white hover:ring focus:ring
 focus:outline-none ring-opacity-30 block transform-gpu transition-transform transition-colors hover:-translate-y-0.5
 focus:-translate-y-0.5 duration-100 motion-reduce:transition-none border-1`;
 const PRIMARY = "primary";

@@ -1,5 +1,5 @@
 <template>
-    <nav class="py-3 container mx-auto">
+    <nav class="py-3 lg:container mx-auto">
       <div class="px-8 flex justify-between sm:justify-start">
         <NavbarLink url="/" css="sm:font-bold sm:text-lg">Choppa.app</NavbarLink>
         <IconButton class="sm:hidden hover:bg-gray-200 dark:hover:bg-gray-700"

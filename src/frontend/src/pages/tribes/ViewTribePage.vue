@@ -66,13 +66,8 @@ export default {
     };
   },
   async mounted() {
-    // TODO: error handling
     try {
-      this.tribe = await getTribe({
-        id: this.$route.params.id,
-        loadSquads: false,
-      });
-
+      this.tribe = await getTribe({ id: this.$route.params.id, loadSquads: true });
       this.isLoaded = true;
     } catch {
       await this.$router.replace("/not-found");

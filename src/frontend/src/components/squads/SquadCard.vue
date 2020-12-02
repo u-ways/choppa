@@ -19,25 +19,37 @@
       </div>
     </div>
     <div>
-      <div class="grid grid-cols-4 text-sm leading-8 px-7 dark:text-gray-200 text-gray-500
-      bg-gray-100 dark:bg-gray-666">
-        <div class="ml-10 col-span-3">Name</div>
-        <div>Chapter</div>
-      </div>
-      <div v-for="member in squad.members" :key="member.id" class="py-3 px-4 sm:px-7 grid grid-cols-4
-      bg-gray-100 even:bg-gray-50 dark:bg-gray-666 dark:even:bg-gray-600">
-        <div class="self-center flex flex-row gap-3 col-span-3">
-          <Avatar class="self-center flex-shrink-0 w-8 h-8 text-2xl" :member="member"/>
-          <div class="self-center flex-grow text-lg font-normal leading-8">
-            {{member.name}}
+      <div v-if="squad.members.length > 0">
+        <div class="grid grid-cols-4 text-sm leading-8 px-7 dark:text-gray-200 text-gray-500
+        bg-gray-100 dark:bg-gray-666">
+          <div class="ml-10 col-span-3">Name</div>
+          <div>Chapter</div>
+        </div>
+        <div v-for="member in squad.members" :key="member.id" class="py-3 px-4 sm:px-7 grid grid-cols-4
+        bg-gray-100 even:bg-gray-50 dark:bg-gray-666 dark:even:bg-gray-600">
+          <div class="self-center flex flex-row gap-3 col-span-3">
+            <Avatar class="self-center flex-shrink-0 w-8 h-8 text-2xl" :member="member"/>
+            <div class="self-center flex-grow text-lg font-normal leading-8">
+              {{member.name}}
+            </div>
+          </div>
+          <div class="self-center grid">
+            <Tag v-if="member.chapter" :style="{ 'border-left-color': member.chapter.color }"
+                 class="lowercase overflow-ellipsis overflow-hidden w-16 md:w-20 lg:w-24 shadow-none border
+                 dark:border-gray-600 border border-gray-200 dark:border-transparent">
+              {{member.chapter.name}}
+            </Tag>
           </div>
         </div>
-        <div class="self-center grid">
-          <Tag v-if="member.chapter" :style="{ 'border-left-color': member.chapter.color }"
-               class="lowercase overflow-ellipsis overflow-hidden w-16 md:w-20 lg:w-24 shadow-none border
-               dark:border-gray-600 border border-gray-200 dark:border-transparent">
-            {{member.chapter.name}}
-          </Tag>
+      </div>
+      <div v-else class="py-5 text-center flex flex-col stretch-items gap-1">
+        <div class="font-normal">This squad currently has no members.</div>
+        <div class="mx-auto sm:mx-auto">
+          <StyledButton type="link"
+                        :link="addMemberUrl(squad)"
+                        variant="primary">
+            Add Member
+          </StyledButton>
         </div>
       </div>
     </div>
@@ -45,16 +57,17 @@
 </template>
 
 <script>
-/* eslint-disable */
 import Squad from "@/models/squad";
 import Avatar from "@/components/member/Avatar";
 import Tag from "@/components/atoms/Tag";
+import StyledButton from "@/components/atoms/buttons/StyledButton";
 
 export default {
   name: "SquadCard",
   components: {
+    StyledButton,
     Avatar,
-    Tag
+    Tag,
   },
   props: {
     squad: {
@@ -65,7 +78,11 @@ export default {
   methods: {
     limitedMembersAvatars(members) {
       return members.slice(0, 3);
-    }
+    },
+    addMemberUrl(squad) {
+      // TO:DO maybe add member here should be a popup? What about mobile?
+      return `/${squad.id}`;
+    },
   },
 };
 </script>

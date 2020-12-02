@@ -4,7 +4,6 @@ import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberController
 import app.choppa.domain.member.MemberService
-import app.choppa.exception.EmptyListException
 import app.choppa.exception.EntityNotFoundException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
@@ -44,24 +43,6 @@ internal class MemberControllerIT @Autowired constructor(
 
     @Nested
     inner class HappyPath {
-
-        @Test
-        fun `LIST entities`() {
-            val anotherMember = Member()
-            val entities = listOf(member, anotherMember)
-
-            every { memberService.find() } returns entities
-
-            mvc.get("/api/members") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-            }.andExpect {
-                status { isOk }
-                content { contentType(APPLICATION_JSON) }
-                content { json(mapper.writeValueAsString(entities)) }
-            }
-        }
-
         @Test
         fun `GET entity by ID`() {
             val entity = member
@@ -138,19 +119,6 @@ internal class MemberControllerIT @Autowired constructor(
 
     @Nested
     inner class SadPath {
-
-        @Test
-        fun `LIST no content`() {
-            every { memberService.find() } throws EmptyListException("No members exist yet")
-
-            mvc.get("/api/members") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-            }.andExpect {
-                status { isNoContent }
-            }
-        }
-
         @Test
         fun `GET UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()

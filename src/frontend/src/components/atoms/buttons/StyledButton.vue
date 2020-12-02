@@ -12,12 +12,12 @@
 <script>
 const SHARED_CSS = `rounded-md m-0 p-2 text-sm font-semibold text-white hover:ring focus:ring
 focus:outline-none ring-opacity-30 block transform-gpu transition-transform transition-colors hover:-translate-y-0.5
-focus:-translate-y-0.5 duration-100 motion-reduce:transition-none`;
-
+focus:-translate-y-0.5 duration-100 motion-reduce:transition-none border-1`;
 const PRIMARY = "primary";
-const PRIMARY_CSS = "bg-choppa-two ring-purple-600";
+const PRIMARY_CSS = "bg-choppa-two ring-purple-600 border-transparent";
 const SECONDARY = "secondary";
-const SECONDARY_CSS = "bg-transparent border border-gray-200 text-gray-600";
+const SECONDARY_CSS = `bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200 border-grey-200
+dark:border-transparent`;
 const CUSTOM = "custom";
 
 export default {

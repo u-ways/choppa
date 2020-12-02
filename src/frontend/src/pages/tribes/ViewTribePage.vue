@@ -21,7 +21,7 @@
             <SquadCard v-for="squad in tribe.squads" :squad="squad" :key="squad.id"/>
           </div>
           <div v-else class="container mx-auto mt-10 flex flex-col gap-4">
-            <img src="src/assets/svg/squad.svg" alt="A representation of a squad" width="100%" height="100%"
+            <img :src="require('@/assets/svg/squad.svg')" alt="A representation of a squad" width="100%" height="100%"
                  class="h-44 w-auto mx-auto"/>
             <p class="place-self-center font-semibold text-md dark:text-gray-300">
               Create your first Squad for this Tribe.

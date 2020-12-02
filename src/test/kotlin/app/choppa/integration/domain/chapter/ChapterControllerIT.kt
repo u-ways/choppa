@@ -3,7 +3,6 @@ package app.choppa.integration.domain.chapter
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterController
 import app.choppa.domain.chapter.ChapterService
-import app.choppa.exception.EmptyListException
 import app.choppa.exception.EntityNotFoundException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
@@ -22,7 +21,6 @@ import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
-import java.util.UUID
 import java.util.UUID.randomUUID
 
 @WebMvcTest(controllers = [ChapterController::class])
@@ -44,24 +42,6 @@ internal class ChapterControllerIT @Autowired constructor(
 
     @Nested
     inner class HappyPath {
-
-        @Test
-        fun `LIST entities`() {
-            val anotherChapter = Chapter()
-            val entities = listOf(chapter, anotherChapter)
-
-            every { chapterService.find() } returns entities
-
-            mvc.get("/api/chapters") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-            }.andExpect {
-                status { isOk }
-                content { contentType(APPLICATION_JSON) }
-                content { json(mapper.writeValueAsString(entities)) }
-            }
-        }
-
         @Test
         fun `GET entity by ID`() {
             val entity = chapter

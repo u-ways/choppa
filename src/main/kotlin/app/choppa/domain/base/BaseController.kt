@@ -33,8 +33,9 @@ abstract class BaseController<T : BaseModel>(
         /**
          * Returns the location of the current URI request with the values expanded.
          */
-        fun location(path: String, vararg uriVariableValues: Any): URI =
-            fromCurrentRequest().path("/$path").buildAndExpand(*uriVariableValues).toUri()
+        fun location(path: String = "", vararg uriVariableValues: Any): URI =
+            fromCurrentRequest().path(path.let { if (it.isBlank()) it else "/$path" })
+                .buildAndExpand(*uriVariableValues).toUri()
     }
 
     @GetMapping(ID_PATH)

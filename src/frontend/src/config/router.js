@@ -9,6 +9,10 @@ const routes = [
     component: () => import("@/pages/HomePage"),
   },
   {
+    path: "/tribes/:id/edit",
+    component: () => import("@/pages/tribes/EditTribePage"),
+  },
+  {
     path: "/tribes/:id",
     component: () => import("@/pages/tribes/ViewTribePage"),
   },

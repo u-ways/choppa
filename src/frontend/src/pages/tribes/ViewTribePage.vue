@@ -5,7 +5,9 @@
         <template v-if="isLoaded">
           <p class="text-3xl font-normal">Tribe <span class="font-semibold">{{ tribe.name }}</span></p>
           <p class="text-sm leading-7">
-            {{ tribe.squads.length }} Squads | {{ tribe.allDistinctMembers().length }} Distinct Members
+            <span>{{ tribe.squads.length }} Squads |</span>
+            <span>{{ tribe.allDistinctMembers().length }} Distinct Members |</span>
+            <StyledLink link="edit" :link-append="true">Edit</StyledLink>
           </p>
         </template>
         <template v-else>
@@ -50,10 +52,12 @@ import SquadSkeleton from "@/components/squads/SquadSkeleton";
 import SquadCard from "@/components/squads/SquadCard";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
 import { getTribe } from "@/config/api/tribe.api";
+import StyledLink from "@/components/atoms/links/StyledLink";
 
 export default {
   name: "ViewTribePage",
   components: {
+    StyledLink,
     StyledButton,
     SquadCard,
     SquadSkeleton,

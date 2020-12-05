@@ -32,9 +32,11 @@ export default {
       type: String,
     },
     linkReplace: {
+      default: false,
       type: Boolean,
     },
     linkAppend: {
+      default: false,
       type: Boolean,
     },
     variant: {

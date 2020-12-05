@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.squad
 
+import app.choppa.domain.member.Member
 import app.choppa.domain.member.Member.Companion.NO_MEMBERS
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadController
@@ -67,7 +68,10 @@ internal class SquadControllerIT @Autowired constructor(
 
         @Test
         fun `GET entity by ID`() {
-            val entity = squad
+            val entity = squad.apply {
+                this.members.add(Member())
+                this.members.add(Member())
+            }
 
             every { squadService.find(entity.id) } returns entity
 

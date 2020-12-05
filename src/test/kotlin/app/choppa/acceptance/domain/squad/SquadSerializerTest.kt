@@ -2,6 +2,8 @@ package app.choppa.acceptance.domain.squad
 
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
+import app.choppa.support.factory.SquadFactory
+import app.choppa.support.matchers.containsInAnyOrder
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
@@ -30,7 +32,7 @@ internal class SquadSerializerTest {
         val color = uniformDto?.read<String>("$.color")
         val tribe = uniformDto?.read<String>("$.tribe")
         val chapters = uniformDto?.read<String>("$.chapters")
-        val members = uniformDto?.read<List<String>>("$.members")
+        val members = uniformDto?.read<List<Member>>("$.members")
         val iterations = uniformDto?.read<String>("$.iterations")
         val history = uniformDto?.read<String>("$.history")
 
@@ -45,10 +47,12 @@ internal class SquadSerializerTest {
     }
 
     @Test
-    fun `Given entity DAO with members, when serialize, then it should return correct uniform DTO`() {
-        val squadWithMembers = Squad(members = mutableListOf(Member()))
-        val uniformDto = JsonPath.parse(mapper.writeValueAsString(squadWithMembers))
-        val members = uniformDto?.read<List<String>>("$.members")
-        assertThat(members?.first(), equalTo("members/${squadWithMembers.members.first().id}"))
+    internal fun `Given DAO with members, when serialize, then it should return DTO with members`() {
+        val squad = SquadFactory.create(membersAmount = 2)
+
+        val uniformDto = JsonPath.parse(mapper.writeValueAsString(squad))
+        val members = uniformDto?.read<List<Member>>("$.members")
+
+        assertThat(members!!, List<Member>::containsInAnyOrder, squad.members)
     }
 }

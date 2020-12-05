@@ -29,7 +29,7 @@ class Color {
                 when (it.length) {
                     6 -> "${it}ff".toLong(16).toInt()
                     8 -> it.toLong(16).toInt()
-                    else -> throw IllegalArgumentException("Hex [$this] value is invalid.")
+                    else -> throw IllegalArgumentException("Hex value [$this] format is invalid. (Valid hex color format: #AABBCC)")
                 }
             }
     }

@@ -15,9 +15,17 @@ class SquadService(
     @Autowired private val tribeService: TribeService,
     @Autowired private val memberService: MemberService,
 ) : BaseService<Squad> {
+    override fun find(): List<Squad> = squadRepository
+        .findAll()
+        .orElseThrow { throw EntityNotFoundException("No squads exist yet.") }
+
     override fun find(id: UUID): Squad = squadRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Squad with id [$id] does not exist.") }
+
+    override fun find(ids: List<UUID>): List<Squad> = squadRepository
+        .findAllById(ids)
+        .orElseThrow { throw EntityNotFoundException("No squads found with given ids.") }
 
     // NOTE(u-ways) #55 Squad is the owning map of tribe and members.
     //                  Therefore, service ensures they exist before relating tribe and members accordingly.
@@ -37,12 +45,14 @@ class SquadService(
         )
     )
 
+    @Transactional
+    override fun save(entities: List<Squad>): List<Squad> = entities.map(::save)
+
+    override fun delete(entities: List<Squad>) = entities
+        .apply { squadRepository.deleteAll(entities) }
+
     override fun delete(entity: Squad): Squad = entity
         .apply { squadRepository.delete(entity) }
-
-    fun find(): List<Squad> = squadRepository
-        .findAll()
-        .orElseThrow { throw EntityNotFoundException("No squads exist yet.") }
 
     fun findRelatedByMember(memberId: UUID): List<Squad> = squadRepository
         .findAllByMemberId(memberId)
@@ -51,21 +61,4 @@ class SquadService(
     fun findRelatedByTribe(tribeId: UUID): List<Squad> = squadRepository
         .findAllByTribeId(tribeId)
         .orElseThrow { throw EntityNotFoundException("No squads found belonging to tribe [$tribeId] yet.") }
-
-    fun find(ids: List<UUID>): List<Squad> = squadRepository
-        .findAllById(ids)
-        .orElseThrow { throw EntityNotFoundException("No squads found with given ids.") }
-
-    @Transactional
-    fun save(squads: List<Squad>): List<Squad> = squads.map(::save)
-
-    @Transactional
-    fun save(vararg squads: Squad): List<Squad> = this
-        .save(squads.toMutableList())
-
-    fun delete(squads: List<Squad>): List<Squad> = squads
-        .apply { squadRepository.deleteAll(squads) }
-
-    fun delete(vararg squads: Squad): List<Squad> = this
-        .delete(squads.toMutableList())
 }

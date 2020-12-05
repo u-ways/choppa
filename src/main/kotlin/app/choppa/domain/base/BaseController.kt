@@ -33,17 +33,19 @@ abstract class BaseController<T : BaseModel>(
         /**
          * Returns the location of the current URI request with the values expanded.
          */
-        fun location(path: String, vararg uriVariableValues: Any): URI =
-            fromCurrentRequest().path("/$path").buildAndExpand(*uriVariableValues).toUri()
+        fun location(path: String = "", vararg uriVariableValues: Any): URI =
+            fromCurrentRequest().path(path.let { if (it.isBlank()) it else "/$path" })
+                .buildAndExpand(*uriVariableValues).toUri()
     }
 
     @GetMapping(ID_PATH)
-    fun find(@PathVariable id: UUID) = baseService
+    fun get(@PathVariable id: UUID) = baseService
         .find(id)
         .run { ok().body(this) }
 
     @PutMapping(ID_PATH)
-    fun update(@PathVariable id: UUID, @RequestBody updatedEntity: T): ResponseEntity<T> = baseService
+    fun put(@PathVariable id: UUID, @RequestBody updatedEntity: T): ResponseEntity<T> = baseService
+        .requireMatching(id, updatedEntity.id)
         .find(id)
         .also { baseService.save(updatedEntity) }
         .run { created(location(ID_PATH, id)).build() }
@@ -54,8 +56,13 @@ abstract class BaseController<T : BaseModel>(
         .also { baseService.delete(it) }
         .run { noContent().build() }
 
-    @PostMapping
-    fun post(@RequestBody newEntity: T): ResponseEntity<T> = baseService
+    @PostMapping(ID_PATH)
+    fun post(@PathVariable id: UUID, @RequestBody newEntity: T): ResponseEntity<T> = baseService
+        .requireMatching(id, newEntity.id)
         .save(newEntity)
         .run { created(location(ID_PATH, this.id)).build() }
+
+    private fun BaseService<T>.requireMatching(expected: UUID, actual: UUID): BaseService<T> = this.apply {
+        require(expected == actual) { "URI endpoint with id [$expected] does not match response body entity id [$actual]" }
+    }
 }

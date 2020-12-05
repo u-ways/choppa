@@ -123,7 +123,7 @@ internal class TribeControllerIT @Autowired constructor(
 
             every { tribeService.save(Tribe(tribe.id, tribe.name)) } returns newEntity
 
-            mvc.post("/api/tribes") {
+            mvc.post("/api/tribes/${newEntity.id}") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(newEntity)

@@ -3,7 +3,6 @@ package app.choppa.integration.domain.iteration
 import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.iteration.IterationController
 import app.choppa.domain.iteration.IterationService
-import app.choppa.exception.EmptyListException
 import app.choppa.exception.EntityNotFoundException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
@@ -44,24 +43,6 @@ internal class IterationControllerIT @Autowired constructor(
 
     @Nested
     inner class HappyPath {
-
-        @Test
-        fun `LIST entities`() {
-            val anotherIteration = Iteration()
-            val entities = listOf(iteration, anotherIteration)
-
-            every { iterationService.find() } returns entities
-
-            mvc.get("/api/iterations") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-            }.andExpect {
-                status { isOk }
-                content { contentType(APPLICATION_JSON) }
-                content { json(mapper.writeValueAsString(entities)) }
-            }
-        }
-
         @Test
         fun `GET entity by ID`() {
             val entity = iteration
@@ -135,7 +116,7 @@ internal class IterationControllerIT @Autowired constructor(
                 )
             } returns newEntity
 
-            mvc.post("/api/iterations") {
+            mvc.post("/api/iterations/${newEntity.id}") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
                 content = mapper.writeValueAsString(newEntity)
@@ -148,19 +129,6 @@ internal class IterationControllerIT @Autowired constructor(
 
     @Nested
     inner class SadPath {
-
-        @Test
-        fun `LIST no content`() {
-            every { iterationService.find() } throws EmptyListException("No iterations exist yet")
-
-            mvc.get("/api/iterations") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-            }.andExpect {
-                status { isNoContent }
-            }
-        }
-
         @Test
         fun `GET UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()

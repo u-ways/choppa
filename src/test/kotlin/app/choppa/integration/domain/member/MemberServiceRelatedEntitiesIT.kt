@@ -48,8 +48,10 @@ internal class MemberServiceRelatedEntitiesIT @Autowired constructor(
         val expectedRelatedTribeMembers = tribeMembersOfSquadA.plus(tribeMembersOfSquadB)
 
         squadService.save(
-            Squad(tribe = relatedTribe, members = tribeMembersOfSquadA.toMutableList()),
-            Squad(tribe = relatedTribe, members = tribeMembersOfSquadB.toMutableList())
+            listOf(
+                Squad(tribe = relatedTribe, members = tribeMembersOfSquadA.toMutableList()),
+                Squad(tribe = relatedTribe, members = tribeMembersOfSquadB.toMutableList())
+            )
         )
 
         val actualRelatedTribeMembers = memberService.findRelatedByTribe(relatedTribe.id)

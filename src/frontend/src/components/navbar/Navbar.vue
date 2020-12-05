@@ -1,6 +1,6 @@
 <template>
-    <nav class="py-3 lg:container mx-auto">
-      <div class="px-8 flex justify-between sm:justify-start">
+    <nav class="py-3">
+      <div class="px-5 flex justify-between sm:justify-start">
         <NavbarLink url="/" css="sm:font-bold sm:text-lg">Choppa.app</NavbarLink>
         <IconButton class="sm:hidden hover:bg-gray-200 dark:hover:bg-gray-700"
                     screenReaderText="Open Menu" icon="bars" @click="expandedMenu = true"
@@ -16,6 +16,9 @@
                           screenReaderText="Close Menu" icon="times" @click="expandedMenu = false"
               />
             </div>
+            <NavbarLink url="/tribes/00000000-0000-0000-0000-000000000001/">Tribe-1</NavbarLink>
+            <NavbarLink url="/tribes/00000000-0000-0000-0000-000000000001/edit">Edit</NavbarLink>
+            <NavbarLink url="/not-found">404</NavbarLink>
             <NavbarLink url="/external/github">Github</NavbarLink>
             <NavbarLink url="/external/production">Production</NavbarLink>
             <NavbarLink url="/external/staging">Staging</NavbarLink>

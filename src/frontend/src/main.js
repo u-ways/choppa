@@ -1,6 +1,6 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
-  faCog, faHelicopter, faPlus, faTrash, faUpload, faUserAlt, faTimes, faBars, faSun, faMoon,
+  faCog, faHelicopter, faPlus, faTrash, faUpload, faUserAlt, faTimes, faBars, faSun, faMoon, faPencilAlt, faEye,
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -11,7 +11,10 @@ import store from "@/config/store/store";
 import Vue from "vue";
 import "./assets/style.css";
 
-library.add(faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus, faTimes, faBars, faSun, faMoon, faGithub);
+library.add(
+  faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus, faTimes, faBars, faSun, faMoon, faGithub, faPencilAlt,
+  faEye,
+);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;

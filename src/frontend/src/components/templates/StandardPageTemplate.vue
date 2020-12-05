@@ -4,7 +4,17 @@
       <Navbar/>
     </div>
     <div class="flex-grow flex items-stretch">
-      <slot></slot>
+      <slot name="whole-page">
+        <div class="flex-grow">
+          <div class="bg-choppa-two px-5 py-10 text-white font-semibold">
+            <slot name="page-header"/>
+          </div>
+          <slot name="full-width"/>
+          <div class="container mx-auto max-w-screen-lg">
+            <slot name="fixed-width"/>
+          </div>
+        </div>
+      </slot>
     </div>
     <div class="flex-none">
       <Footer/>

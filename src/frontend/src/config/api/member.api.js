@@ -1,19 +1,22 @@
 import httpClient from "@/config/api/http-client";
 import Member from "@/models/member";
-import { getChapter } from "@/config/api/chapter.api";
 
-function getUrlOrId(config) {
-  return Object.prototype.hasOwnProperty.call(config, "url")
-    ? config.url
-    : `members/${config.id}`;
+function findChapter(config, chapterId) {
+  if (config.chapters && chapterId) {
+    const chapter = config.chapters.find((c) => c.id === chapterId);
+    return chapter || null;
+  }
+
+  return null;
 }
 
 async function deserializeMember(config, json) {
+  const potentialChapter = findChapter(config, json.chapter);
+
   return new Member({
     id: json.id,
     name: json.name,
-    chapter: !Object.prototype.hasOwnProperty.call(config, "loadChapter") || config.loadChapter
-      ? await getChapter({ url: json.chapter }) : null,
+    chapter: potentialChapter || null,
   });
 }
 
@@ -25,9 +28,17 @@ function serializeMember(config) {
   };
 }
 
-export async function getMember(config) {
-  const response = await httpClient.get(getUrlOrId(config));
-  return deserializeMember(config, response.data);
+export async function getMembersByQuery(config) {
+  try {
+    const response = await httpClient.get(config.url);
+    return Promise.all(response.data.map((member) => deserializeMember(config, member)));
+  } catch (error) {
+    if (error.response.status === 404) {
+      return [];
+    }
+
+    throw error;
+  }
 }
 
 async function saveExistingMember(config) {

@@ -1,11 +1,15 @@
 import httpClient from "@/config/api/http-client";
 import Squad from "@/models/squad";
-import { getMember, saveMember } from "@/config/api/member.api";
+import { getMembersByQuery, saveMember } from "@/config/api/member.api";
+import hasMissingOrTrueProperty from "@/helpers/hasMissingOrTrueProperty";
 
 async function deserializeSquad(config, json) {
   let members = [];
-  if (!Object.prototype.hasOwnProperty.call(config, "loadMembers") || config.loadMembers) {
-    members = await Promise.all(json.members.map((member) => getMember({ url: member, loadChapter: true })));
+  if (hasMissingOrTrueProperty(config, "loadMembers")) {
+    members = await getMembersByQuery({
+      url: `members?squad=${json.id.replace("squads/", "")}`,
+      chapters: config.chapters,
+    });
   }
 
   return new Squad({
@@ -26,12 +30,9 @@ function serializeSquad(config) {
   };
 }
 
-export async function getSquads(config) {
-  const response = await httpClient.get("squads");
-
-  // TODO: Once API has been finished this should be implemented correctly with the api and support url and id
-  return Promise.all(response.data.filter((squad) => squad.tribe === config.tribeId)
-    .map((squad) => deserializeSquad(config, squad)));
+export async function getSquadsByQuery(config) {
+  const response = await httpClient.get(config.url);
+  return Promise.all(response.data.map((squad) => deserializeSquad(config, squad)));
 }
 
 async function saveExistingSquad(config) {

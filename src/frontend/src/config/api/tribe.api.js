@@ -1,17 +1,18 @@
 import httpClient from "@/config/api/http-client";
 import Tribe from "@/models/tribe";
-import { deleteSquad, getSquads, saveSquad } from "@/config/api/squad.api";
-
-function getUrlOrId(config) {
-  return Object.prototype.hasOwnProperty.call(config, "url")
-    ? config.url
-    : `tribes/${config.id}`;
-}
+import { deleteSquad, getSquadsByQuery, saveSquad } from "@/config/api/squad.api";
+import hasMissingOrTrueProperty from "@/helpers/hasMissingOrTrueProperty";
+import { getChaptersByQuery } from "@/config/api/chapter.api";
 
 async function deserializeTribe(config, json) {
+  let chapters = [];
+  if (hasMissingOrTrueProperty(config, "loadChapters")) {
+    chapters = await getChaptersByQuery({ url: json.chapters });
+  }
+
   let squads = [];
-  if (!Object.prototype.hasOwnProperty.call(config, "loadSquads") || config.loadSquads) {
-    squads = await getSquads({ tribeId: json.id, loadMembers: true });
+  if (hasMissingOrTrueProperty(config, "loadSquads")) {
+    squads = await getSquadsByQuery({ url: json.squads, loadMembers: true, chapters });
   }
 
   return new Tribe({
@@ -22,7 +23,9 @@ async function deserializeTribe(config, json) {
 }
 
 export async function getTribe(config) {
-  const response = await httpClient.get(getUrlOrId(config));
+  const url = Object.prototype.hasOwnProperty.call(config, "url") ? config.url : `tribes/${config.id}`;
+  const response = await httpClient.get(url);
+
   return deserializeTribe(config, response.data);
 }
 

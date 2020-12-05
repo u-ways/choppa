@@ -47,9 +47,9 @@
 <script>
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import SquadSkeleton from "@/components/squads/SquadSkeleton";
-import { getTribe } from "@/config/api/tribe.api";
 import SquadCard from "@/components/squads/SquadCard";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
+import { getTribe } from "@/config/api/tribe.api";
 
 export default {
   name: "ViewTribePage",
@@ -67,9 +67,9 @@ export default {
   },
   async mounted() {
     try {
-      this.tribe = await getTribe({ id: this.$route.params.id, loadSquads: true });
+      this.tribe = await getTribe({ id: this.$route.params.id, loadSquads: true, loadChapters: true });
       this.isLoaded = true;
-    } catch {
+    } catch (error) {
       await this.$router.replace("/not-found");
     }
   },

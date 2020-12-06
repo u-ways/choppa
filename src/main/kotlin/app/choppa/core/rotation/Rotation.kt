@@ -1,6 +1,6 @@
-package app.choppa.core
+package app.choppa.core.rotation
 
-import app.choppa.core.Options.Companion.DEFAULT_OPTIONS
+import app.choppa.core.rotation.Options.Companion.DEFAULT_OPTIONS
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad

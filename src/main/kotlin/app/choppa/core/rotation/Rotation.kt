@@ -1,6 +1,6 @@
 package app.choppa.core.rotation
 
-import app.choppa.core.rotation.Options.Companion.DEFAULT_OPTIONS
+import app.choppa.core.rotation.RotationOptions.Companion.DEFAULT_OPTIONS
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
@@ -8,7 +8,7 @@ import app.choppa.domain.tribe.Tribe
 
 class Rotation {
     companion object {
-        fun rotate(tribe: Tribe, options: Options = DEFAULT_OPTIONS): Tribe {
+        fun rotate(tribe: Tribe, options: RotationOptions = DEFAULT_OPTIONS): Tribe {
             if (tribe.squads.count() < 2) return tribe
             val oldMembers = mutableListOf<List<Member>>()
 
@@ -36,7 +36,7 @@ class Rotation {
                                     .plus(newMembers).toMutableList()
                             )
                         }.toMutableList(),
-                        tribe.history
+                        tribe.history.toMutableList()
                     )
                 }
         }

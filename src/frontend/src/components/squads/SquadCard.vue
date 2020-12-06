@@ -1,7 +1,7 @@
 <template>
   <div class="shadow ring-1 ring-black ring-opacity-5 border-choppa-light dark:border-choppa-dark border-t-4
-  bg-gray-100 dark:bg-gray-600 dark:ring-bg-gray-700" :style="{ 'border-top-color': squad.color }">
-    <div class="bg-white dark:bg-gray-700 p-5">
+  bg-gray-100 dark:bg-gray-600 dark:ring-bg-gray-700 flex flex-col" :style="{ 'border-top-color': squad.color }">
+    <div class="bg-white dark:bg-gray-700 p-5 flex-shrink-0">
       <p class="text-xl font-normal">Squad <span class="font-semibold">{{ squad.name }}</span></p>
       <div class="text-sm leading-8 flex flex-row gap-1">
         <div class="self-center">{{squad.members.length}} Members</div>
@@ -42,15 +42,8 @@
           </div>
         </div>
       </div>
-      <div v-else class="py-5 text-center flex flex-col stretch-items gap-1">
-        <div class="font-normal">This squad currently has no members.</div>
-        <div class="mx-auto sm:mx-auto">
-          <StyledButton type="link"
-                        :link="addMemberUrl(squad)"
-                        variant="primary">
-            Add Member
-          </StyledButton>
-        </div>
+      <div v-else class="py-5 flex-grow flex flex-col content-center place-content-center">
+        <NoMembersToShowAlert/>
       </div>
     </template>
   </div>
@@ -60,12 +53,12 @@
 import Squad from "@/models/domain/squad";
 import Avatar from "@/components/member/Avatar";
 import Tag from "@/components/atoms/Tag";
-import StyledButton from "@/components/atoms/buttons/StyledButton";
+import NoMembersToShowAlert from "@/components/member/NoMembersToShowAlert";
 
 export default {
   name: "SquadCard",
   components: {
-    StyledButton,
+    NoMembersToShowAlert,
     Avatar,
     Tag,
   },

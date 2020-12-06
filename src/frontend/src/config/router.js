@@ -17,6 +17,10 @@ const routes = [
     component: () => import("@/pages/tribes/ViewTribePage"),
   },
   {
+    path: "/squads/:id",
+    component: () => import("@/pages/squads/EditSquadPage"),
+  },
+  {
     path: "/external/github",
     beforeEnter() { window.location.href = "https://github.com/u-ways/chopper"; },
   },

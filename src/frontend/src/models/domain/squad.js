@@ -6,6 +6,7 @@ const DEFAULT_SQUAD_COLOR = "#3068c2";
 export default class Squad {
   constructor(config) {
     this._id = hasPropertyOrDefault(config, "id", `squads/${uuidv4()}`);
+    this._tribeId = hasPropertyOrDefault(config, "tribeId", "");
     this._name = hasPropertyOrDefault(config, "name", "");
     this._color = hasPropertyOrDefault(config, "color", DEFAULT_SQUAD_COLOR);
     this._members = hasPropertyOrDefault(config, "members", []);
@@ -13,6 +14,14 @@ export default class Squad {
 
   get id() {
     return this._id;
+  }
+
+  get tribeId() {
+    return this._tribeId;
+  }
+
+  set tribeId(newTribeId) {
+    this._tribeId = newTribeId;
   }
 
   get name() {

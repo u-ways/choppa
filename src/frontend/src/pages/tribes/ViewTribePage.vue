@@ -59,7 +59,7 @@ import SquadSkeleton from "@/components/squads/SquadSkeleton";
 import SquadCard from "@/components/squads/SquadCard";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
 import { getTribe } from "@/config/api/tribe.api";
-import NoSquadsToShowAlert from "@/components/tribes/NoSquadsToShowAlert";
+import NoSquadsToShowAlert from "@/components/squads/NoSquadsToShowAlert";
 
 export default {
   name: "ViewTribePage",

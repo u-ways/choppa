@@ -1,4 +1,4 @@
-import Chapter from "@/models/chapter";
+import Chapter from "@/models/domain/chapter";
 
 export async function deserializeChapter(json) {
   return new Chapter({

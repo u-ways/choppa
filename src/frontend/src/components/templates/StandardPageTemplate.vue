@@ -5,7 +5,7 @@
     </div>
     <div class="flex-grow flex items-stretch">
       <slot name="whole-page">
-        <div class="flex-grow">
+        <div class="flex-grow w-full">
           <div class="bg-choppa-two px-5 py-10 text-white font-semibold">
             <slot name="page-header"/>
           </div>

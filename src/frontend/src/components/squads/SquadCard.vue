@@ -9,16 +9,16 @@
           <Avatar v-for="member in limitedMembersAvatars(squad.members)" :key="member.id" :member="member"
                   class="inline w-8 h-8 text-xl self-center"
           />
-          <div v-if="squad.members.length > 3" class="bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-300
-          border border-gray-200 dark:border-gray-600 rounded-full grid self-center w-8 h-8">
+          <div v-if="squad.members.length > memberShowCount" class="bg-white dark:bg-gray-700 text-gray-500
+          dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-full grid self-center w-8 h-8">
             <div class="justify-self-center self-center font-bold text-sm">
-              +{{ squad.members.length - 3 }}
+              +{{ squad.members.length - memberShowCount }}
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div>
+    <template v-if="!showHeaderOnly">
       <div v-if="squad.members.length > 0">
         <div class="grid grid-cols-4 text-sm leading-8 px-7 dark:text-gray-200 text-gray-500
         bg-gray-100 dark:bg-gray-666">
@@ -52,12 +52,12 @@
           </StyledButton>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script>
-import Squad from "@/models/squad";
+import Squad from "@/models/domain/squad";
 import Avatar from "@/components/member/Avatar";
 import Tag from "@/components/atoms/Tag";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
@@ -74,10 +74,19 @@ export default {
       type: Squad,
       required: true,
     },
+    showHeaderOnly: {
+      type: Boolean,
+      default: false,
+    },
+    memberShowCount: {
+      type: Number,
+      default: 3,
+      validator: (value) => value > 0,
+    },
   },
   methods: {
     limitedMembersAvatars(members) {
-      return members.slice(0, 3);
+      return members.slice(0, this.memberShowCount);
     },
     addMemberUrl(squad) {
       // TO:DO maybe add member here should be a popup? What about mobile?

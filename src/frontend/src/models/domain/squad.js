@@ -1,14 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
+import { hasPropertyOrDefault } from "@/utils/hasPropertyOrDefault";
 
 const DEFAULT_SQUAD_COLOR = "#3068c2";
 
 export default class Squad {
   constructor(config) {
-    this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : `squads/${uuidv4()}`;
-    this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
-    this._color = Object.prototype.hasOwnProperty.call(config, "color") ? config.color : DEFAULT_SQUAD_COLOR;
-    this._members = Object.prototype.hasOwnProperty.call(config, "members") ? config.members : [];
-    this._newlyCreated = Object.prototype.hasOwnProperty.call(config, "newlyCreated") ? config.newlyCreated : false;
+    this._id = hasPropertyOrDefault(config, "id", `squads/${uuidv4()}`);
+    this._name = hasPropertyOrDefault(config, "name", "");
+    this._color = hasPropertyOrDefault(config, "color", DEFAULT_SQUAD_COLOR);
+    this._members = hasPropertyOrDefault(config, "members", []);
   }
 
   get id() {
@@ -33,10 +33,6 @@ export default class Squad {
 
   get members() {
     return this._members;
-  }
-
-  get newlyCreated() {
-    return this._newlyCreated;
   }
 
   updateChapter(id, name, color) {

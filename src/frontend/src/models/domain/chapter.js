@@ -1,12 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
+import { hasPropertyOrDefault } from "@/utils/hasPropertyOrDefault";
 
 const DEFAULT_CHAPTER_COLOR = "#3068c2";
 
 export default class Chapter {
   constructor(config) {
-    this._id = Object.prototype.hasOwnProperty.call(config, "id") ? config.id : `chapters/${uuidv4()}`;
-    this._name = Object.prototype.hasOwnProperty.call(config, "name") ? config.name : "";
-    this._color = Object.prototype.hasOwnProperty.call(config, "color") ? config.color : DEFAULT_CHAPTER_COLOR;
+    this._id = hasPropertyOrDefault(config, "id", `chapters/${uuidv4()}`);
+    this._name = hasPropertyOrDefault(config, "name", "");
+    this._color = hasPropertyOrDefault(config, "color", DEFAULT_CHAPTER_COLOR);
   }
 
   get id() {

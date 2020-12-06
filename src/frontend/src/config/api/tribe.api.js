@@ -1,5 +1,5 @@
 import httpClient from "@/config/api/http-client";
-import Tribe from "@/models/tribe";
+import Tribe from "@/models/domain/tribe";
 import { getSquadsByQuery } from "@/config/api/squad.api";
 
 async function deserializeTribe(config, json) {
@@ -15,4 +15,11 @@ export async function getTribe(config) {
   const response = await httpClient.get(url);
 
   return deserializeTribe(config, response.data);
+}
+
+export async function saveTribe(config) {
+  await httpClient.put(config.tribe.id, {
+    id: config.tribe.id,
+    name: config.tribe.name,
+  });
 }

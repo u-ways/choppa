@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="[ variant === secondaryDark ? 'dark' : '']">
     <router-link v-if="type === 'link'" :to="link" :class="[sharedCss, getVariantCss, css]" :replace="linkReplace"
                  :append="linkAppend">
       <slot></slot>
@@ -13,13 +13,13 @@
 <script>
 const SHARED_CSS = `rounded-md p-2 text-sm font-semibold text-white hover:ring focus:ring
 focus:outline-none ring-opacity-30 block transform-gpu transition-transform transition-colors hover:-translate-y-0.5
-focus:-translate-y-0.5 duration-100 motion-reduce:transition-none border-1`;
+focus:-translate-y-0.5 duration-100 motion-reduce:transition-none border-1 ring-purple-600`;
 const PRIMARY = "primary";
-const PRIMARY_CSS = "bg-choppa-two ring-purple-600 border-transparent";
+const PRIMARY_CSS = "bg-choppa-two border-transparent";
 const SECONDARY_LIGHT = "secondary-light";
 const SECONDARY_LIGHT_CSS = `bg-gray-100 text-gray-600 border-grey-200`;
 const SECONDARY_DARK = "secondary-dark";
-const SECONDARY_DARK_CSS = `dark:bg-gray-700 dark:text-gray-200 dark:border-transparent`;
+const SECONDARY_DARK_CSS = `dark dark:bg-gray-700 dark:text-gray-200 dark:border-transparent`;
 const SECONDARY = "secondary";
 const SECONDARY_CSS = `${SECONDARY_LIGHT_CSS} ${SECONDARY_DARK_CSS}`;
 const CUSTOM = "custom";
@@ -54,6 +54,7 @@ export default {
   data() {
     return {
       sharedCss: SHARED_CSS,
+      secondaryDark: SECONDARY_DARK,
     };
   },
   computed: {

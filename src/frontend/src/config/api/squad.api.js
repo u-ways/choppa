@@ -1,5 +1,5 @@
 import httpClient from "@/config/api/http-client";
-import Squad from "@/models/squad";
+import Squad from "@/models/domain/squad";
 import { deserializeMember } from "@/config/api/member.api";
 
 async function deserializeSquad(json) {
@@ -12,6 +12,14 @@ async function deserializeSquad(json) {
 }
 
 export async function getSquadsByQuery(config) {
-  const response = await httpClient.get(config.url);
-  return Promise.all(response.data.map((squad) => deserializeSquad(squad)));
+  try {
+    const response = await httpClient.get(config.url);
+    return Promise.all(response.data.map((squad) => deserializeSquad(squad)));
+  } catch (error) {
+    if (error.response.status === 404) {
+      return [];
+    }
+
+    throw error;
+  }
 }

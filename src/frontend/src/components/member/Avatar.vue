@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import Member from "@/models/member";
+import Member from "@/models/domain/member";
 import { updateSvg } from "jdenticon";
 
 export default {

@@ -10,7 +10,13 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      animation: {
+        "fade-in": "fade-in 0.2s",
+      },
       colors: {
+        amber: colors.amber,
+        emerald: colors.emerald,
+        rose: colors.rose,
         gray: {
           "666": "#444e5d",
           ...colors.coolGray
@@ -29,6 +35,12 @@ module.exports = {
       fontFamily: {
         "open-sans": ["Open\\ Sans", "sans-serif"],
       },
+      keyframes: {
+        "fade-in": {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        }
+      }
     },
     container: {
       screens: {

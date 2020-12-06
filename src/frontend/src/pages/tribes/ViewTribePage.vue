@@ -3,24 +3,24 @@
     <template v-slot:page-header>
       <template v-if="isLoaded">
         <div class="flex flex-row place-content-between place-items-center">
-          <div>
-            <p class="text-3xl font-normal">
+          <div class="truncate">
+            <div class="text-3xl font-normal truncate">
               <span class="hidden sm:inline">Tribe </span>
-              <span class="inline font-bold">
+              <span class="font-bold truncate">
                 {{ tribe.name }}
               </span>
-            </p>
-            <p class="text-sm leading-7">
+            </div>
+            <div class="text-sm leading-7">
               <span>{{ tribe.squads.length }} Squads |</span>
               <span>{{ tribe.allDistinctMembers().length }} Distinct Members</span>
-            </p>
+            </div>
           </div>
-          <div>
-            <StyledButton type="link" variant="secondary-light" css="pr-5 pl-4" link="edit" :link-append="true">
-              <div class="inline pr-1">
+          <div class="flex-shrink-0">
+            <StyledButton type="link" variant="secondary" css="px-2 sm:pr-5 sm:pl-4" :link="`/${tribe.id}/edit`">
+              <div class="inline sm:pr-1">
                 <font-awesome-icon icon="pencil-alt"/>
               </div>
-              Edit
+              <div class="hidden sm:inline">Edit</div>
             </StyledButton>
           </div>
         </div>
@@ -38,17 +38,8 @@
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-3" v-if="tribe.squads.length > 0">
             <SquadCard v-for="squad in tribe.squads" :squad="squad" :key="squad.id"/>
           </div>
-          <div v-else class="container mx-auto mt-10 flex flex-col gap-4">
-            <img :src="require('@/assets/svg/squad.svg')" alt="A representation of a squad" width="100%"
-                 height="100%" class="h-44 w-auto mx-auto"/>
-            <p class="place-self-center font-semibold text-md dark:text-gray-300">
-              Create your first Squad for this Tribe.
-            </p>
-            <div class="inline-block mx-auto">
-              <StyledButton type="link" link="/edit/squad/create" variant="primary">
-                Create Squad
-              </StyledButton>
-            </div>
+          <div v-else class="container mx-auto mt-10">
+            <NoSquadsToShowAlert/>
           </div>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3" v-else>
@@ -68,10 +59,12 @@ import SquadSkeleton from "@/components/squads/SquadSkeleton";
 import SquadCard from "@/components/squads/SquadCard";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
 import { getTribe } from "@/config/api/tribe.api";
+import NoSquadsToShowAlert from "@/components/tribes/NoSquadsToShowAlert";
 
 export default {
   name: "ViewTribePage",
   components: {
+    NoSquadsToShowAlert,
     StyledButton,
     SquadCard,
     SquadSkeleton,
@@ -88,7 +81,6 @@ export default {
       this.tribe = await getTribe({ id: this.$route.params.id });
       this.isLoaded = true;
     } catch (error) {
-      console.log(error);
       await this.$router.replace("/not-found");
     }
   },

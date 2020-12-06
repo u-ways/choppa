@@ -1,6 +1,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faCog, faHelicopter, faPlus, faTrash, faUpload, faUserAlt, faTimes, faBars, faSun, faMoon, faPencilAlt, faEye,
+  faCheck, faExclamation, faInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -9,15 +10,18 @@ import App from "@/App.vue";
 import router from "@/config/router";
 import store from "@/config/store/store";
 import Vue from "vue";
+import Vuelidate from "vuelidate";
 import "./assets/style.css";
 
 library.add(
   faUserAlt, faHelicopter, faCog, faTrash, faUpload, faPlus, faTimes, faBars, faSun, faMoon, faGithub, faPencilAlt,
-  faEye,
+  faEye, faCheck, faExclamation, faInfo,
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;
+
+Vue.use(Vuelidate);
 
 new Vue({
   mixins: [darkMode],

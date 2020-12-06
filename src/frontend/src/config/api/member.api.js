@@ -1,4 +1,4 @@
-import Member from "@/models/member";
+import Member from "@/models/domain/member";
 import { deserializeChapter } from "@/config/api/chapter.api";
 
 export async function deserializeMember(json) {

@@ -14,6 +14,7 @@ module.exports = {
         "fade-in": "fade-in 0.2s",
       },
       colors: {
+        orange: colors.orange,
         amber: colors.amber,
         emerald: colors.emerald,
         rose: colors.rose,

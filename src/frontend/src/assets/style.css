@@ -2,15 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-.\? {
-  animation: \?wobble 0.5s ease-in-out alternate infinite;
+.ulLight {
+    text-decoration: underline;
+    text-decoration-color: #6762d9;
 }
-
-@keyframes \?wobble {
-  0% {
-    box-shadow: inset 4px 4px rgb(236, 15, 170), inset -4px -4px rgb(236, 15, 170);
-  }
-  100% {
-    box-shadow: inset 8px 8px rgb(236, 15, 170), inset -8px -8px rgb(236, 15, 170);
-  }
+.ulDark {
+    text-decoration: underline;
+    text-decoration-color: #6762d9;
 }

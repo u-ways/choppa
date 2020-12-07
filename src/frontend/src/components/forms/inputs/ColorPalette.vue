@@ -37,7 +37,6 @@ export default {
         "#C084FC", "#9333EA",
         "#E879F9", "#C026D3",
         "#F472B6", "#DB2777",
-        "#FB7185", "#E11D48",
       ],
     },
     currentColor: String,

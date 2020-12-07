@@ -6,6 +6,7 @@ export default class Member {
     this._id = hasPropertyOrDefault(config, "id", `members/${uuidv4()}`);
     this._name = hasPropertyOrDefault(config, "name", "");
     this._chapter = hasPropertyOrDefault(config, "chapter", null);
+    this._relations = hasPropertyOrDefault(config, "relations", {});
   }
 
   get id() {
@@ -26,5 +27,9 @@ export default class Member {
 
   get chapter() {
     return this._chapter;
+  }
+
+  get relations() {
+    return this._relations;
   }
 }

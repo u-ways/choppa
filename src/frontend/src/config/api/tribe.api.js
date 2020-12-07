@@ -7,6 +7,13 @@ async function deserializeTribe(config, json) {
     id: json.id,
     name: json.name,
     squads: await getSquadsByQuery({ url: json.squads }),
+    relations: {
+      chapters: json.chapters,
+      members: json.members,
+      squads: json.squads,
+      iterations: json.iterations,
+      history: json.history,
+    },
   });
 }
 

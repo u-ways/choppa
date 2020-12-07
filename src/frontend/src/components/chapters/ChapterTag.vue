@@ -11,7 +11,7 @@ import Member from "@/models/domain/member";
 import Tag from "@/components/atoms/Tag";
 
 export default {
-  name: "MemberChapterTag",
+  name: "ChapterTag",
   components: {
     Tag,
   },

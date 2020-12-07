@@ -6,6 +6,7 @@ export default class Tribe {
     this._id = hasPropertyOrDefault(config, "id", `tribes/${uuidv4()}`);
     this._name = hasPropertyOrDefault(config, "name", "");
     this._squads = hasPropertyOrDefault(config, "squads", []);
+    this._relations = hasPropertyOrDefault(config, "relations", {});
   }
 
   get id() {
@@ -24,17 +25,8 @@ export default class Tribe {
     return this._squads;
   }
 
-  allDistinctChapters() {
-    const uniques = {};
-    this.squads
-      .flatMap((squad) => squad.members)
-      .filter((member) => member.chapter)
-      .flatMap((member) => member.chapter)
-      .forEach((chapter) => {
-        uniques[chapter.id] = chapter;
-      });
-
-    return Object.values(uniques);
+  get relations() {
+    return this._relations;
   }
 
   allDistinctMembers() {
@@ -46,30 +38,5 @@ export default class Tribe {
       });
 
     return Object.values(uniques);
-  }
-
-  removeSquadById(squadId) {
-    this._squads = this.squads.filter((squad) => squad.id !== squadId);
-  }
-
-  findSquadById(squadId) {
-    const result = this.squads.filter((squad) => squad.id === squadId);
-    if (!result[0]) {
-      throw new Error(`No squad found with id ${squadId}`);
-    }
-
-    return result[0];
-  }
-
-  updateChapter(id, name, color) {
-    this.squads.forEach((squad) => squad.updateChapter(id, name, color));
-  }
-
-  deleteChapter(id) {
-    this.squads.forEach((squad) => squad.deleteChapter(id));
-  }
-
-  addSquad(squad) {
-    this.squads.push(squad);
   }
 }

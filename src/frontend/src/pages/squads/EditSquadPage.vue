@@ -8,7 +8,7 @@
         </div>
         <div class="flex-shrink-0">
           <StyledButton type="link" variant="secondary" css="px-2 sm:pr-5 sm:pl-4"
-                        :link="`/${squad.tribeId}`">
+                        :link="`/${squad.relations.tribe}`">
             <div class="inline sm:pr-1">
               <font-awesome-icon icon="eye"/>
             </div>
@@ -58,7 +58,7 @@
           <div class="pt-3">
             <div v-if="squad.members.length > 0" class="flex flex-col gap-2">
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                <router-link v-for="member in squad.members" v-bind:key="member.id" :to="`/${member.id}`"
+                <router-link v-for="member in squad.members" v-bind:key="member.id" :to="`/${squad.id}/${member.id}`"
                              class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
                   <MemberCard :member="member"/>
                 </router-link>
@@ -75,8 +75,8 @@
         </section>
         <section class="mt-5" v-if="squad && tribe && allSquadsExceptOneBeingEdited.length > 0">
           <FormHeader>
-            <template v-slot:heading>Other Squads</template>
-            <template v-slot:subheading>Other Squads that belong to the same tribe.</template>
+            <template v-slot:heading>Related Squads</template>
+            <template v-slot:subheading>Squads belonging to Tribe {{tribe.name}}.</template>
           </FormHeader>
           <div class="pt-3">
             <SquadsOverview :squads="allSquadsExceptOneBeingEdited"/>
@@ -141,7 +141,7 @@ export default {
   async mounted() {
     try {
       this.squad = await getSquad({ id: this.$route.params.id });
-      this.tribe = await getTribe({ url: this.squad.tribeId });
+      this.tribe = await getTribe({ url: this.squad.relations.tribe });
     } catch (error) {
       await this.$router.replace("/not-found");
     }

@@ -34,7 +34,7 @@
             </div>
           </div>
           <div class="self-center grid">
-            <MemberChapterTag v-if="member.chapter"
+            <ChapterTag v-if="member.chapter"
                               :member="member"
                               class="w-16 md:w-20 lg:w-24 bg-gray-50 dark:bg-gray-700"
             />
@@ -52,12 +52,12 @@
 import Squad from "@/models/domain/squad";
 import Avatar from "@/components/member/Avatar";
 import NoMembersToShowAlert from "@/components/member/NoMembersToShowAlert";
-import MemberChapterTag from "@/components/member/MemberChapterTag";
+import ChapterTag from "@/components/chapters/ChapterTag";
 
 export default {
   name: "SquadCard",
   components: {
-    MemberChapterTag,
+    ChapterTag,
     NoMembersToShowAlert,
     Avatar,
   },

@@ -9,6 +9,12 @@ async function deserializeSquad(json) {
     name: json.name,
     members: await Promise.all(json.members.map((member) => deserializeMember(member))),
     color: json.color,
+    relations: {
+      tribe: json.tribe,
+      chapters: json.chapters,
+      iterations: json.iterations,
+      history: json.history,
+    },
   });
 }
 
@@ -35,7 +41,7 @@ export async function getSquadsByQuery(config) {
 export async function saveSquad(config) {
   await httpClient.put(config.squad.id, {
     id: config.squad.id,
-    tribe: config.squad.tribeId,
+    tribe: config.squad.relations.tribe,
     name: config.squad.name,
     color: config.squad.color,
     members: config.squad.members.map((member) => member.id),

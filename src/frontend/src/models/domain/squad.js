@@ -6,22 +6,14 @@ const DEFAULT_SQUAD_COLOR = "#3068c2";
 export default class Squad {
   constructor(config) {
     this._id = hasPropertyOrDefault(config, "id", `squads/${uuidv4()}`);
-    this._tribeId = hasPropertyOrDefault(config, "tribeId", "");
     this._name = hasPropertyOrDefault(config, "name", "");
     this._color = hasPropertyOrDefault(config, "color", DEFAULT_SQUAD_COLOR);
     this._members = hasPropertyOrDefault(config, "members", []);
+    this._relations = hasPropertyOrDefault(config, "relations", {});
   }
 
   get id() {
     return this._id;
-  }
-
-  get tribeId() {
-    return this._tribeId;
-  }
-
-  set tribeId(newTribeId) {
-    this._tribeId = newTribeId;
   }
 
   get name() {
@@ -44,28 +36,7 @@ export default class Squad {
     return this._members;
   }
 
-  updateChapter(id, name, color) {
-    this.members.forEach((member, index) => {
-      if (member.chapter && member.chapter.id === id) {
-        this.members[index].chapter.name = name;
-        this.members[index].chapter.color = color;
-      }
-    });
-  }
-
-  deleteChapter(id) {
-    this.members.forEach((member, index) => {
-      if (member.chapter && member.chapter.id === id) {
-        this.members[index].chapter = undefined;
-      }
-    });
-  }
-
-  removeMember(member) {
-    this._members = this.members.filter((m) => m.id !== member.id);
-  }
-
-  addMember(member) {
-    this._members.push(member);
+  get relations() {
+    return this._relations;
   }
 }

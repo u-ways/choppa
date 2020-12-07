@@ -8,6 +8,7 @@ export default class Chapter {
     this._id = hasPropertyOrDefault(config, "id", `chapters/${uuidv4()}`);
     this._name = hasPropertyOrDefault(config, "name", "");
     this._color = hasPropertyOrDefault(config, "color", DEFAULT_CHAPTER_COLOR);
+    this._relations = hasPropertyOrDefault(config, "relations", {});
   }
 
   get id() {
@@ -28,5 +29,9 @@ export default class Chapter {
 
   set color(newColor) {
     this._color = newColor;
+  }
+
+  get relations() {
+    return this._relations;
   }
 }

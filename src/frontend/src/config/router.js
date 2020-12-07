@@ -17,6 +17,10 @@ const routes = [
     component: () => import("@/pages/tribes/ViewTribePage"),
   },
   {
+    path: "/squads/:squadId/members/:memberId",
+    component: () => import("@/pages/members/EditMemberPage"),
+  },
+  {
     path: "/squads/:id",
     component: () => import("@/pages/squads/EditSquadPage"),
   },

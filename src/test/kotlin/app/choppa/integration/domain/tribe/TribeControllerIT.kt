@@ -1,7 +1,5 @@
 package app.choppa.integration.domain.tribe
 
-import app.choppa.core.rotation.RotationOptions
-import app.choppa.domain.rotation.RotationService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeController
 import app.choppa.domain.tribe.TribeService
@@ -24,7 +22,7 @@ import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
-import java.util.UUID.randomUUID
+import java.util.UUID
 
 @WebMvcTest(controllers = [TribeController::class])
 @ActiveProfiles("test")
@@ -35,8 +33,6 @@ internal class TribeControllerIT @Autowired constructor(
 
     @MockkBean
     private lateinit var tribeService: TribeService
-    @MockkBean
-    private lateinit var rotationService: RotationService
 
     private lateinit var tribe: Tribe
 
@@ -136,42 +132,6 @@ internal class TribeControllerIT @Autowired constructor(
                 header { string(LOCATION, StringContains("/api/tribes/${newEntity.id}")) }
             }
         }
-
-        @Test
-        fun `POST rotation request no payload`() {
-            val entity = tribe
-
-            every { rotationService.rotate(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
-            every { tribeService.find(entity.id) } returns entity
-
-            mvc.post("/api/tribes/${entity.id}:rotate") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-            }.andExpect {
-                status { isOk }
-                content { contentType(APPLICATION_JSON) }
-                content { json(mapper.writeValueAsString(entity)) }
-            }
-        }
-
-        @Test
-        fun `POST rotation request with valid payload`() {
-            val entity = tribe
-            val rotation = RotationOptions.DEFAULT_OPTIONS
-
-            every { rotationService.rotate(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
-            every { tribeService.find(entity.id) } returns entity
-
-            mvc.post("/api/tribes/${entity.id}:rotate") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-                content = mapper.writeValueAsString(rotation)
-            }.andExpect {
-                status { isOk }
-                content { contentType(APPLICATION_JSON) }
-                content { json(mapper.writeValueAsString(entity)) }
-            }
-        }
     }
 
     @Nested
@@ -191,7 +151,7 @@ internal class TribeControllerIT @Autowired constructor(
 
         @Test
         fun `GET UUID doesn't exist`() {
-            val randomUUID = randomUUID()
+            val randomUUID = UUID.randomUUID()
 
             every { tribeService.find(randomUUID) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
 
@@ -205,7 +165,7 @@ internal class TribeControllerIT @Autowired constructor(
 
         @Test
         fun `PUT invalid payload`() {
-            val randomUUID = randomUUID()
+            val randomUUID = UUID.randomUUID()
 
             mvc.put("/api/tribes/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
@@ -218,7 +178,7 @@ internal class TribeControllerIT @Autowired constructor(
 
         @Test
         fun `DELETE UUID doesn't exist`() {
-            val randomUUID = randomUUID()
+            val randomUUID = UUID.randomUUID()
 
             every { tribeService.find(randomUUID) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
 
@@ -238,33 +198,6 @@ internal class TribeControllerIT @Autowired constructor(
                 content = "invalidPayload"
             }.andExpect {
                 status { isUnprocessableEntity }
-            }
-        }
-
-        @Test
-        fun `POST rotation request with invalid payload`() {
-            val entity = tribe
-
-            mvc.post("/api/tribes/${entity.id}:rotate") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-                content = "invalidPayload"
-            }.andExpect {
-                status { isUnprocessableEntity }
-            }
-        }
-
-        @Test
-        fun `POST rotation request to invalid tribe`() {
-            val randomUUID = randomUUID()
-
-            every { tribeService.find(randomUUID) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
-
-            mvc.post("/api/tribes/${randomUUID}:rotate") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-            }.andExpect {
-                status { isNotFound }
             }
         }
     }

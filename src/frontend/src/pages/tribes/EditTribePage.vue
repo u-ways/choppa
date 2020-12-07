@@ -1,6 +1,6 @@
 <template>
   <StandardPageTemplate>
-    <template v-slot:page-header v-if="tribe">
+    <template v-slot:page-header v-if="tribe && chapters">
       <div class="flex flex-row place-content-between place-items-center">
         <div class="text-3xl font-normal truncate">
           <span class="hidden sm:inline">Tribe </span>
@@ -17,7 +17,7 @@
         </div>
       </div>
     </template>
-    <template v-slot:fixed-width v-if="tribe">
+    <template v-slot:fixed-width v-if="tribe && chapters">
       <div class="px-3 py-5">
         <section>
           <FormHeader>
@@ -63,6 +63,87 @@
             <NoSquadsToShowAlert v-else />
           </div>
         </section>
+        <section class="mt-5">
+          <FormHeader>
+            <template v-slot:heading>Rotation</template>
+            <template v-slot:subheading>Is it time to rotate the tribe?</template>
+          </FormHeader>
+          <div class="pt-3">
+            <div class="flex flex-col gap-2">
+              <StandardInputWithLabel id="rotation-amount"
+                                      label-text="Amount of Members to rotate"
+                                      type="number"
+                                      v-bind:value="rotation.amount"
+                                      v-on:input="rotation.amount = $event.target.value"
+                                      :validator="$v.rotation.amount"
+                                      place-holder="Amount of Members to rotate"
+              />
+              <div>
+                <StandardLabel for-id="rotation-chapter" label-text="Chapter To Rotate"/>
+                <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  <ChapterRadioButton v-for="chapter in chapters"
+                                      v-bind:key="chapter.id"
+                                      :chapter="chapter"
+                                      :selected-chapter="rotation.chapter"
+                                      input-name="member-chapter"
+                                      @onChapterChanged="onChapterChanged"/>
+                </div>
+              </div>
+              <div>
+                <StandardLabel for-id="rotation-filter" label-text="Filter"/>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <StandardRadio inputName="rotation-filter"
+                                 id="rotation-filter-none"
+                                 label="None"
+                                 :value="filters.none"
+                                 :checked="rotation.filter === filters.none"
+                                 @onChanged="(event) => rotation.filter = event.target.value"/>
+                  <StandardRadio inputName="rotation-filter"
+                                 id="rotation-filter-oldest"
+                                 label="Oldest"
+                                 :value="filters.oldest"
+                                 :checked="rotation.filter === filters.oldest"
+                                 @onChanged="(event) => rotation.filter = event.target.value"/>
+                  <StandardRadio inputName="rotation-filter"
+                                 id="rotation-filter-random"
+                                 label="Random"
+                                 :value="filters.random"
+                                 :checked="rotation.filter === filters.random"
+                                 @onChanged="(event) => rotation.filter = event.target.value"/>
+                </div>
+              </div>
+              <div>
+                <StandardLabel for-id="rotation-strategy" label-text="Strategy"/>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <StandardRadio inputName="rotation-strategy"
+                                 id="rotation-strategy-clockwise"
+                                 label="Clockwise"
+                                 :value="strategies.clockwise"
+                                 :checked="rotation.strategy === strategies.clockwise"
+                                 @onChanged="(event) => rotation.strategy = event.target.value"/>
+                  <StandardRadio inputName="rotation-strategy"
+                                 id="rotation-strategy-anti-clockwise"
+                                 label="Anti Clockwise"
+                                 :value="strategies.antiClockwise"
+                                 :checked="rotation.strategy === strategies.antiClockwise"
+                                 @onChanged="(event) => rotation.strategy = event.target.value"/>
+                  <StandardRadio inputName="rotation-strategy"
+                                 id="rotation-strategy-random"
+                                 label="Random"
+                                 :value="strategies.random"
+                                 :checked="rotation.strategy === strategies.random"
+                                 @onChanged="(event) => rotation.strategy = event.target.value"/>
+                </div>
+              </div>
+              <div class="self-end">
+                <StyledButton type="button" @click="rotate" variant="primary" css="px-2 pr-5 pl-4">
+                  <font-awesome-icon icon="sync"/>
+                  Rotate Now
+                </StyledButton>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </template>
   </StandardPageTemplate>
@@ -73,17 +154,26 @@ import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
-import { getTribe, saveTribe } from "@/config/api/tribe.api";
+import { getTribe, rotateTribe, saveTribe } from "@/config/api/tribe.api";
 import NoSquadsToShowAlert from "@/components/squads/NoSquadsToShowAlert";
-import { required, minLength, maxLength } from "vuelidate/lib/validators";
+import { required, minLength, maxLength, minValue, maxValue } from "vuelidate/lib/validators";
 import { mapActions } from "vuex";
 import { toastVariants } from "@/enums/toastVariants";
 import ToastData from "@/models/toastData";
 import SquadsOverview from "@/components/squads/SquadsOverview";
+import { getChaptersByQuery } from "@/config/api/chapter.api";
+import ChapterRadioButton from "@/components/chapters/ChapterRadioButton";
+import StandardLabel from "@/components/forms/inputs/StandardLabel";
+import StandardRadio from "@/components/forms/inputs/StandardRadio";
+import { rotationFilter } from "@/enums/rotationFilter";
+import { rotationStrategy } from "@/enums/rotationStrategy";
 
 export default {
   name: "EditTribePage",
   components: {
+    StandardRadio,
+    StandardLabel,
+    ChapterRadioButton,
     SquadsOverview,
     NoSquadsToShowAlert,
     StandardInputWithLabel,
@@ -99,6 +189,23 @@ export default {
   data() {
     return {
       tribe: undefined,
+      chapters: undefined,
+      rotation: {
+        amount: 1,
+        chapter: undefined,
+        filter: rotationFilter.NONE,
+        strategy: rotationStrategy.CLOCKWISE,
+      },
+      filters: {
+        oldest: rotationFilter.OLDEST,
+        random: rotationFilter.RANDOM,
+        none: rotationFilter.NONE,
+      },
+      strategies: {
+        clockwise: rotationStrategy.CLOCKWISE,
+        antiClockwise: rotationStrategy.ANTI_CLOCKWISE,
+        random: rotationStrategy.RANDOM,
+      },
     };
   },
   validations: {
@@ -109,10 +216,18 @@ export default {
         maxLength: maxLength(100),
       },
     },
+    rotation: {
+      amount: {
+        required,
+        minValue: minValue(1),
+        maxValue: maxValue(20),
+      },
+    },
   },
   async mounted() {
     try {
       this.tribe = await getTribe({ id: this.$route.params.id });
+      this.chapters = await getChaptersByQuery({ url: this.tribe.relations.chapters });
     } catch (error) {
       await this.$router.replace("/not-found");
     }
@@ -133,6 +248,27 @@ export default {
         }));
       } catch (error) {
         this.newToast(new ToastData({ variant: toastVariants.ERROR, message: "Save failed, please try again later" }));
+        throw error;
+      }
+    },
+    onChapterChanged(event) {
+      const [selectedChapter] = this.chapters.filter((chapter) => chapter.id === event.target.value);
+      this.rotation.chapter = selectedChapter;
+    },
+    async rotate() {
+      try {
+        await rotateTribe({ tribe: this.tribe, ...this.rotation });
+        this.$router.go(-1);
+        this.newToast(new ToastData({
+          variant: toastVariants.SUCCESS,
+          message: `Tribe ${this.tribe.name} has been rotated`,
+        }));
+      } catch (error) {
+        this.newToast(new ToastData({
+          variant: toastVariants.ERROR,
+          message: "Rotation failed, please try again later",
+        }));
+
         throw error;
       }
     },

@@ -30,3 +30,12 @@ export async function saveTribe(config) {
     name: config.tribe.name,
   });
 }
+
+export async function rotateTribe(config) {
+  await httpClient.post(`${config.tribe.id}:rotate`, {
+    amount: config.amount,
+    chapter: config.chapter.id,
+    filter: config.filter,
+    strategy: config.strategy,
+  });
+}

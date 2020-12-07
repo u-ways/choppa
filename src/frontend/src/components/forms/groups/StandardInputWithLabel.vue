@@ -4,7 +4,7 @@
       <StandardLabel :label-text="labelText" :for-id="id" :validator="validator"/>
     </div>
     <div class="mt-1">
-      <StandardInput type="text"
+      <StandardInput :type="type"
                      :id="id"
                      v-bind="$attrs"
                      v-on="$listeners"
@@ -41,6 +41,10 @@ export default {
     maxLength: Number,
     placeHolder: String,
     validator: Object,
+    type: {
+      type: String,
+      default: "text",
+    },
   },
 };
 </script>

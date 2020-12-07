@@ -25,22 +25,12 @@
             <div>
               <StandardLabel for-id="member-chapter" label-text="Member Chapter"/>
               <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                <div v-for="chapter in chapters"
-                     v-bind:key="chapter.id"
-                     class="bg-white dark:bg-gray-700 shadow rounded-sm flex
-                     flex-row items-center border-l-4 cursor-pointer hover:ring-2 ring-choppa-two lowercase"
-                     :style="{ 'border-color': chapter.color }">
-                  <input type="radio" name="member-chapter"
-                         :value="chapter.id"
-                         :id="`${chapter.id}`"
-                         class="ml-4 flex-shrink-0 cursor-pointer"
-                         :checked=" member.chapter && member.chapter.id === chapter.id ? 'checked' : ''"
-                         @change="onChapterChanged">
-                  <StandardLabel :label-text="chapter.name"
-                                 :for-id="`${chapter.id}`"
-                                 class="px-2 py-3 flex-grow cursor-pointer"
-                  />
-                </div>
+                <ChapterRadioButton v-for="chapter in chapters"
+                                    v-bind:key="chapter.id"
+                                    :chapter="chapter"
+                                    :selected-chapter="member.chapter"
+                                    input-name="member-chapter"
+                                    @onChapterChanged="onChapterChanged"/>
               </div>
             </div>
             <div class="self-end flex flex-row gap-1">
@@ -84,10 +74,12 @@ import StandardLabel from "@/components/forms/inputs/StandardLabel";
 import SquadsOverview from "@/components/squads/SquadsOverview";
 import { getChapters } from "@/config/api/chapter.api";
 import { getSquadsByQuery } from "@/config/api/squad.api";
+import ChapterRadioButton from "@/components/chapters/ChapterRadioButton";
 
 export default {
   name: "EditMemberPage",
   components: {
+    ChapterRadioButton,
     SquadsOverview,
     StandardLabel,
     StyledButton,

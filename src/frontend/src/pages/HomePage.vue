@@ -36,15 +36,15 @@
     </section>
 
     <section id="Knowledge Sharing">
-      <div class="container px-3 py-3 mx-auto max-w-screen-lg">
+      <div class="container py-52 mx-auto max-w-screen-lg">
         <div class="flex flex-col place-items-center lg:flex-row gap-1">
           <div class="w-full lg:w-2/3 pr-3 py-6">
-            <video width="100%" height="528" controls>
+            <video controls>
               <source src="@/assets/video/homeVideo.mp4" type="video/mp4">
               Your browser does not support the video tag.
             </video>
           </div>
-          <InformationBlock>
+          <InformationBlock class="order-first lg:order-last">
             <template v-slot:heading>Knowledge Sharing</template>
             <template v-slot:body>
               Utilise several rotation strategies to maximise knowledge sharing within your team.
@@ -54,16 +54,16 @@
       </div>
     </section>
 
-    <section id="Demonstration" class="bg-choppa-light dark:bg-choppa-dark py-6">
+    <section id="Demonstration" class="bg-rose-500 py-32">
       <div class="container px-3 mx-auto max-w-screen-lg">
         <div class="flex flex-col pb-3 place-items-center gap-1">
-          <div class="text-white w-full lg:w-1/3 text-center text-lg sm:text-xl lg:text-xl font-semibold">
-            <p>Ready for your first test flight?</p>
+          <div class="text-white w-full lg:w-1/2 text-center text-lg sm:text-xl lg:text-xl font-semibold">
+            <p class="text-2xl font-bold">Time for your first test flight!</p>
             <p>Check out this handy demonstration!</p>
-            <div class="pt-3">
+            <div class="pt-12">
               <StyledButton class="text-center" type="link"
                             link="/tribes/00000000-0000-0000-0000-000000000001/" :replace="true"
-                            variant="primary">Demo
+                            variant="custom" css="bg-rose-800">Demo
               </StyledButton>
             </div>
           </div>

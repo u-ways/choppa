@@ -33,6 +33,7 @@ class RotationService(
         return rotatedTribe
     }
 
+    //MD485: (TODO) Replace this when Uways's history saving is in. This is why it is untested.
     private fun updateTribeHistory(originalTribe: Tribe, rotatedTribe: Tribe): Tribe = rotatedTribe.apply {
         this.history.addAll(
             rotatedTribe.squads.let { squadList ->

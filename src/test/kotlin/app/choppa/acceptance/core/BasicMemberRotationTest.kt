@@ -2,7 +2,7 @@ package app.choppa.acceptance.core
 
 import app.choppa.core.rotation.RotationOptions
 import app.choppa.core.rotation.Rotation
-import app.choppa.core.rotation.filter.Filter.NONE
+import app.choppa.core.rotation.filter.Filter
 import app.choppa.core.rotation.filter.Filter.OLDEST
 import app.choppa.core.rotation.strategy.Strategy.ANTI_CLOCKWISE
 import app.choppa.core.rotation.strategy.Strategy.CLOCKWISE
@@ -65,7 +65,7 @@ class BasicMemberRotationTest {
         squadRotationAmount: Int
     ) {
         val testTribe = TribeFactory.create(squadAmount, squadMemberAmount)
-        val rotatedTribe = Rotation.rotate(testTribe, RotationOptions(squadRotationAmount, UNASSIGNED_ROLE, NONE, RANDOM))
+        val rotatedTribe = Rotation.rotate(testTribe, RotationOptions(squadRotationAmount, UNASSIGNED_ROLE, Filter.RANDOM, RANDOM))
 
         val distinctRotatedMemberCounts = testTribe.squads.mapIndexed { index, squad ->
             squad.members.filter { !rotatedTribe.squads[index].members.contains(it) }.count()

@@ -22,6 +22,19 @@ export async function getMember(config) {
   return deserializeMember(response.data);
 }
 
+export async function getMembersByQuery(config) {
+  try {
+    const response = await httpClient.get(config.url);
+    return Promise.all(response.data.map((member) => deserializeMember(member)));
+  } catch (error) {
+    if (error.response.status === 404) {
+      return [];
+    }
+
+    throw error;
+  }
+}
+
 export async function saveMember(config) {
   await httpClient.put(config.member.id, {
     id: config.member.id,

@@ -35,8 +35,8 @@
           </div>
           <div class="self-center grid">
             <ChapterTag v-if="member.chapter"
-                              :member="member"
-                              class="w-16 md:w-20 lg:w-24 bg-gray-50 dark:bg-gray-700"
+                        :chapter="member.chapter"
+                        class="w-16 md:w-20 lg:w-24 bg-gray-50 dark:bg-gray-700"
             />
           </div>
         </div>

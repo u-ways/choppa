@@ -1,12 +1,12 @@
 <template>
   <StandardPageTemplate>
-    <template v-slot:page-header v-if="isReady">
+    <template v-slot:page-header v-if="member && chapters">
       <div class="text-3xl font-normal truncate">
         <span class="hidden sm:inline">Member </span>
         <span class="font-bold truncate">{{ memberNameHeader }}</span>
       </div>
     </template>
-    <template v-slot:fixed-width v-if="isReady">
+    <template v-slot:fixed-width v-if="member && chapters">
       <div class="px-3 py-5">
         <section>
           <FormHeader>
@@ -25,10 +25,10 @@
             <div>
               <StandardLabel for-id="member-chapter" label-text="Member Chapter"/>
               <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                <div v-for="chapter in tribeChapters"
+                <div v-for="chapter in chapters"
                      v-bind:key="chapter.id"
                      class="bg-white dark:bg-gray-700 shadow rounded-sm flex
-                     flex-row items-center border-l-4 cursor-pointer hover:ring-2 ring-choppa-two"
+                     flex-row items-center border-l-4 cursor-pointer hover:ring-2 ring-choppa-two lowercase"
                      :style="{ 'border-color': chapter.color }">
                   <input type="radio" name="member-chapter"
                          :value="chapter.id"
@@ -55,13 +55,13 @@
             </div>
           </div>
         </section>
-        <section class="mt-5" v-if="isReady">
+        <section class="mt-5" v-if="squads">
           <FormHeader>
             <template v-slot:heading>Squads</template>
-            <template v-slot:subheading>{{ memberNameHeader }} belongs to the following Squads.</template>
+            <template v-slot:subheading>{{member.name}} belongs to the following Squads.</template>
           </FormHeader>
           <div class="pt-3">
-            <SquadsOverview :squads="involvedSquads"/>
+            <SquadsOverview :squads="squads"/>
           </div>
         </section>
       </div>
@@ -70,6 +70,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import { mapActions } from "vuex";
 import { getMember, saveMember } from "@/config/api/member.api";
@@ -80,10 +81,9 @@ import StyledButton from "@/components/atoms/buttons/StyledButton";
 import ToastData from "@/models/toastData";
 import { toastVariants } from "@/enums/toastVariants";
 import StandardLabel from "@/components/forms/inputs/StandardLabel";
-import { getSquad, getSquadsByQuery } from "@/config/api/squad.api";
-import { getChaptersByQuery } from "@/config/api/chapter.api";
-import { getTribe } from "@/config/api/tribe.api";
 import SquadsOverview from "@/components/squads/SquadsOverview";
+import { getChapters } from "@/config/api/chapter.api";
+import { getSquadsByQuery } from "@/config/api/squad.api";
 
 export default {
   name: "EditMemberPage",
@@ -99,17 +99,12 @@ export default {
     memberNameHeader() {
       return this.member.name ? this.member.name : "Untitled";
     },
-    isReady() {
-      return this.member && this.squad && this.tribe && this.tribeChapters;
-    },
   },
   data() {
     return {
       member: undefined,
-      squad: undefined,
-      tribe: undefined,
-      tribeChapters: undefined,
-      involvedSquads: undefined,
+      chapters: undefined,
+      squads: undefined,
     };
   },
   validations: {
@@ -123,12 +118,9 @@ export default {
   },
   async mounted() {
     try {
-      // TODO BT: Needs reworking - making too many queries right now.
-      this.member = await getMember({ id: this.$route.params.memberId });
-      this.squad = await getSquad({ id: this.$route.params.squadId });
-      this.involvedSquads = await getSquadsByQuery({ url: this.member.relations.squads });
-      this.tribe = await getTribe({ url: this.squad.relations.tribe });
-      this.tribeChapters = await getChaptersByQuery({ url: this.tribe.relations.chapters });
+      this.member = await getMember({ id: this.$route.params.id });
+      this.chapters = await getChapters();
+      this.squads = await getSquadsByQuery({ url: this.member.relations.squads });
     } catch (error) {
       await this.$router.replace("/not-found");
     }
@@ -136,7 +128,7 @@ export default {
   methods: {
     ...mapActions(["newToast"]),
     onChapterChanged(event) {
-      const [selectedChapter] = this.tribeChapters.filter((chapter) => chapter.id === event.target.value);
+      const [selectedChapter] = this.chapters.filter((chapter) => chapter.id === event.target.value);
       this.member.chapter = selectedChapter;
     },
     save() {

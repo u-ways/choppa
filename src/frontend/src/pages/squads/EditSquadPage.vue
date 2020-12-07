@@ -1,6 +1,6 @@
 <template>
   <StandardPageTemplate>
-    <template v-slot:page-header v-if="squad">
+    <template v-slot:page-header v-if="squad && chapters">
       <div class="flex flex-row place-content-between place-items-center">
         <div class="text-3xl font-normal truncate">
           <span class="hidden sm:inline">Squad </span>
@@ -17,7 +17,7 @@
         </div>
       </div>
     </template>
-    <template v-slot:fixed-width v-if="squad">
+    <template v-slot:fixed-width v-if="squad && chapters">
       <div class="px-3 py-5">
         <section>
           <FormHeader>
@@ -36,7 +36,7 @@
             <ColorPaletteWithLabel id="squad-color"
                                    label-text="Squad Color"
                                    :current-color="squad.color"
-                                   @colorSelected="onColorChanged"
+                                   @colorSelected="(newColor) => squad.color = newColor"
             />
             <div class="self-end flex flex-row gap-1">
               <StyledButton type="button" variant="secondary" css="px-2 pr-5 pl-4" @click="$router.go(-1)">
@@ -58,7 +58,7 @@
           <div class="pt-3">
             <div v-if="squad.members.length > 0" class="flex flex-col gap-2">
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                <router-link v-for="member in squad.members" v-bind:key="member.id" :to="`/${squad.id}/${member.id}`"
+                <router-link v-for="member in squad.members" v-bind:key="member.id" :to="`/${member.id}`"
                              class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
                   <MemberCard :member="member"/>
                 </router-link>
@@ -73,7 +73,34 @@
             <NoMembersToShowAlert v-else/>
           </div>
         </section>
-        <section class="mt-5" v-if="squad && tribe && allSquadsExceptOneBeingEdited.length > 0">
+        <section class="mt-5">
+          <FormHeader>
+            <template v-slot:heading>Chapters</template>
+            <template v-slot:subheading>Now lets add some Chapters.</template>
+          </FormHeader>
+          <div class="pt-3">
+            <div v-if="chapters.length > 0" class="flex flex-col gap-2">
+              <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                <router-link :to="`/${chapter.id}`" v-for="chapter in chapters" v-bind:key="chapter.id"
+                             class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
+                  <div :style="{ 'border-color': chapter.color }"
+                    class="bg-white dark:bg-gray-700 shadow rounded-sm ring-1 ring-black ring-opacity-5 px-3 py-4
+                       border-l-4">
+                    {{ chapter.name }}
+                  </div>
+                </router-link>
+              </div>
+              <div class="self-end">
+                <StyledButton type="link" link="/edit/squad/create" variant="secondary" css="px-2 pr-5 pl-4">
+                  <font-awesome-icon icon="plus"/>
+                  New Chapter
+                </StyledButton>
+              </div>
+            </div>
+            <NoChaptersToShowAlert v-else/>
+          </div>
+        </section>
+        <section class="mt-5" v-if="tribe && allSquadsExceptOneBeingEdited.length > 0">
           <FormHeader>
             <template v-slot:heading>Related Squads</template>
             <template v-slot:subheading>Squads belonging to Tribe {{tribe.name}}.</template>
@@ -102,10 +129,13 @@ import { getTribe } from "@/config/api/tribe.api";
 import SquadsOverview from "@/components/squads/SquadsOverview";
 import NoMembersToShowAlert from "@/components/member/NoMembersToShowAlert";
 import MemberCard from "@/components/member/MemberCard";
+import { getChaptersByQuery } from "@/config/api/chapter.api";
+import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
 
 export default {
   name: "EditSquadPage",
   components: {
+    NoChaptersToShowAlert,
     MemberCard,
     NoMembersToShowAlert,
     SquadsOverview,
@@ -127,6 +157,7 @@ export default {
     return {
       tribe: undefined,
       squad: undefined,
+      chapters: undefined,
     };
   },
   validations: {
@@ -142,15 +173,13 @@ export default {
     try {
       this.squad = await getSquad({ id: this.$route.params.id });
       this.tribe = await getTribe({ url: this.squad.relations.tribe });
+      this.chapters = await getChaptersByQuery({ url: this.squad.relations.chapters });
     } catch (error) {
       await this.$router.replace("/not-found");
     }
   },
   methods: {
     ...mapActions(["newToast"]),
-    onColorChanged(newColor) {
-      this.squad.color = newColor;
-    },
     save() {
       if (this.$v.$invalid) {
         return;

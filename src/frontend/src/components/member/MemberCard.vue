@@ -4,8 +4,8 @@
       <Avatar class="w-8 h-8 flex-shrink-0" :member="member" />
       <div class="leading-2 flex-grow text-lg truncate" >{{ member.name }}</div>
       <ChapterTag v-if="member.chapter"
-                        :member="member"
-                        class="flex-shrink-0 w-16 md:w-20 lg:w-24 bg-gray-50 dark:bg-gray-600"
+                  :chapter="member.chapter"
+                  class="flex-shrink-0 w-16 md:w-20 lg:w-24 bg-gray-50 dark:bg-gray-600"
       />
     </div>
   </div>

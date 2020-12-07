@@ -17,7 +17,11 @@ const routes = [
     component: () => import("@/pages/tribes/ViewTribePage"),
   },
   {
-    path: "/squads/:squadId/members/:memberId",
+    path: "/chapters/:id",
+    component: () => import("@/pages/chapters/EditChapterPage"),
+  },
+  {
+    path: "/members/:id",
     component: () => import("@/pages/members/EditMemberPage"),
   },
   {

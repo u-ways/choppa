@@ -1,14 +1,14 @@
 <template>
-  <Tag v-if="member.chapter" :style="{ 'border-left-color': member.chapter.color }"
+  <Tag :style="{ 'border-left-color': chapter.color }"
        class="lowercase overflow-ellipsis overflow-hidden shadow-none border
                  dark:border-gray-600 border border-gray-200 dark:border-transparent">
-    {{member.chapter.name}}
+    {{chapter.name}}
   </Tag>
 </template>
 
 <script>
-import Member from "@/models/domain/member";
 import Tag from "@/components/atoms/Tag";
+import Chapter from "@/models/domain/chapter";
 
 export default {
   name: "ChapterTag",
@@ -16,8 +16,8 @@ export default {
     Tag,
   },
   props: {
-    member: {
-      type: Member,
+    chapter: {
+      type: Chapter,
       required: true,
     },
   },

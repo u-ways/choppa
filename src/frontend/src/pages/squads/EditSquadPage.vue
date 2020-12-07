@@ -55,6 +55,23 @@
             <template v-slot:heading>Members</template>
             <template v-slot:subheading>Now lets add some Members.</template>
           </FormHeader>
+          <div class="pt-3">
+            <div v-if="squad.members.length > 0" class="flex flex-col gap-2">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                <router-link v-for="member in squad.members" v-bind:key="member.id" :to="`/${member.id}`"
+                             class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
+                  <MemberCard :member="member"/>
+                </router-link>
+              </div>
+              <div class="self-end">
+                <StyledButton type="link" link="/edit/squad/create" variant="secondary" css="px-2 pr-5 pl-4">
+                  <font-awesome-icon icon="plus"/>
+                  New Member
+                </StyledButton>
+              </div>
+            </div>
+            <NoMembersToShowAlert v-else/>
+          </div>
         </section>
         <section class="mt-5" v-if="squad && tribe && allSquadsExceptOneBeingEdited.length > 0">
           <FormHeader>
@@ -83,10 +100,14 @@ import { toastVariants } from "@/enums/toastVariants";
 import ColorPaletteWithLabel from "@/components/forms/groups/ColorPaletteWithLabel";
 import { getTribe } from "@/config/api/tribe.api";
 import SquadsOverview from "@/components/squads/SquadsOverview";
+import NoMembersToShowAlert from "@/components/member/NoMembersToShowAlert";
+import MemberCard from "@/components/member/MemberCard";
 
 export default {
   name: "EditSquadPage",
   components: {
+    MemberCard,
+    NoMembersToShowAlert,
     SquadsOverview,
     ColorPaletteWithLabel,
     StandardPageTemplate,

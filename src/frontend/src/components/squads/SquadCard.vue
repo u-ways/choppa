@@ -34,11 +34,10 @@
             </div>
           </div>
           <div class="self-center grid">
-            <Tag v-if="member.chapter" :style="{ 'border-left-color': member.chapter.color }"
-                 class="lowercase overflow-ellipsis overflow-hidden w-16 md:w-20 lg:w-24 shadow-none border
-                 dark:border-gray-600 border border-gray-200 dark:border-transparent">
-              {{member.chapter.name}}
-            </Tag>
+            <MemberChapterTag v-if="member.chapter"
+                              :member="member"
+                              class="w-16 md:w-20 lg:w-24 bg-gray-50 dark:bg-gray-700"
+            />
           </div>
         </div>
       </div>
@@ -52,15 +51,15 @@
 <script>
 import Squad from "@/models/domain/squad";
 import Avatar from "@/components/member/Avatar";
-import Tag from "@/components/atoms/Tag";
 import NoMembersToShowAlert from "@/components/member/NoMembersToShowAlert";
+import MemberChapterTag from "@/components/member/MemberChapterTag";
 
 export default {
   name: "SquadCard",
   components: {
+    MemberChapterTag,
     NoMembersToShowAlert,
     Avatar,
-    Tag,
   },
   props: {
     squad: {

@@ -2,11 +2,10 @@ package app.choppa.acceptance.domain.member
 
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.history.History
-import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.Member.Companion.NO_MEMBERS
 import app.choppa.domain.squad.Squad
-import app.choppa.domain.tribe.Tribe
+import app.choppa.support.factory.HistoryFactory
 import nl.jqno.equalsverifier.EqualsVerifier
 import nl.jqno.equalsverifier.Warning
 import org.junit.jupiter.api.Test
@@ -29,7 +28,7 @@ class MemberTest {
             .forClass(Member::class.java)
             .withPrefabValues(Chapter::class.java, Chapter(), Chapter())
             .withPrefabValues(Squad::class.java, Squad(), Squad())
-            .withPrefabValues(History::class.java, History(Iteration(), Tribe(), Squad(), Member()), History(Iteration(), Tribe(), Squad(), Member()))
+            .withPrefabValues(History::class.java, HistoryFactory.create(), HistoryFactory.create())
             .verify()
     }
 }

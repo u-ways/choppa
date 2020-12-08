@@ -26,21 +26,25 @@ class HistoryService(
     fun delete(history: List<History>): List<History> = history
         .apply { historyRepository.deleteAll(history) }
 
-    fun findRelatedByIteration(iterationId: UUID): List<History> = historyRepository
-        .findAllByIterationIdOrderByCreateDate(iterationId)
-        .orElseThrow { throw EntityNotFoundException("No history records found for iteration [$iterationId].") }
+    fun findRelatedByChapter(chapterId: UUID): List<History> = historyRepository
+        .findAllByChapterIdOrderByCreateDate(chapterId)
+        .orElseThrow { throw EntityNotFoundException("No history records found for chapter [$chapterId].") }
 
-    fun findRelatedByTribe(tribeId: UUID): List<History> = historyRepository
-        .findAllByTribeIdOrderByCreateDate(tribeId)
-        .orElseThrow { throw EntityNotFoundException("No history records found for tribe [$tribeId].") }
+    fun findRelatedByMember(memberId: UUID): List<History> = historyRepository
+        .findAllByMemberIdOrderByCreateDate(memberId)
+        .orElseThrow { throw EntityNotFoundException("No history records found for member [$memberId].") }
 
     fun findRelatedBySquad(squadId: UUID): List<History> = historyRepository
         .findAllBySquadIdOrderByCreateDate(squadId)
         .orElseThrow { throw EntityNotFoundException("No history records found for squad [$squadId].") }
 
-    fun findRelatedByMember(memberId: UUID): List<History> = historyRepository
-        .findAllByMemberIdOrderByCreateDate(memberId)
-        .orElseThrow { throw EntityNotFoundException("No history records found for member [$memberId].") }
+    fun findRelatedByTribe(tribeId: UUID): List<History> = historyRepository
+        .findAllByTribeIdOrderByCreateDate(tribeId)
+        .orElseThrow { throw EntityNotFoundException("No history records found for tribe [$tribeId].") }
+
+    fun findRelatedByIteration(iterationId: UUID): List<History> = historyRepository
+        .findAllByIterationIdOrderByCreateDate(iterationId)
+        .orElseThrow { throw EntityNotFoundException("No history records found for iteration [$iterationId].") }
 
     fun findAllByCreateDateBefore(createDate: Instant): List<History> = historyRepository
         .findAllByCreateDateBeforeOrderByCreateDate(createDate)

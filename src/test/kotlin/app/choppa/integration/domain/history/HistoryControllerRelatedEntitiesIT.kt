@@ -31,7 +31,7 @@ internal class HistoryControllerRelatedEntitiesIT @Autowired constructor(
     @Nested
     inner class HappyPath {
         @ParameterizedTest
-        @ValueSource(strings = ["iteration", "tribe", "squad", "member"])
+        @ValueSource(strings = ["iteration", "tribe", "squad", "member", "chapter"])
         fun `LIST history records by related entity id`(relatedEntity: String) {
             val id = randomUUID()
             val relatedHistory = HistoryFactory.create(2)
@@ -50,6 +50,7 @@ internal class HistoryControllerRelatedEntitiesIT @Autowired constructor(
 
     private fun findHistoryRelatedBy(relatedEntity: String, id: UUID): List<History> {
         return when (relatedEntity) {
+            "chapter" -> historyService.findRelatedByChapter(id)
             "member" -> historyService.findRelatedByMember(id)
             "squad" -> historyService.findRelatedBySquad(id)
             "tribe" -> historyService.findRelatedByTribe(id)

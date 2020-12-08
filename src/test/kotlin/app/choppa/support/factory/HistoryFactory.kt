@@ -1,5 +1,6 @@
 package app.choppa.support.factory
 
+import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.history.History
 import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.member.Member
@@ -16,7 +17,7 @@ class HistoryFactory {
          *
          * @return History
          */
-        fun create(): History = History(Iteration(), Tribe(), Squad(), Member())
+        fun create(): History = History(Iteration(), Tribe(), Squad(), Member(), Chapter())
 
         /**
          * Creates X amount of history records with no relation at all.
@@ -44,17 +45,18 @@ class HistoryFactory {
         fun create(
             tribe: Tribe,
             currentIteration: Iteration = Iteration(
-                number = if (tribe.history.isEmpty()) 1 else tribe.history.last().iteration.number + 1
+                number = if (tribe.history.isEmpty()) 1 else tribe.history.last().iteration?.number?.plus(1) ?: 1
             ),
             createDate: Instant = now()
         ): MutableList<History> = tribe.apply {
             this.squads.forEach { squad ->
                 squad.members.forEach { member ->
-                    History(currentIteration, tribe, squad, member, createDate).apply {
+                    History(currentIteration, tribe, squad, member, member.chapter, createDate).apply {
                         currentIteration.history.add(this)
                         tribe.history.add(this)
                         squad.history.add(this)
                         member.history.add(this)
+                        member.chapter.history.add(this)
                     }
                 }
             }

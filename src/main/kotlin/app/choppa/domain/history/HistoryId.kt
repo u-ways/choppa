@@ -7,9 +7,10 @@ import java.util.UUID
 
 @NoArg
 data class HistoryId(
-    val iteration: UUID,
-    val tribe: UUID,
-    val squad: UUID,
-    val member: UUID,
+    val iteration: UUID?,
+    val tribe: UUID?,
+    val squad: UUID?,
+    val member: UUID?,
+    val chapter: UUID?,
     val createDate: Instant = Instant.now()
 ) : Serializable

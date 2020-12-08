@@ -9,7 +9,7 @@ enum class Filter : Contract {
     },
     OLDEST {
         override fun invoke(members: MutableList<Member>, amount: Int): MutableList<Member> = members.apply {
-            if (this.count() > 1) this.sortBy { it.history.last().iteration.startDate }
+            if (this.count() > 1) this.sortBy { it.history.last().iteration?.startDate }
         }.take(amount).toMutableList()
     };
 }

@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.iteration
 
+import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
 import app.choppa.domain.history.History
 import app.choppa.domain.history.HistoryService
 import app.choppa.domain.iteration.Iteration
@@ -51,7 +52,8 @@ internal class IterationServiceRelatedEntitiesIT @Autowired constructor(
                 currentIteration,
                 UNASSIGNED_TRIBE,
                 UNASSIGNED_SQUAD,
-                memberService.save(relatedMember)
+                memberService.save(relatedMember),
+                relatedMember.chapter
             )
         )
 
@@ -72,7 +74,8 @@ internal class IterationServiceRelatedEntitiesIT @Autowired constructor(
                 currentIteration,
                 UNASSIGNED_TRIBE,
                 squadService.save(relatedSquad),
-                memberService.save(Member())
+                memberService.save(Member()),
+                UNASSIGNED_ROLE
             )
         )
 
@@ -93,7 +96,8 @@ internal class IterationServiceRelatedEntitiesIT @Autowired constructor(
                 currentIteration,
                 tribeService.save(relatedTribe),
                 UNASSIGNED_SQUAD,
-                memberService.save(Member())
+                memberService.save(Member()),
+                UNASSIGNED_ROLE
             )
         )
 

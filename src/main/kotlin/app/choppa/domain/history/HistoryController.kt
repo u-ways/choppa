@@ -1,6 +1,7 @@
 package app.choppa.domain.history
 
 import app.choppa.domain.base.BaseController.Companion.API_PREFIX
+import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
@@ -31,6 +32,7 @@ class HistoryController(
         @QueryComponent(Tribe::class) @RequestParam(name = "tribe", required = false) tribeId: UUID?,
         @QueryComponent(Squad::class) @RequestParam(name = "squad", required = false) squadId: UUID?,
         @QueryComponent(Member::class) @RequestParam(name = "member", required = false) memberId: UUID?,
+        @QueryComponent(Chapter::class) @RequestParam(name = "chapter", required = false) chapterId: UUID?,
         @RequestParam(name = "before", required = false) before: Long?,
         @RequestParam(name = "after", required = false) after: Long?,
     ): ResponseEntity<List<History>> = ok().body(
@@ -39,6 +41,7 @@ class HistoryController(
             tribeId is UUID -> historyService.findRelatedByTribe(tribeId)
             squadId is UUID -> historyService.findRelatedBySquad(squadId)
             memberId is UUID -> historyService.findRelatedByMember(memberId)
+            chapterId is UUID -> historyService.findRelatedByChapter(chapterId)
             before is Long -> historyService.findAllByCreateDateBefore(ofEpochMilli(before))
             after is Long -> historyService.findAllByCreateDateAfter(ofEpochMilli(after))
             else -> historyService.find()

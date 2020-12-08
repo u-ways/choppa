@@ -1,5 +1,6 @@
 package app.choppa.acceptance.domain.history
 
+import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.history.History
 import app.choppa.domain.history.HistoryId
 import app.choppa.domain.history.HistoryRepository
@@ -30,7 +31,7 @@ internal class HistoryServiceTest {
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = History(Iteration(), Tribe(), Squad(), Member())
+        val entity = History(Iteration(), Tribe(), Squad(), Member(), Chapter())
 
         every { repository.save(entity) } returns entity
 
@@ -42,9 +43,23 @@ internal class HistoryServiceTest {
     }
 
     @Test
+    fun `Given existing entities related by chapter, when service looks for existing entities by chapter id, then service should find using repository and return existing entities related by chapter`() {
+        val relatedChapter = Chapter()
+        val existingRecord = History(Iteration(), Tribe(), Squad(), Member(), relatedChapter)
+
+        every { repository.findAllByChapterIdOrderByCreateDate(relatedChapter.id) } returns listOf(existingRecord)
+
+        val foundRecords = service.findRelatedByChapter(relatedChapter.id)
+
+        foundRecords shouldBeEqualTo listOf(existingRecord)
+
+        verify(exactly = 1) { repository.findAllByChapterIdOrderByCreateDate(relatedChapter.id) }
+    }
+
+    @Test
     fun `Given existing entities related by member, when service looks for existing entities by member id, then service should find using repository and return existing entities related by member`() {
         val relatedMember = Member()
-        val existingRecord = History(Iteration(), Tribe(), Squad(), relatedMember)
+        val existingRecord = History(Iteration(), Tribe(), Squad(), relatedMember, Chapter())
 
         every { repository.findAllByMemberIdOrderByCreateDate(relatedMember.id) } returns listOf(existingRecord)
 
@@ -58,7 +73,7 @@ internal class HistoryServiceTest {
     @Test
     fun `Given existing entities related by squad, when service looks for existing entities by squad id, then service should find using repository and return existing entities related by squad`() {
         val relatedSquad = Squad()
-        val existingRecord = History(Iteration(), Tribe(), relatedSquad, Member())
+        val existingRecord = History(Iteration(), Tribe(), relatedSquad, Member(), Chapter())
 
         every { repository.findAllBySquadIdOrderByCreateDate(relatedSquad.id) } returns listOf(existingRecord)
 
@@ -72,7 +87,7 @@ internal class HistoryServiceTest {
     @Test
     fun `Given existing entities related by tribe, when service looks for existing entities by tribe id, then service should find using repository and return existing entities related by tribe`() {
         val relatedTribe = Tribe()
-        val existingRecord = History(Iteration(), relatedTribe, Squad(), Member())
+        val existingRecord = History(Iteration(), relatedTribe, Squad(), Member(), Chapter())
 
         every { repository.findAllByTribeIdOrderByCreateDate(relatedTribe.id) } returns listOf(existingRecord)
 
@@ -86,7 +101,7 @@ internal class HistoryServiceTest {
     @Test
     fun `Given existing entities related by iteration, when service looks for existing entities by iteration id, then service should find using repository and return existing entities related by iteration`() {
         val relatedIteration = Iteration()
-        val existingRecord = History(relatedIteration, Tribe(), Squad(), Member())
+        val existingRecord = History(relatedIteration, Tribe(), Squad(), Member(), Chapter())
 
         every { repository.findAllByIterationIdOrderByCreateDate(relatedIteration.id) } returns listOf(existingRecord)
 
@@ -100,7 +115,7 @@ internal class HistoryServiceTest {
     @Test
     fun `Given existing entities related by createDate, when service looks for existing entities by createDate id, then service should find using repository and return existing entities related by createDate`() {
         val createDate = now()
-        val existingRecord = History(Iteration(), Tribe(), Squad(), Member(), createDate)
+        val existingRecord = History(Iteration(), Tribe(), Squad(), Member(), Chapter(), createDate)
 
         every { repository.findAllByCreateDateBeforeOrderByCreateDate(createDate) } returns listOf(existingRecord)
 
@@ -113,8 +128,14 @@ internal class HistoryServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val existingEntity = History(Iteration(), Tribe(), Squad(), Member())
-        val id = HistoryId(existingEntity.iteration.id, existingEntity.tribe.id, existingEntity.squad.id, existingEntity.member.id)
+        val existingEntity = History(Iteration(), Tribe(), Squad(), Member(), Chapter())
+        val id = HistoryId(
+            existingEntity.iteration!!.id,
+            existingEntity.tribe!!.id,
+            existingEntity.squad!!.id,
+            existingEntity.member!!.id,
+            existingEntity.chapter!!.id
+        )
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(id) } returns empty()

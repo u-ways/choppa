@@ -1,6 +1,7 @@
 package app.choppa.domain.chapter
 
 import app.choppa.domain.base.BaseModel
+import app.choppa.domain.history.History
 import app.choppa.domain.member.Member
 import app.choppa.utils.Color.Companion.GREY
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -33,6 +34,9 @@ data class Chapter(
 
     @OneToMany(mappedBy = "chapter")
     val members: MutableList<Member> = mutableListOf(),
+
+    @OneToMany(mappedBy = "chapter")
+    val history: MutableList<History> = mutableListOf()
 ) : BaseModel {
     override fun toString() = "Chapter(id=$id, name=$name)"
 

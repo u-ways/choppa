@@ -1,5 +1,6 @@
 package app.choppa.acceptance.domain.history
 
+import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.history.History
 import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.member.Member
@@ -19,6 +20,7 @@ class HistoryTest {
             .withPrefabValues(Tribe::class.java, Tribe(), Tribe())
             .withPrefabValues(Squad::class.java, Squad(), Squad())
             .withPrefabValues(Member::class.java, Member(), Member())
+            .withPrefabValues(Chapter::class.java, Chapter(), Chapter())
             .verify()
     }
 }

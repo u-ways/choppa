@@ -1,6 +1,5 @@
 package app.choppa.support.factory
 
-import app.choppa.domain.history.History
 import app.choppa.domain.tribe.Tribe
 
 class TribeFactory {
@@ -16,24 +15,8 @@ class TribeFactory {
         fun create(
             squadAmount: Int = 0,
             membersPerSquadAmount: Int = 0
-        ): Tribe {
-            val squads = SquadFactory.create(squadAmount, membersPerSquadAmount)
-            return Tribe(squads = squads).apply {
-                this.squads.forEach { squad ->
-                    squad.members.forEach { member ->
-                        /* FIXME(u-ways) #124 this could be greatly simplified when the history factory is created. */
-                        member.history.add(
-                            History(
-                                iteration = IterationFactory.create(),
-                                squad = squad,
-                                member = member,
-                                tribe = this
-                            )
-                        )
-                    }
-                }
-            }
-        }
+        ): Tribe = Tribe(squads = SquadFactory.create(squadAmount, membersPerSquadAmount))
+            .apply { HistoryFactory.create(this, IterationFactory.create()) }
 
         /**
          * Create X amount of tribes with Y amount of squads with Z amount of members in each squad.

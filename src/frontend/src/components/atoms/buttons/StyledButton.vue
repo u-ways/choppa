@@ -32,7 +32,7 @@ export default {
       validator: (value) => ["button", "link"].indexOf(value) !== -1,
     },
     link: {
-      type: String,
+      type: Object,
     },
     linkReplace: {
       default: false,

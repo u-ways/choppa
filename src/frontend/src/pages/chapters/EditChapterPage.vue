@@ -39,7 +39,7 @@
             </div>
           </div>
         </section>
-        <section class="mt-5" v-if="members.length > 0">
+        <section class="mt-5" v-if="members && members.length > 0">
           <FormHeader>
             <template v-slot:heading>Related Members</template>
             <template v-slot:subheading>These members belong to Chapter {{chapterNameHeader}}.</template>

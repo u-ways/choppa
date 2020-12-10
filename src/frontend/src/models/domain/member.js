@@ -32,4 +32,8 @@ export default class Member {
   get relations() {
     return this._relations;
   }
+
+  get path() {
+    return this._id.replace("members/", "");
+  }
 }

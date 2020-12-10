@@ -7,8 +7,9 @@
           <span class="font-bold truncate">{{squadNameHeader}}</span>
         </div>
         <div class="flex-shrink-0">
-          <StyledButton type="link" variant="secondary" css="px-2 sm:pr-5 sm:pl-4"
-                        :link="`/${squad.relations.tribe}`">
+          <StyledButton type="link" variant="secondary"
+                        css="px-2 sm:pr-5 sm:pl-4"
+                        :link="{ name: 'view-tribe', params: { id: squad.relations.tribeId } }">
             <div class="inline sm:pr-1">
               <font-awesome-icon icon="eye"/>
             </div>
@@ -57,14 +58,12 @@
           </FormHeader>
           <div class="pt-3">
             <div v-if="squad.members.length > 0" class="flex flex-col gap-2">
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                <router-link v-for="member in squad.members" v-bind:key="member.id" :to="`/${member.id}`"
-                             class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
-                  <MemberCard :member="member"/>
-                </router-link>
-              </div>
+              <MembersOverview :members="squad.members"/>
               <div class="self-end">
-                <StyledButton type="link" link="/edit/squad/create" variant="secondary" css="px-2 pr-5 pl-4">
+                <StyledButton type="link"
+                              :link="{ name: '404' }"
+                              variant="secondary"
+                              css="px-2 pr-5 pl-4">
                   <font-awesome-icon icon="plus"/>
                   New Member
                 </StyledButton>
@@ -82,7 +81,10 @@
             <div v-if="chapters.length > 0" class="flex flex-col gap-2">
               <ChapterOverview :chapters="chapters"/>
               <div class="self-end">
-                <StyledButton type="link" link="/edit/squad/create" variant="secondary" css="px-2 pr-5 pl-4">
+                <StyledButton type="link"
+                              :link="{ name: '404' }"
+                              variant="secondary"
+                              css="px-2 pr-5 pl-4">
                   <font-awesome-icon icon="plus"/>
                   New Chapter
                 </StyledButton>
@@ -119,17 +121,17 @@ import ColorPaletteWithLabel from "@/components/forms/groups/ColorPaletteWithLab
 import { getTribe } from "@/config/api/tribe.api";
 import SquadsOverview from "@/components/squads/SquadsOverview";
 import NoMembersToShowAlert from "@/components/member/NoMembersToShowAlert";
-import MemberCard from "@/components/member/MemberCard";
 import { getChaptersByQuery } from "@/config/api/chapter.api";
 import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
 import ChapterOverview from "@/components/chapters/ChapterOverview";
+import MembersOverview from "@/components/member/MembersOverview";
 
 export default {
   name: "EditSquadPage",
   components: {
+    MembersOverview,
     ChapterOverview,
     NoChaptersToShowAlert,
-    MemberCard,
     NoMembersToShowAlert,
     SquadsOverview,
     ColorPaletteWithLabel,
@@ -163,6 +165,7 @@ export default {
     },
   },
   async mounted() {
+    console.log("called");
     try {
       this.squad = await getSquad({ id: this.$route.params.id });
       this.tribe = await getTribe({ url: this.squad.relations.tribe });

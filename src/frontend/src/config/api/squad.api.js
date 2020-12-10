@@ -5,11 +5,11 @@ import { deserializeMember } from "@/config/api/member.api";
 async function deserializeSquad(json) {
   return new Squad({
     id: json.id,
-    tribeId: json.tribe,
     name: json.name,
     members: await Promise.all(json.members.map((member) => deserializeMember(member))),
     color: json.color,
     relations: {
+      tribeId: json.tribe.replace("tribes/", ""),
       tribe: json.tribe,
       chapters: json.chapters,
       iterations: json.iterations,

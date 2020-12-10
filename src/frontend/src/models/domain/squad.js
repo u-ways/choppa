@@ -39,4 +39,8 @@ export default class Squad {
   get relations() {
     return this._relations;
   }
+
+  get path() {
+    return this._id.replace("squads/", "");
+  }
 }

@@ -34,4 +34,8 @@ export default class Chapter {
   get relations() {
     return this._relations;
   }
+
+  get path() {
+    return this._id.replace("chapters/", "");
+  }
 }

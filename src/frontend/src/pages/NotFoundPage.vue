@@ -10,7 +10,7 @@
           <p class="text-sm md:text-md">The page you're looking for doesn't exist.</p>
           <div class="mt-4 flex flex-row justify-center gap-1">
             <StyledButton type="button" variant="secondary" @click="goBack">Go Back</StyledButton>
-            <StyledButton type="link" link="/" :replace="true" variant="primary">Home</StyledButton>
+            <StyledButton type="link" :link="{ name: 'home' }" :replace="true" variant="primary">Home</StyledButton>
           </div>
         </div>
       </div>

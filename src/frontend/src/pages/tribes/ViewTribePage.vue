@@ -15,8 +15,11 @@
               <span>{{ tribe.allDistinctMembers().length }} Distinct Members</span>
             </div>
           </div>
-          <div class="flex-shrink-0">
-            <StyledButton type="link" variant="secondary" css="px-2 sm:pr-5 sm:pl-4" :link="`/${tribe.id}/edit`">
+          <div class="flex-shrink-0" v-if="tribe">
+            <StyledButton type="link"
+                          variant="secondary"
+                          css="px-2 sm:pr-5 sm:pl-4"
+                          :link="{ name: 'edit-tribe', params: { id: tribe.path } }">
               <div class="inline sm:pr-1">
                 <font-awesome-icon icon="pencil-alt"/>
               </div>

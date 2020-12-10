@@ -1,6 +1,7 @@
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-    <router-link v-for="squad in squads" v-bind:key="squad.id" :to="`/${squad.id}`"
+    <router-link :to="{ name: 'edit-squad', params: { id: squad.path } }"
+                 v-for="squad in squads" v-bind:key="squad.id"
                  class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
       <SquadCard :squad="squad"
                  :show-header-only="true"

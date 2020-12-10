@@ -8,7 +8,7 @@
         </div>
         <div class="flex-shrink-0">
           <StyledButton type="link" variant="secondary" css="px-2 sm:pr-5 sm:pl-4"
-                        :link="`/${tribe.id}`">
+                        :link="{ name: 'view-tribe', params: { id: tribe.path } }">
             <div class="inline sm:pr-1">
               <font-awesome-icon icon="eye"/>
             </div>
@@ -54,7 +54,10 @@
             <div v-if="tribe.squads.length > 0" class="flex flex-col gap-2">
               <SquadsOverview :squads="tribe.squads"/>
               <div class="self-end">
-                <StyledButton type="link" link="/edit/squad/create" variant="secondary" css="px-2 pr-5 pl-4">
+                <StyledButton type="link"
+                              :link="{ name: '404' }"
+                              variant="secondary"
+                              css="px-2 pr-5 pl-4">
                   <font-awesome-icon icon="plus"/>
                   New Squad
                 </StyledButton>
@@ -72,7 +75,10 @@
             <div v-if="allChapters.length > 0" class="flex flex-col gap-2">
               <ChapterOverview :chapters="allChapters"/>
               <div class="self-end">
-                <StyledButton type="link" link="/edit/squad/create" variant="secondary" css="px-2 pr-5 pl-4">
+                <StyledButton type="link"
+                              :link="{ name: '404' }"
+                              variant="secondary"
+                              css="px-2 pr-5 pl-4">
                   <font-awesome-icon icon="plus"/>
                   New Chapter
                 </StyledButton>

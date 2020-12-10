@@ -62,7 +62,8 @@
             <p>Check out this handy demonstration!</p>
             <div class="pt-12">
               <StyledButton class="text-center" type="link"
-                            link="/tribes/00000000-0000-0000-0000-000000000001/" :replace="true"
+                            :link="{ name: 'view-tribe', params: { id: '00000000-0000-0000-0000-000000000001' } }"
+                            :replace="true"
                             variant="custom" css="bg-rose-800">Demo
               </StyledButton>
             </div>

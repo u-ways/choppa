@@ -39,4 +39,8 @@ export default class Tribe {
 
     return Object.values(uniques);
   }
+
+  get path() {
+    return this._id.replace("tribes/", "");
+  }
 }

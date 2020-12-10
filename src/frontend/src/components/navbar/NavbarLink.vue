@@ -18,7 +18,7 @@ export default {
   },
   props: {
     url: {
-      type: String,
+      type: Object,
       required: true,
     },
     css: {

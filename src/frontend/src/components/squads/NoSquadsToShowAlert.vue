@@ -6,7 +6,7 @@
       Create your first Squad for this Tribe.
     </p>
     <div class="inline-block mx-auto">
-      <StyledButton type="link" link="/edit/squad/create" variant="primary">
+      <StyledButton type="link" :link="{ name: 'create-squad', query: { tribe: '0001' } }" variant="primary">
         Create Squad
       </StyledButton>
     </div>

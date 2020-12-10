@@ -5,40 +5,59 @@ Vue.use(VueRouter);
 
 const routes = [
   {
+    name: "home",
     path: "/",
     component: () => import("@/pages/HomePage"),
   },
   {
+    name: "edit-tribe",
     path: "/tribes/:id/edit",
     component: () => import("@/pages/tribes/EditTribePage"),
   },
   {
+    name: "view-tribe",
     path: "/tribes/:id",
     component: () => import("@/pages/tribes/ViewTribePage"),
   },
   {
-    path: "/chapters/:id",
+    name: "edit-chapter",
+    path: "/chapters/:id/edit",
     component: () => import("@/pages/chapters/EditChapterPage"),
   },
   {
-    path: "/members/:id",
+    name: "edit-member",
+    path: "/members/:id/edit",
     component: () => import("@/pages/members/EditMemberPage"),
   },
   {
-    path: "/squads/:id",
+    name: "create-squad",
+    path: "/squads/create",
     component: () => import("@/pages/squads/EditSquadPage"),
   },
   {
+    name: "edit-squad",
+    path: "/squads/:id/edit",
+    component: () => import("@/pages/squads/EditSquadPage"),
+  },
+  {
+    name: "external-github",
     path: "/external/github",
     beforeEnter() { window.location.href = "https://github.com/u-ways/chopper"; },
   },
   {
+    name: "external-production",
     path: "/external/production",
     beforeEnter() { window.location.href = "https://www.choppa.app"; },
   },
   {
+    name: "external-staging",
     path: "/external/staging",
     beforeEnter() { window.location.href = "https://choppa-staging.herokuapp.com/"; },
+  },
+  {
+    name: "404",
+    path: "/404",
+    component: () => import("@/pages/NotFoundPage"),
   },
   {
     path: "/:pathMatch(.*)*",

@@ -1,6 +1,6 @@
 <template>
   <StandardPageTemplate>
-    <template v-slot:page-header v-if="tribe && chapters">
+    <template v-slot:page-header v-if="tribe && chaptersInUse">
       <div class="flex flex-row place-content-between place-items-center">
         <div class="text-3xl font-normal truncate">
           <span class="hidden sm:inline">Tribe </span>
@@ -17,7 +17,7 @@
         </div>
       </div>
     </template>
-    <template v-slot:fixed-width v-if="tribe && chapters">
+    <template v-slot:fixed-width v-if="tribe && chaptersInUse">
       <div class="px-3 py-5">
         <section>
           <FormHeader>
@@ -65,6 +65,24 @@
         </section>
         <section class="mt-5">
           <FormHeader>
+            <template v-slot:heading>Chapters</template>
+            <template v-slot:subheading>Now lets add some Chapters.</template>
+          </FormHeader>
+          <div class="pt-3">
+            <div v-if="allChapters.length > 0" class="flex flex-col gap-2">
+              <ChapterOverview :chapters="allChapters"/>
+              <div class="self-end">
+                <StyledButton type="link" link="/edit/squad/create" variant="secondary" css="px-2 pr-5 pl-4">
+                  <font-awesome-icon icon="plus"/>
+                  New Chapter
+                </StyledButton>
+              </div>
+            </div>
+            <NoChaptersToShowAlert v-else/>
+          </div>
+        </section>
+        <section class="mt-5" v-if="tribe.allDistinctMembers().length > 0 && chaptersInUse.length > 0">
+          <FormHeader>
             <template v-slot:heading>Rotation</template>
             <template v-slot:subheading>Is it time to rotate the tribe?</template>
           </FormHeader>
@@ -81,7 +99,7 @@
               <div>
                 <StandardLabel for-id="rotation-chapter" label-text="Chapter To Rotate"/>
                 <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                  <ChapterRadioButton v-for="chapter in chapters"
+                  <ChapterRadioButton v-for="chapter in chaptersInUse"
                                       v-bind:key="chapter.id"
                                       :chapter="chapter"
                                       :selected-chapter="rotation.chapter"
@@ -161,16 +179,20 @@ import { mapActions } from "vuex";
 import { toastVariants } from "@/enums/toastVariants";
 import ToastData from "@/models/toastData";
 import SquadsOverview from "@/components/squads/SquadsOverview";
-import { getChaptersByQuery } from "@/config/api/chapter.api";
+import { getChapters, getChaptersByQuery } from "@/config/api/chapter.api";
 import ChapterRadioButton from "@/components/chapters/ChapterRadioButton";
 import StandardLabel from "@/components/forms/inputs/StandardLabel";
 import StandardRadio from "@/components/forms/inputs/StandardRadio";
 import { rotationFilter } from "@/enums/rotationFilter";
 import { rotationStrategy } from "@/enums/rotationStrategy";
+import ChapterOverview from "@/components/chapters/ChapterOverview";
+import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
 
 export default {
   name: "EditTribePage",
   components: {
+    NoChaptersToShowAlert,
+    ChapterOverview,
     StandardRadio,
     StandardLabel,
     ChapterRadioButton,
@@ -189,7 +211,8 @@ export default {
   data() {
     return {
       tribe: undefined,
-      chapters: undefined,
+      allChapters: undefined,
+      chaptersInUse: undefined,
       rotation: {
         amount: 1,
         chapter: undefined,
@@ -227,7 +250,8 @@ export default {
   async mounted() {
     try {
       this.tribe = await getTribe({ id: this.$route.params.id });
-      this.chapters = await getChaptersByQuery({ url: this.tribe.relations.chapters });
+      this.allChapters = await getChapters();
+      this.chaptersInUse = await getChaptersByQuery({ url: this.tribe.relations.chapters });
     } catch (error) {
       await this.$router.replace("/not-found");
     }
@@ -252,7 +276,7 @@ export default {
       }
     },
     onChapterChanged(event) {
-      const [selectedChapter] = this.chapters.filter((chapter) => chapter.id === event.target.value);
+      const [selectedChapter] = this.chaptersInUse.filter((chapter) => chapter.id === event.target.value);
       this.rotation.chapter = selectedChapter;
     },
     async rotate() {

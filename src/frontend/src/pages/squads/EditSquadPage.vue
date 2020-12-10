@@ -80,16 +80,7 @@
           </FormHeader>
           <div class="pt-3">
             <div v-if="chapters.length > 0" class="flex flex-col gap-2">
-              <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                <router-link :to="`/${chapter.id}`" v-for="chapter in chapters" v-bind:key="chapter.id"
-                             class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
-                  <div :style="{ 'border-color': chapter.color }"
-                    class="bg-white dark:bg-gray-700 shadow rounded-sm ring-1 ring-black ring-opacity-5 px-3 py-4
-                       border-l-4">
-                    {{ chapter.name }}
-                  </div>
-                </router-link>
-              </div>
+              <ChapterOverview :chapters="chapters"/>
               <div class="self-end">
                 <StyledButton type="link" link="/edit/squad/create" variant="secondary" css="px-2 pr-5 pl-4">
                   <font-awesome-icon icon="plus"/>
@@ -131,10 +122,12 @@ import NoMembersToShowAlert from "@/components/member/NoMembersToShowAlert";
 import MemberCard from "@/components/member/MemberCard";
 import { getChaptersByQuery } from "@/config/api/chapter.api";
 import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
+import ChapterOverview from "@/components/chapters/ChapterOverview";
 
 export default {
   name: "EditSquadPage",
   components: {
+    ChapterOverview,
     NoChaptersToShowAlert,
     MemberCard,
     NoMembersToShowAlert,

@@ -2,6 +2,16 @@ import httpClient from "@/config/api/http-client";
 import Squad from "@/models/domain/squad";
 import { deserializeMember } from "@/config/api/member.api";
 
+function serializeSquad(squad) {
+  return {
+    id: squad.id,
+    tribe: squad.relations.tribeId,
+    name: squad.name,
+    color: squad.color,
+    members: squad.members.map((member) => member.id),
+  };
+}
+
 async function deserializeSquad(json) {
   return new Squad({
     id: json.id,
@@ -39,11 +49,9 @@ export async function getSquadsByQuery(config) {
 }
 
 export async function saveSquad(config) {
-  await httpClient.put(config.squad.id, {
-    id: config.squad.id,
-    tribe: config.squad.relations.tribe,
-    name: config.squad.name,
-    color: config.squad.color,
-    members: config.squad.members.map((member) => member.id),
-  });
+  await httpClient.put(config.squad.id, serializeSquad(config.squad));
+}
+
+export async function createSquad(config) {
+  await httpClient.post("squads", [serializeSquad(config.squad)]);
 }

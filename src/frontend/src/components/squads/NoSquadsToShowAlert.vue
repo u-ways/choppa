@@ -6,7 +6,7 @@
       Create your first Squad for this Tribe.
     </p>
     <div class="inline-block mx-auto">
-      <StyledButton type="link" :link="{ name: 'create-squad', query: { tribe: '0001' } }" variant="primary">
+      <StyledButton type="link" :link="{ name: 'create-squad', query: { tribe: tribe.path } }" variant="primary">
         Create Squad
       </StyledButton>
     </div>
@@ -15,11 +15,18 @@
 
 <script>
 import StyledButton from "@/components/atoms/buttons/StyledButton";
+import Tribe from "@/models/domain/tribe";
 
 export default {
   name: "NoSquadsToShowAlert",
   components: {
     StyledButton,
+  },
+  props: {
+    tribe: {
+      type: Tribe,
+      required: true,
+    },
   },
 };
 </script>

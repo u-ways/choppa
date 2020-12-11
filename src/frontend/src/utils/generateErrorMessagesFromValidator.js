@@ -13,7 +13,7 @@ export function generateErrorMessagesFromValidator(label, validator) {
 }
 
 function addIfExist(errorMessages, validator, label, validationName, message) {
-  if (validator[validationName]) {
+  if (validator[validationName] !== undefined) {
     errorMessages[validationName] = `${label} ${message(validator.$params[validationName])}`;
   }
 }

@@ -123,14 +123,14 @@ export default {
       const [selectedChapter] = this.chapters.filter((chapter) => chapter.id === event.target.value);
       this.member.chapter = selectedChapter;
     },
-    save() {
+    async save() {
       if (this.$v.$invalid) {
         return;
       }
 
       try {
-        saveMember({ member: this.member });
-        this.$router.go(-1);
+        await saveMember({ member: this.member });
+        await this.$router.go(-1);
         this.newToast(new ToastData({
           variant: toastVariants.SUCCESS,
           message: `Member ${this.member.name} has been updated`,

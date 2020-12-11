@@ -1,6 +1,6 @@
 <template>
   <StandardPageTemplate>
-    <template v-slot:page-header v-if="squad && chapters">
+    <template v-slot:page-header v-if="squad">
       <div class="flex flex-row place-content-between place-items-center">
         <div class="text-3xl font-normal truncate">
           <span class="hidden sm:inline">Squad </span>
@@ -18,7 +18,7 @@
         </div>
       </div>
     </template>
-    <template v-slot:fixed-width v-if="squad && chapters">
+    <template v-slot:fixed-width v-if="squad">
       <div class="px-3 py-5">
         <section>
           <FormHeader>
@@ -38,6 +38,7 @@
                                    label-text="Squad Color"
                                    :current-color="squad.color"
                                    @colorSelected="(newColor) => squad.color = newColor"
+                                   :validator="$v.squad.color"
             />
             <div class="self-end flex flex-row gap-1">
               <StyledButton type="button" variant="secondary" css="px-2 pr-5 pl-4" @click="$router.go(-1)">
@@ -46,12 +47,17 @@
               </StyledButton>
               <StyledButton type="button" variant="primary" css="px-2 pr-5 pl-4" @click="save">
                 <font-awesome-icon icon="check"/>
-                Save
+                <template v-if="creatingSquad">
+                  Create
+                </template>
+                <template v-else>
+                  Save
+                </template>
               </StyledButton>
             </div>
           </div>
         </section>
-        <section class="mt-5">
+        <section class="mt-5" v-if="!creatingSquad">
           <FormHeader>
             <template v-slot:heading>Members</template>
             <template v-slot:subheading>Now lets add some Members.</template>
@@ -69,10 +75,10 @@
                 </StyledButton>
               </div>
             </div>
-            <NoMembersToShowAlert v-else/>
+            <NoMembersToShowAlert v-else :squad="squad"/>
           </div>
         </section>
-        <section class="mt-5">
+        <section class="mt-5" v-if="!creatingSquad && chapters">
           <FormHeader>
             <template v-slot:heading>Chapters</template>
             <template v-slot:subheading>Now lets add some Chapters.</template>
@@ -93,7 +99,7 @@
             <NoChaptersToShowAlert v-else/>
           </div>
         </section>
-        <section class="mt-5" v-if="tribe && allSquadsExceptOneBeingEdited.length > 0">
+        <section class="mt-5" v-if="!creatingSquad && tribe && allSquadsExceptOneBeingEdited.length > 0">
           <FormHeader>
             <template v-slot:heading>Related Squads</template>
             <template v-slot:subheading>Squads belonging to Tribe {{tribe.name}}.</template>
@@ -112,7 +118,7 @@ import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
-import { getSquad, saveSquad } from "@/config/api/squad.api";
+import { createSquad, getSquad, saveSquad } from "@/config/api/squad.api";
 import { maxLength, minLength, required } from "vuelidate/lib/validators";
 import { mapActions } from "vuex";
 import ToastData from "@/models/toastData";
@@ -125,6 +131,7 @@ import { getChaptersByQuery } from "@/config/api/chapter.api";
 import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
 import ChapterOverview from "@/components/chapters/ChapterOverview";
 import MembersOverview from "@/components/member/MembersOverview";
+import Squad from "@/models/domain/squad";
 
 export default {
   name: "EditSquadPage",
@@ -147,9 +154,13 @@ export default {
     allSquadsExceptOneBeingEdited() {
       return this.tribe.squads.filter((otherSquad) => otherSquad.id !== this.squad.id);
     },
+    saveOrCreateVerb() {
+      return this.creatingSquad ? "created" : "updated";
+    },
   },
   data() {
     return {
+      creatingSquad: false,
       tribe: undefined,
       squad: undefined,
       chapters: undefined,
@@ -162,34 +173,52 @@ export default {
         minLength: minLength(3),
         maxLength: maxLength(100),
       },
+      color: {
+        required,
+      },
     },
   },
   async mounted() {
-    console.log("called");
     try {
-      this.squad = await getSquad({ id: this.$route.params.id });
-      this.tribe = await getTribe({ url: this.squad.relations.tribe });
-      this.chapters = await getChaptersByQuery({ url: this.squad.relations.chapters });
+      if (this.$route.query.tribe) {
+        this.creatingSquad = true;
+        this.squad = new Squad({ relations: { tribeId: this.$route.query.tribe } });
+        this.tribe = await getTribe({ id: this.$route.query.tribe });
+      } else if (this.$route.params.id) {
+        this.creatingSquad = false;
+        this.squad = await getSquad({ id: this.$route.params.id });
+        this.tribe = await getTribe({ url: this.squad.relations.tribe });
+        this.chapters = await getChaptersByQuery({ url: this.squad.relations.chapters });
+      }
     } catch (error) {
       await this.$router.replace("/not-found");
     }
   },
   methods: {
     ...mapActions(["newToast"]),
-    save() {
+    async save() {
       if (this.$v.$invalid) {
         return;
       }
 
       try {
-        saveSquad({ squad: this.squad });
-        this.$router.go(-1);
+        if (this.creatingSquad) {
+          await createSquad({ squad: this.squad });
+        } else {
+          await saveSquad({ squad: this.squad });
+        }
+
+        await this.$router.go(-1);
         this.newToast(new ToastData({
           variant: toastVariants.SUCCESS,
-          message: `Squad ${this.squad.name} has been updated`,
+          message: `Squad ${this.squad.name} has been ${this.saveOrCreateVerb}`,
         }));
       } catch (error) {
-        this.newToast(new ToastData({ variant: toastVariants.ERROR, message: "Save failed, please try again later" }));
+        this.newToast(new ToastData({
+          variant: toastVariants.ERROR,
+          message: `${this.saveOrCreateVerb} failed, please try again later`,
+        }));
+
         throw error;
       }
     },

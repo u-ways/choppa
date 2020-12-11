@@ -25,6 +25,11 @@ const routes = [
     component: () => import("@/pages/chapters/EditChapterPage"),
   },
   {
+    name: "create-member",
+    path: "/members/create",
+    component: () => import("@/pages/members/EditMemberPage"),
+  },
+  {
     name: "edit-member",
     path: "/members/:id/edit",
     component: () => import("@/pages/members/EditMemberPage"),

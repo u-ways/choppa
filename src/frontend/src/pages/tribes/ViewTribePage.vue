@@ -42,7 +42,7 @@
             <SquadCard v-for="squad in tribe.squads" :squad="squad" :key="squad.id"/>
           </div>
           <div v-else class="container mx-auto mt-10">
-            <NoSquadsToShowAlert/>
+            <NoSquadsToShowAlert :tribe="tribe"/>
           </div>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3" v-else>

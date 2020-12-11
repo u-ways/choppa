@@ -42,7 +42,7 @@
         </div>
       </div>
       <div v-else class="py-5 flex-grow flex flex-col content-center place-content-center">
-        <NoMembersToShowAlert/>
+        <NoMembersToShowAlert :squad="squad"/>
       </div>
     </template>
   </div>

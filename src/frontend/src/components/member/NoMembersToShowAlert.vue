@@ -6,7 +6,7 @@
       Add your first member to this Squad.
     </p>
     <div class="inline-block mx-auto">
-      <StyledButton type="link" link="/edit/squad/create" variant="primary">
+      <StyledButton type="link" :link="{ name: 'create-member', query: { squad: squad.path } }" variant="primary">
         Add Member
       </StyledButton>
     </div>
@@ -15,11 +15,18 @@
 
 <script>
 import StyledButton from "@/components/atoms/buttons/StyledButton";
+import Squad from "@/models/domain/squad";
 
 export default {
   name: "NoMembersToShowAlert",
   components: {
     StyledButton,
+  },
+  props: {
+    squad: {
+      type: Squad,
+      required: true,
+    },
   },
 };
 </script>

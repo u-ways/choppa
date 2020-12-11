@@ -55,7 +55,7 @@
               <SquadsOverview :squads="tribe.squads"/>
               <div class="self-end">
                 <StyledButton type="link"
-                              :link="{ name: '404' }"
+                              :link="{ name: 'create-squad', query: { tribe: tribe.path } }"
                               variant="secondary"
                               css="px-2 pr-5 pl-4">
                   <font-awesome-icon icon="plus"/>
@@ -63,7 +63,7 @@
                 </StyledButton>
               </div>
             </div>
-            <NoSquadsToShowAlert v-else />
+            <NoSquadsToShowAlert v-else :tribe="tribe" />
           </div>
         </section>
         <section class="mt-5">
@@ -264,14 +264,14 @@ export default {
   },
   methods: {
     ...mapActions(["newToast"]),
-    save() {
+    async save() {
       if (this.$v.$invalid) {
         return;
       }
 
       try {
-        saveTribe({ tribe: this.tribe });
-        this.$router.go(-1);
+        await saveTribe({ tribe: this.tribe });
+        await this.$router.go(-1);
         this.newToast(new ToastData({
           variant: toastVariants.SUCCESS,
           message: `Tribe ${this.tribe.name} has been updated`,

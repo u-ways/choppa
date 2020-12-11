@@ -92,7 +92,7 @@ export default {
     chapter: {
       name: {
         required,
-        minLength: minLength(3),
+        minLength: minLength(2),
         maxLength: maxLength(100),
       },
     },
@@ -107,14 +107,14 @@ export default {
   },
   methods: {
     ...mapActions(["newToast"]),
-    save() {
+    async save() {
       if (this.$v.$invalid) {
         return;
       }
 
       try {
-        saveChapter({ chapter: this.chapter });
-        this.$router.go(-1);
+        await saveChapter({ chapter: this.chapter });
+        await this.$router.go(-1);
         this.newToast(new ToastData({
           variant: toastVariants.SUCCESS,
           message: `Chapter ${this.chapter.name} has been updated`,

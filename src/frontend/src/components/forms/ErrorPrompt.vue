@@ -25,6 +25,8 @@ export default {
   },
   mounted() {
     this.errorMessages = generateErrorMessagesFromValidator(this.labelText, this.validator);
+    this.updateErrorText();
+
     Object.keys(this.errorMessages).forEach((key) => this.$watch(`validator.${key}`, this.updateErrorText));
   },
   methods: {

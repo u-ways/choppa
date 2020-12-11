@@ -2,6 +2,14 @@ import Member from "@/models/domain/member";
 import { deserializeChapter } from "@/config/api/chapter.api";
 import httpClient from "@/config/api/http-client";
 
+function serializeMember(member) {
+  return {
+    id: member.id,
+    name: member.name,
+    chapter: member.chapter ? member.chapter.id : "",
+  };
+}
+
 export async function deserializeMember(json) {
   return new Member({
     id: json.id,
@@ -36,9 +44,9 @@ export async function getMembersByQuery(config) {
 }
 
 export async function saveMember(config) {
-  await httpClient.put(config.member.id, {
-    id: config.member.id,
-    name: config.member.name,
-    chapter: config.member.chapter ? config.member.chapter.id : "",
-  });
+  await httpClient.put(config.member.id, serializeMember(config.member));
+}
+
+export async function createMember(config) {
+  await httpClient.post("members", [serializeMember(config.member)]);
 }

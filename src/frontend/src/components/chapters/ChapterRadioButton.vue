@@ -3,7 +3,7 @@
                  :input-name="inputName"
                  :value="chapter.id"
                  :id="`${chapter.id}`"
-                 :checked="this.selectedChapter !== undefined && this.selectedChapter.id === this.chapter.id"
+                 :checked="isChecked"
                  :label="chapter.name"
                  class="border-l-4 lowercase"
                  @onChanged="$emit('onChapterChanged', $event)"
@@ -29,7 +29,16 @@ export default {
       required: true,
     },
     selectedChapter: {
-      type: Chapter,
+      type: Object,
+    },
+  },
+  computed: {
+    isChecked() {
+      if (this.selectedChapter) {
+        return this.selectedChapter.id === this.chapter.id;
+      }
+
+      return false;
     },
   },
 };

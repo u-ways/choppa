@@ -67,7 +67,7 @@
               <MembersOverview :members="squad.members"/>
               <div class="self-end">
                 <StyledButton type="link"
-                              :link="{ name: '404' }"
+                              :link="{ name: 'create-member', query: { squad: squad.path } }"
                               variant="secondary"
                               css="px-2 pr-5 pl-4">
                   <font-awesome-icon icon="plus"/>

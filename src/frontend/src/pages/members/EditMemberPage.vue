@@ -23,7 +23,7 @@
                                     :max-length="100"
             />
             <div>
-              <StandardLabel for-id="member-chapter" label-text="Member Chapter"/>
+              <StandardLabel for-id="member-chapter" label-text="Member Chapter" :validator="$v.member.chapter"/>
               <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 <ChapterRadioButton v-for="chapter in chapters"
                                     v-bind:key="chapter.id"
@@ -32,6 +32,7 @@
                                     input-name="member-chapter"
                                     @onChapterChanged="onChapterChanged"/>
               </div>
+              <ErrorPrompt label-text="Member Chapter" :validator="$v.member.chapter"/>
             </div>
             <div class="self-end flex flex-row gap-1">
               <StyledButton type="button" variant="secondary" css="px-2 pr-5 pl-4" @click="$router.go(-1)">
@@ -45,7 +46,7 @@
             </div>
           </div>
         </section>
-        <section class="mt-5" v-if="squads">
+        <section class="mt-5" v-if="!creatingMember && squads">
           <FormHeader>
             <template v-slot:heading>Squads</template>
             <template v-slot:subheading>{{member.name}} belongs to the following Squads.</template>
@@ -60,10 +61,9 @@
 </template>
 
 <script>
-/* eslint-disable */
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import { mapActions } from "vuex";
-import { getMember, saveMember } from "@/config/api/member.api";
+import { createMember, getMember, saveMember } from "@/config/api/member.api";
 import { maxLength, minLength, required } from "vuelidate/lib/validators";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
@@ -73,12 +73,15 @@ import { toastVariants } from "@/enums/toastVariants";
 import StandardLabel from "@/components/forms/inputs/StandardLabel";
 import SquadsOverview from "@/components/squads/SquadsOverview";
 import { getChapters } from "@/config/api/chapter.api";
-import { getSquadsByQuery } from "@/config/api/squad.api";
+import { getSquad, getSquadsByQuery, saveSquad } from "@/config/api/squad.api";
 import ChapterRadioButton from "@/components/chapters/ChapterRadioButton";
+import Member from "@/models/domain/member";
+import ErrorPrompt from "@/components/forms/ErrorPrompt";
 
 export default {
   name: "EditMemberPage",
   components: {
+    ErrorPrompt,
     ChapterRadioButton,
     SquadsOverview,
     StandardLabel,
@@ -91,12 +94,17 @@ export default {
     memberNameHeader() {
       return this.member.name ? this.member.name : "Untitled";
     },
+    saveOrCreateVerb() {
+      return this.creatingMember ? "created" : "updated";
+    },
   },
   data() {
     return {
+      creatingMember: false,
       member: undefined,
       chapters: undefined,
       squads: undefined,
+      selectedSquad: undefined,
     };
   },
   validations: {
@@ -106,13 +114,24 @@ export default {
         minLength: minLength(3),
         maxLength: maxLength(100),
       },
+      chapter: {
+        required,
+      },
     },
   },
   async mounted() {
     try {
-      this.member = await getMember({ id: this.$route.params.id });
-      this.chapters = await getChapters();
-      this.squads = await getSquadsByQuery({ url: this.member.relations.squads });
+      if (this.$route.query.squad) {
+        this.creatingMember = true;
+        this.member = new Member({});
+        this.chapters = await getChapters();
+        this.selectedSquad = await getSquad({ id: this.$route.query.squad });
+      } else if (this.$route.params.id) {
+        this.creatingMember = false;
+        this.member = await getMember({ id: this.$route.params.id });
+        this.chapters = await getChapters();
+        this.squads = await getSquadsByQuery({ url: this.member.relations.squads });
+      }
     } catch (error) {
       await this.$router.replace("/not-found");
     }
@@ -129,14 +148,25 @@ export default {
       }
 
       try {
-        await saveMember({ member: this.member });
+        if (this.creatingMember) {
+          await createMember({ member: this.member });
+          this.selectedSquad.members.push(this.member);
+          await saveSquad({ squad: this.selectedSquad });
+        } else {
+          await saveMember({ member: this.member });
+        }
+
         await this.$router.go(-1);
         this.newToast(new ToastData({
           variant: toastVariants.SUCCESS,
-          message: `Member ${this.member.name} has been updated`,
+          message: `Member ${this.member.name} has been ${this.saveOrCreateVerb}`,
         }));
       } catch (error) {
-        this.newToast(new ToastData({ variant: toastVariants.ERROR, message: "Save failed, please try again later" }));
+        this.newToast(new ToastData({
+          variant: toastVariants.ERROR,
+          message: `${this.saveOrCreateVerb} failed, please try again later`,
+        }));
+
         throw error;
       }
     },

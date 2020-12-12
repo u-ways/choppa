@@ -1,6 +1,14 @@
 import Chapter from "@/models/domain/chapter";
 import httpClient from "@/config/api/http-client";
 
+function serializeChapter(chapter) {
+  return {
+    id: chapter.id,
+    name: chapter.name,
+    color: chapter.color,
+  };
+}
+
 export async function deserializeChapter(json) {
   return new Chapter({
     id: json.id,
@@ -38,9 +46,9 @@ export async function getChaptersByQuery(config) {
 }
 
 export async function saveChapter(config) {
-  await httpClient.put(config.chapter.id, {
-    id: config.chapter.id,
-    name: config.chapter.name,
-    color: config.chapter.color,
-  });
+  await httpClient.put(config.chapter.id, serializeChapter(config.chapter));
+}
+
+export async function createChapter(config) {
+  await httpClient.post("chapters", [serializeChapter(config.chapter)]);
 }

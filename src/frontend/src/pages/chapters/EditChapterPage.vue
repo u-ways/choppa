@@ -26,6 +26,7 @@
                                    label-text="Chapter Color"
                                    :current-color="chapter.color"
                                    @colorSelected="(newColor) => chapter.color = newColor"
+                                   :validator="$v.chapter.color"
             />
             <div class="self-end flex flex-row gap-1">
               <StyledButton type="button" variant="secondary" css="px-2 pr-5 pl-4" @click="$router.go(-1)">
@@ -56,7 +57,7 @@
 <script>
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import { mapActions } from "vuex";
-import { getChapter, saveChapter } from "@/config/api/chapter.api";
+import { createChapter, getChapter, saveChapter } from "@/config/api/chapter.api";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
 import { maxLength, minLength, required } from "vuelidate/lib/validators";
@@ -66,6 +67,7 @@ import ToastData from "@/models/toastData";
 import { toastVariants } from "@/enums/toastVariants";
 import { getMembersByQuery } from "@/config/api/member.api";
 import MembersOverview from "@/components/member/MembersOverview";
+import Chapter from "@/models/domain/chapter";
 
 export default {
   name: "EditSquadPage",
@@ -81,9 +83,13 @@ export default {
     chapterNameHeader() {
       return this.chapter.name ? this.chapter.name : "Untitled";
     },
+    saveOrCreateVerb() {
+      return this.creatingChapter ? "created" : "updated";
+    },
   },
   data() {
     return {
+      creatingChapter: false,
       chapter: undefined,
       members: undefined,
     };
@@ -95,12 +101,21 @@ export default {
         minLength: minLength(2),
         maxLength: maxLength(100),
       },
+      color: {
+        required,
+      },
     },
   },
   async mounted() {
     try {
-      this.chapter = await getChapter({ id: this.$route.params.id });
-      this.members = await getMembersByQuery({ url: this.chapter.relations.members });
+      if (this.$route.query.tribe) {
+        this.creatingChapter = true;
+        this.chapter = new Chapter({});
+      } else if (this.$route.params.id) {
+        this.creatingChapter = false;
+        this.chapter = await getChapter({ id: this.$route.params.id });
+        this.members = await getMembersByQuery({ url: this.chapter.relations.members });
+      }
     } catch (error) {
       await this.$router.replace("/not-found");
     }
@@ -113,14 +128,23 @@ export default {
       }
 
       try {
-        await saveChapter({ chapter: this.chapter });
+        if (this.creatingChapter) {
+          await createChapter({ chapter: this.chapter });
+        } else {
+          await saveChapter({ chapter: this.chapter });
+        }
+
         await this.$router.go(-1);
         this.newToast(new ToastData({
           variant: toastVariants.SUCCESS,
-          message: `Chapter ${this.chapter.name} has been updated`,
+          message: `Chapter ${this.chapter.name} has been ${this.saveOrCreateVerb}`,
         }));
       } catch (error) {
-        this.newToast(new ToastData({ variant: toastVariants.ERROR, message: "Save failed, please try again later" }));
+        this.newToast(new ToastData({
+          variant: toastVariants.ERROR,
+          message: `${this.saveOrCreateVerb} failed, please try again later`,
+        }));
+
         throw error;
       }
     },

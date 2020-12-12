@@ -20,6 +20,11 @@ const routes = [
     component: () => import("@/pages/tribes/ViewTribePage"),
   },
   {
+    name: "create-chapter",
+    path: "/chapters/create",
+    component: () => import("@/pages/chapters/EditChapterPage"),
+  },
+  {
     name: "edit-chapter",
     path: "/chapters/:id/edit",
     component: () => import("@/pages/chapters/EditChapterPage"),

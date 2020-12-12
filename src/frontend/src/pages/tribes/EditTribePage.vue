@@ -76,7 +76,7 @@
               <ChapterOverview :chapters="allChapters"/>
               <div class="self-end">
                 <StyledButton type="link"
-                              :link="{ name: '404' }"
+                              :link="{ name: 'create-chapter', query: { tribe: tribe.path } }"
                               variant="secondary"
                               css="px-2 pr-5 pl-4">
                   <font-awesome-icon icon="plus"/>
@@ -84,7 +84,7 @@
                 </StyledButton>
               </div>
             </div>
-            <NoChaptersToShowAlert v-else/>
+            <NoChaptersToShowAlert v-else :tribe="tribe"/>
           </div>
         </section>
         <section class="mt-5" v-if="tribe.allDistinctMembers().length > 0 && chaptersInUse.length > 0">

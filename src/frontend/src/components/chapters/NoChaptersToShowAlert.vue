@@ -6,7 +6,7 @@
       Add your first Chapter to this Squad.
     </p>
     <div class="inline-block mx-auto">
-      <StyledButton type="link" link="/edit/squad/create" variant="primary">
+      <StyledButton type="link" :link="{ name: 'create-chapter', query: { tribe: tribe.path } }" variant="primary">
         Add Chapter
       </StyledButton>
     </div>
@@ -14,11 +14,18 @@
 </template>
 <script>
 import StyledButton from "@/components/atoms/buttons/StyledButton";
+import Tribe from "@/models/domain/tribe";
 
 export default {
   name: "NoChaptersToShowAlert",
   components: {
     StyledButton,
+  },
+  props: {
+    tribe: {
+      type: Tribe,
+      required: true,
+    },
   },
 };
 </script>

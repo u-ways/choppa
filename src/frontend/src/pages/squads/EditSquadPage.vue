@@ -78,27 +78,6 @@
             <NoMembersToShowAlert v-else :squad="squad"/>
           </div>
         </section>
-        <section class="mt-5" v-if="!creatingSquad && chapters">
-          <FormHeader>
-            <template v-slot:heading>Chapters</template>
-            <template v-slot:subheading>Now lets add some Chapters.</template>
-          </FormHeader>
-          <div class="pt-3">
-            <div v-if="chapters.length > 0" class="flex flex-col gap-2">
-              <ChapterOverview :chapters="chapters"/>
-              <div class="self-end">
-                <StyledButton type="link"
-                              :link="{ name: '404' }"
-                              variant="secondary"
-                              css="px-2 pr-5 pl-4">
-                  <font-awesome-icon icon="plus"/>
-                  New Chapter
-                </StyledButton>
-              </div>
-            </div>
-            <NoChaptersToShowAlert v-else/>
-          </div>
-        </section>
         <section class="mt-5" v-if="!creatingSquad && tribe && allSquadsExceptOneBeingEdited.length > 0">
           <FormHeader>
             <template v-slot:heading>Related Squads</template>
@@ -127,9 +106,6 @@ import ColorPaletteWithLabel from "@/components/forms/groups/ColorPaletteWithLab
 import { getTribe } from "@/config/api/tribe.api";
 import SquadsOverview from "@/components/squads/SquadsOverview";
 import NoMembersToShowAlert from "@/components/member/NoMembersToShowAlert";
-import { getChaptersByQuery } from "@/config/api/chapter.api";
-import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
-import ChapterOverview from "@/components/chapters/ChapterOverview";
 import MembersOverview from "@/components/member/MembersOverview";
 import Squad from "@/models/domain/squad";
 
@@ -137,8 +113,6 @@ export default {
   name: "EditSquadPage",
   components: {
     MembersOverview,
-    ChapterOverview,
-    NoChaptersToShowAlert,
     NoMembersToShowAlert,
     SquadsOverview,
     ColorPaletteWithLabel,
@@ -163,7 +137,6 @@ export default {
       creatingSquad: false,
       tribe: undefined,
       squad: undefined,
-      chapters: undefined,
     };
   },
   validations: {
@@ -188,7 +161,6 @@ export default {
         this.creatingSquad = false;
         this.squad = await getSquad({ id: this.$route.params.id });
         this.tribe = await getTribe({ url: this.squad.relations.tribe });
-        this.chapters = await getChaptersByQuery({ url: this.squad.relations.chapters });
       }
     } catch (error) {
       await this.$router.replace("/not-found");

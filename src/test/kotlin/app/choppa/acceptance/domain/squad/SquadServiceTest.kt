@@ -4,7 +4,6 @@ import app.choppa.domain.member.MemberService
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadRepository
 import app.choppa.domain.squad.SquadService
-import app.choppa.domain.tribe.TribeService
 import app.choppa.exception.EntityNotFoundException
 import io.mockk.every
 import io.mockk.mockkClass
@@ -19,17 +18,14 @@ import java.util.UUID.randomUUID
 
 internal class SquadServiceTest {
     private lateinit var repository: SquadRepository
-    private lateinit var tribeService: TribeService
     private lateinit var memberService: MemberService
     private lateinit var service: SquadService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(SquadRepository::class)
-        tribeService = mockkClass(TribeService::class, relaxed = true)
-        memberService = mockkClass(MemberService::class, relaxed = true)
-
-        service = SquadService(repository, tribeService, memberService)
+        memberService = mockkClass(MemberService::class)
+        service = SquadService(repository, memberService)
     }
 
     @Test
@@ -38,8 +34,7 @@ internal class SquadServiceTest {
         val tribe = entity.tribe
         val members = entity.members
 
-        every { tribeService.find(entity.tribe.id) } returns tribe
-        every { memberService.find(entity.members.map { it.id }) } returns members
+        every { memberService.save(entity.members) } returns members
         every { repository.save(Squad(entity.id, entity.name, entity.color, tribe, members)) } returns entity
 
         val savedEntity = service.save(entity)

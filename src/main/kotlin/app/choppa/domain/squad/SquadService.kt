@@ -2,7 +2,6 @@ package app.choppa.domain.squad
 
 import app.choppa.domain.base.BaseService
 import app.choppa.domain.member.MemberService
-import app.choppa.domain.tribe.TribeService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -12,7 +11,6 @@ import java.util.UUID
 @Service
 class SquadService(
     @Autowired private val squadRepository: SquadRepository,
-    @Autowired private val tribeService: TribeService,
     @Autowired private val memberService: MemberService,
 ) : BaseService<Squad> {
     override fun find(): List<Squad> = squadRepository
@@ -27,23 +25,12 @@ class SquadService(
         .findAllById(ids)
         .orElseThrow { throw EntityNotFoundException("No squads found with given ids.") }
 
-    // NOTE(u-ways) #55 Squad is the owning map of tribe and members.
-    //                  Therefore, service ensures they exist before relating tribe and members accordingly.
-    //                  This avoids invalid foreign key inserts.
+    // NOTE(u-ways) #149 Squad also allows the persistence of non-existent members on top of
+    //                   persisting existing members from/to the squad's current members table.
     @Transactional
-    override fun save(entity: Squad): Squad = squadRepository.save(
-        Squad(
-            entity.id,
-            entity.name,
-            entity.color,
-            tribeService.find(entity.tribe.id),
-            memberService.find(entity.members.map { it.id }).apply {
-                if (size != entity.members.size) {
-                    throw EntityNotFoundException("Persist operation on current squad members detected a member that doesn't exist in the database.")
-                }
-            }.toMutableList()
-        )
-    )
+    override fun save(entity: Squad): Squad = memberService
+        .save(entity.members)
+        .run { squadRepository.save(entity) }
 
     @Transactional
     override fun save(entities: List<Squad>): List<Squad> = entities.map(::save)

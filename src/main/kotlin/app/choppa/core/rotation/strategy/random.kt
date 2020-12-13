@@ -1,29 +1,26 @@
 package app.choppa.core.rotation.strategy
 
 import app.choppa.domain.member.Member
-import java.lang.Math.floorDiv
+import kotlin.math.floor
 
 internal fun random(members: List<List<Member>>): List<List<Member>> {
-    val rotated = floorDiv(members.flatten().count(), members.count())
+    val selectedMembers = mutableListOf<MutableList<Member>>()
+    members.forEach { _ -> selectedMembers.add(mutableListOf()) }
 
-    val randomisedMembers =
-        members.asSequence().mapIndexed { position, memberList ->
-            memberList.map { y -> Triple(Math.random(), position, y) }
-        }.flatten().sortedBy { it.first }.toMutableList()
+    val indexedMembers = members.mapIndexed { index, squadMembers ->
+        squadMembers.map { Pair(index, it) }.toMutableList()
+    }.flatten().toMutableList()
 
-    randomisedMembers.forEachIndexed { position, member ->
-        val theoreticallyAssignedSquad = floorDiv(position, rotated)
-        if (theoreticallyAssignedSquad == member.second) {
-            val swapper = (0 until randomisedMembers.count()).first { j ->
-                val tempAssignedSquad = floorDiv(j, rotated)
-                tempAssignedSquad != theoreticallyAssignedSquad && randomisedMembers[j].second != theoreticallyAssignedSquad
-            }
-            val swapperVal = randomisedMembers[swapper]
-            val tempDouble = swapperVal.first
-            randomisedMembers[position] = Triple(member.first, swapperVal.second, swapperVal.third)
-            randomisedMembers[swapper] = Triple(tempDouble, member.second, member.third)
-        }
+    //Made one smaller to give leeway if member is reassigned to their original squad.
+    val squadCount = members.count() - 1
+
+    indexedMembers.map { member ->
+        var newSquad = floor(Math.random() * squadCount).toInt()
+        if (newSquad == member.first) newSquad++
+        Pair(newSquad, member.second)
+    }.forEach {
+        selectedMembers[it.first].add(it.second)
     }
 
-    return randomisedMembers.map { it.third }.windowed(rotated, rotated)
+    return selectedMembers.map { it.toList() }.toList()
 }

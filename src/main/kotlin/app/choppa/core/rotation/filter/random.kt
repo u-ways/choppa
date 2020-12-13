@@ -3,30 +3,22 @@ package app.choppa.core.rotation.filter
 import app.choppa.domain.member.Member
 import kotlin.random.Random
 
-internal fun random(members: MutableList<Member>, amount: Int): MutableList<Member> {
-    val memberCount = members.count()
+internal fun random(members: List<MutableList<Member>>, amount: Int): List<MutableList<Member>> {
+    val selectedMembers = mutableListOf<MutableList<Member>>()
+    members.forEach { _ -> selectedMembers.add(mutableListOf()) }
 
-    //Handles empty list, doesn't do random selection if amount is too small.
-    if(memberCount <= amount) {
-        return members.take(memberCount).toMutableList()
-    }
+    val indexedMembers = members.mapIndexed { index, squadMembers ->
+        squadMembers.map { Pair(index, it) }.toMutableList()
+    }.flatten().toMutableList()
 
-    //To not alter the original list.
-    val tempMembers = members.toMutableList()
-    val createNewList = amount < memberCount / 2
-
-    if(!createNewList) {
-        val removalAmount = memberCount - amount
-        (0 until removalAmount).forEach { _ ->
-            tempMembers.removeAt(Random.nextInt(tempMembers.count()))
-        }
-        return tempMembers
-    }
-
-    return (0 until amount).map {
-        val selectedMember = Random.nextInt(tempMembers.count())
-        val member = tempMembers[selectedMember]
-        tempMembers.remove(member)
+    (0 until amount).map {
+        val selectedMember = Random.nextInt(indexedMembers.count())
+        val member = indexedMembers[selectedMember]
+        indexedMembers.remove(member)
         member
-    }.toMutableList()
+    }.forEach {
+        selectedMembers[it.first].add(it.second)
+    }
+
+    return selectedMembers.toList()
 }

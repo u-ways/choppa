@@ -1,7 +1,6 @@
 package app.choppa.domain.member
 
 import app.choppa.domain.base.BaseService
-import app.choppa.domain.chapter.ChapterService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -10,8 +9,7 @@ import java.util.UUID
 
 @Service
 class MemberService(
-    @Autowired private val memberRepository: MemberRepository,
-    @Autowired private val chapterService: ChapterService
+    @Autowired private val memberRepository: MemberRepository
 ) : BaseService<Member> {
     override fun find(): List<Member> = memberRepository
         .findAll()
@@ -21,18 +19,12 @@ class MemberService(
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Member with id [$id] does not exist.") }
 
-    // NOTE(u-ways) #57 This is used to find all related members by squad for validation purposes
-    //                  So it should allow the return of empty lists (i.e. squad w/ NO_MEMBERS)
     override fun find(ids: List<UUID>): List<Member> = memberRepository
         .findAllById(ids)
+        .orElseThrow { throw EntityNotFoundException("No members found.") }
 
-    // NOTE(u-ways) #57 Member is the owning map of chapter.
-    //                  Therefore, service ensure chapter exist before relating chapter accordingly.
-    //                  This avoids invalid foreign key inserts.
     @Transactional
-    override fun save(entity: Member): Member = chapterService
-        .find(entity.chapter.id)
-        .run { memberRepository.save(Member(entity.id, entity.name, this)) }
+    override fun save(entity: Member): Member = memberRepository.save(entity)
 
     @Transactional
     override fun save(entities: List<Member>): List<Member> = entities.map(::save)

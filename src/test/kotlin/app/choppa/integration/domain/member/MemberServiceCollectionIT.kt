@@ -2,11 +2,13 @@ package app.choppa.integration.domain.member
 
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
+import app.choppa.exception.EntityNotFoundException
 import app.choppa.support.factory.MemberFactory
 import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.matchers.containsInAnyOrder
 import app.choppa.support.testcontainers.TestDBContainer
 import com.natpryce.hamkrest.assertion.assertThat
+import org.junit.Assert.assertThrows
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -25,8 +27,6 @@ internal class MemberServiceCollectionIT @Autowired constructor(
 ) {
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
-
-    private lateinit var entity: Member
 
     @Test
     @Transactional
@@ -58,8 +58,6 @@ internal class MemberServiceCollectionIT @Autowired constructor(
         val existingListOfMembers = memberService.save(MemberFactory.create(amount = 3))
         val removedListOfMembers = memberService.delete(existingListOfMembers)
 
-        val result = memberService.find(removedListOfMembers.map { it.id })
-
-        assertThat(result, List<Member>::isEmpty)
+        assertThrows(EntityNotFoundException::class.java) { memberService.find(removedListOfMembers.map { it.id }) }
     }
 }

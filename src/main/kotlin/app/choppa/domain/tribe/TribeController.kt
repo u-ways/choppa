@@ -1,8 +1,8 @@
 package app.choppa.domain.tribe
 
-import app.choppa.domain.rotation.RotationOptions
 import app.choppa.domain.base.BaseController
 import app.choppa.domain.base.BaseController.Companion.API_PREFIX
+import app.choppa.domain.rotation.RotationOptions
 import app.choppa.domain.rotation.RotationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity

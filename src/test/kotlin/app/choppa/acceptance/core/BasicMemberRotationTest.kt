@@ -1,7 +1,6 @@
 package app.choppa.acceptance.core
 
 import app.choppa.core.rotation.Context
-import app.choppa.domain.rotation.RotationOptions
 import app.choppa.core.rotation.filter.Filter
 import app.choppa.core.rotation.filter.Filter.DISTRIBUTED
 import app.choppa.core.rotation.filter.Filter.OLDEST
@@ -10,6 +9,7 @@ import app.choppa.core.rotation.strategy.Strategy.ANTI_CLOCKWISE
 import app.choppa.core.rotation.strategy.Strategy.CLOCKWISE
 import app.choppa.core.rotation.strategy.Strategy.RANDOM
 import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
+import app.choppa.domain.rotation.RotationOptions
 import app.choppa.support.factory.TribeFactory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

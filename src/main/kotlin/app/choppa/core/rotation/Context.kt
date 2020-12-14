@@ -1,9 +1,9 @@
 package app.choppa.core.rotation
 
-import app.choppa.domain.rotation.RotationOptions.Companion.DEFAULT_OPTIONS
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.rotation.RotationOptions
+import app.choppa.domain.rotation.RotationOptions.Companion.DEFAULT_OPTIONS
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.tribe.Tribe
 

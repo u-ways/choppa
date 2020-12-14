@@ -1,8 +1,8 @@
-package app.choppa.core.strategy
+package app.choppa.core.rotation.strategy
 
 import app.choppa.domain.member.Member
 
-enum class Strategy : Contract {
+enum class Strategy : Policy {
     CLOCKWISE {
         override fun invoke(members: List<List<Member>>): List<List<Member>> = clockwise(members)
     },
@@ -14,6 +14,6 @@ enum class Strategy : Contract {
     };
 }
 
-private fun interface Contract {
+private fun interface Policy {
     fun invoke(members: List<List<Member>>): List<List<Member>>
 }

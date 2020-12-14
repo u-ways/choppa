@@ -26,55 +26,20 @@
         <div class="flex flex-col place-items-center lg:flex-row gap-1">
           <InformationBlock>
             <template v-slot:heading>Team Organisation</template>
-            <template v-slot:body>Organise your team structure with our creation tool.</template>
-          </InformationBlock>
-          <div class="w-full pl-3 lg:w-2/3 py-6">
-            <SquadCard v-bind:squad="tribe.squads[0]"/>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="Knowledge Sharing">
-      <div class="container py-52 mx-auto max-w-screen-lg">
-        <div class="flex flex-col place-items-center lg:flex-row gap-1">
-          <div class="w-full lg:w-2/3 pr-3 py-6">
-            <video controls>
-              <source src="@/assets/video/homeVideo.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-          </div>
-          <InformationBlock class="order-first lg:order-last">
-            <template v-slot:heading>Knowledge Sharing</template>
             <template v-slot:body>
-              Utilise several rotation strategies to maximise knowledge sharing within your team.
+              Organise your team structure with our agile creation tool, based on the Spotify model.
             </template>
           </InformationBlock>
-        </div>
-      </div>
-    </section>
-
-    <section id="Demonstration" class="bg-rose-500 py-32">
-      <div class="container px-3 mx-auto max-w-screen-lg">
-        <div class="flex flex-col pb-3 place-items-center gap-1">
-          <div class="text-white w-full lg:w-1/2 text-center text-lg sm:text-xl lg:text-xl font-semibold">
-            <p class="text-2xl font-bold">Time for your first test flight!</p>
-            <p>Check out this handy demonstration!</p>
-            <div class="pt-12">
-              <StyledButton class="text-center" type="link"
-                            :link="{ name: 'view-tribe', params: { id: '00000000-0000-0000-0000-000000000001' } }"
-                            :replace="true"
-                            variant="custom" css="bg-rose-800">Demo
-              </StyledButton>
-            </div>
+          <div class="w-full pl-3 lg:w-2/3 py-6">
+            <SquadCard :squad="squad"/>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="Glossary">
-      <div class="container px-3 pt-12 mx-auto max-w-screen-lg">
-        <div class="flex flex-col pb-3 place-items-center gap-1 lg:flex-row">
+    <section id="Glossary" class="bg-gray-100 dark:bg-gray-700">
+      <div class="container px-3 py-9 mx-auto max-w-screen-lg">
+        <div class="flex flex-col place-items-center gap-1 lg:flex-row">
           <InformationCard>
             <template v-slot:icon>
               <font-awesome-icon icon="users" class="text-3xl text-white justify-self-center self-center"/>
@@ -106,41 +71,126 @@
       </div>
     </section>
 
+    <!-- TODO: Implement other rotation animations.. Choice Ellipses? -->
+    <KnowledgeSharing/>
+
+    <!-- TODO: Sort out this entire section -->
+    <section id="Demonstration" class="py-16">
+      <div class="container px-3 mx-auto max-w-screen-lg">
+        <div class="flex flex-col pb-3 place-items-center gap-1">
+          <InformationBlock>
+            <template slot="heading">
+              Time for your first test flight!
+            </template>
+            <template slot="body">
+              Check out this handy demonstration!
+            </template>
+          </InformationBlock>
+          <div class="pt-12 w-full lg:w-1/2">
+            <DemoButton class="text-center" link="/tribes/00000000-0000-0000-0000-000000000001/"
+                        :replace="true">I'm Ready!
+            </DemoButton>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <div class="flex-none pt-6">
       <Footer/>
     </div>
+
   </div>
 </template>
 
 <script>
-/* eslint-disable */
 import Navbar from "@/components/navbar/Navbar";
 import SquadCard from "@/components/squads/SquadCard";
 import { getTribe } from "@/config/api/tribe.api";
 import Footer from "@/components/footer/Footer";
-import StyledButton from "@/components/atoms/buttons/StyledButton";
 import InformationCard from "@/components/home/InformationCard";
 import InformationBlock from "@/components/home/InformationBlock";
+import Squad from "@/models/domain/squad";
+import Member from "@/models/domain/member";
+import Chapter from "@/models/domain/chapter";
+import DemoButton from "@/components/home/DemoButton";
+import KnowledgeSharing from "@/components/home/KnowledgeSharing";
 
 export default {
   name: "HomePage",
   components: {
     InformationBlock,
-    StyledButton,
+    DemoButton,
     Footer,
     SquadCard,
     Navbar,
     InformationCard,
+    KnowledgeSharing,
   },
   data() {
     return {
       isLoaded: false,
       tribe: undefined,
+      squad: new Squad({
+        name: "Stark",
+        color: "#FACC15",
+        members: [
+          new Member({
+            name: "Eddard",
+            chapter: new Chapter({
+              name: "lead",
+              color: "#DC2626",
+            }),
+          }),
+          new Member({
+            name: "Arya",
+            chapter: new Chapter({
+              name: "tester",
+              color: "#16A34A",
+            }),
+          }),
+          new Member({
+            name: "Bran",
+            chapter: new Chapter({
+              name: "dev",
+              color: "#2563EB",
+            }),
+          }),
+          new Member({
+            name: "Rob",
+            chapter: new Chapter({
+              name: "dev",
+              color: "#2563EB",
+            }),
+          }),
+          new Member({
+            name: "Sansa",
+            chapter: new Chapter({
+              name: "ba",
+              color: "#F5C147",
+            }),
+          }),
+          new Member({
+            name: "Rickon",
+            chapter: new Chapter({
+              name: "intern",
+              color: "#9333EA",
+            }),
+          }),
+          new Member({
+            name: "Tony",
+            chapter: new Chapter({
+              name: "intern",
+              color: "#9333EA",
+            }),
+          }),
+        ],
+      }),
     };
   },
+  methods: {},
   async mounted() {
     try {
-      this.tribe = await getTribe({id: "00000000-0000-0000-0000-000000000001"});
+      this.tribe = await getTribe({ id: "00000000-0000-0000-0000-000000000001" });
       this.isLoaded = true;
     } catch {
       await this.$router.replace("/not-found");

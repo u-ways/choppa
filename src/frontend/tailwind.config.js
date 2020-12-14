@@ -12,6 +12,7 @@ module.exports = {
     extend: {
       animation: {
         "fade-in": "fade-in 0.2s",
+        "slide-left": "slide-left 1s",
       },
       colors: {
         orange: colors.orange,
@@ -41,6 +42,14 @@ module.exports = {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 },
         },
+        "slide-left": {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+      },
+      spacing: {
+        192: "48rem",
+        120: "30rem",
       },
     },
     container: {

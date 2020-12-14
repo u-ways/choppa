@@ -1,7 +1,6 @@
 package app.choppa.domain.rotation
 
-import app.choppa.core.rotation.Rotation
-import app.choppa.core.rotation.RotationOptions
+import app.choppa.core.rotation.Context
 import app.choppa.domain.history.History
 import app.choppa.domain.history.HistoryService
 import app.choppa.domain.squad.SquadService
@@ -10,7 +9,6 @@ import app.choppa.domain.tribe.TribeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
 @Service
 class RotationService(
@@ -20,7 +18,7 @@ class RotationService(
 ) {
     @Transactional
     fun rotate(tribeToRotate: Tribe, options: RotationOptions): Tribe {
-        val rotatedTribe = updateTribeHistory(tribeToRotate, Rotation.rotate(tribeToRotate, options))
+        val rotatedTribe = updateTribeHistory(tribeToRotate, Context.rotate(tribeToRotate, options))
         val newHistories = rotatedTribe.history.filter { !tribeToRotate.history.contains(it) }
         if (newHistories.count() > 0) {
             val squadServiceRotations = newHistories.map { it.squad }.distinct()

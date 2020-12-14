@@ -1,6 +1,6 @@
 package app.choppa.integration.domain.tribe
 
-import app.choppa.core.rotation.RotationOptions
+import app.choppa.domain.rotation.RotationOptions
 import app.choppa.domain.rotation.RotationService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeController

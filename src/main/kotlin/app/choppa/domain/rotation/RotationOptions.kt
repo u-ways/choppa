@@ -1,4 +1,4 @@
-package app.choppa.core.rotation
+package app.choppa.domain.rotation
 
 import app.choppa.core.rotation.filter.Filter
 import app.choppa.core.rotation.filter.Filter.OLDEST

@@ -4,8 +4,7 @@ import app.choppa.domain.member.Member
 import kotlin.random.Random
 
 internal fun random(members: List<MutableList<Member>>, amount: Int): List<MutableList<Member>> {
-    val selectedMembers = mutableListOf<MutableList<Member>>()
-    members.forEach { _ -> selectedMembers.add(mutableListOf()) }
+    val selectedMembers = MutableList<MutableList<Member>>(members.size) { mutableListOf() }
 
     val indexedMembers = members.mapIndexed { index, squadMembers ->
         squadMembers.map { Pair(index, it) }.toMutableList()

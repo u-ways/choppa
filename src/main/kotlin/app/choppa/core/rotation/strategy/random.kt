@@ -11,7 +11,7 @@ internal fun random(members: List<List<Member>>): List<List<Member>> {
         squadMembers.map { Pair(index, it) }.toMutableList()
     }.flatten().toMutableList()
 
-    //Made one smaller to give leeway if member is reassigned to their original squad.
+    // Made one smaller to give leeway if member is reassigned to their original squad.
     val squadCount = members.count() - 1
 
     indexedMembers.map { member ->

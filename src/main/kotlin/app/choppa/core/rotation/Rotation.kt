@@ -5,7 +5,6 @@ import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.tribe.Tribe
-import kotlin.system.measureTimeMillis
 
 class Rotation {
     companion object {
@@ -17,7 +16,7 @@ class Rotation {
                     it.members.find(options.chapter)
                 }.let {
                     val oldMembers =
-                        if(it.flatten().count() <= options.amount)
+                        if (it.flatten().count() > options.amount)
                             options.filter.invoke(it.toList(), options.amount)
                         else
                             it

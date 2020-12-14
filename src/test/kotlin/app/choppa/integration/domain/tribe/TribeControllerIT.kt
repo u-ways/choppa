@@ -260,7 +260,7 @@ internal class TribeControllerIT @Autowired constructor(
 
             every { tribeService.find(randomUUID) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
 
-            mvc.post("/api/tribes/${randomUUID}:rotate") {
+            mvc.post("/api/tribes/$randomUUID:rotate") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {

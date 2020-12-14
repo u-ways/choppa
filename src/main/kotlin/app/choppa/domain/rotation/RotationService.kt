@@ -4,14 +4,12 @@ import app.choppa.core.rotation.Rotation
 import app.choppa.core.rotation.RotationOptions
 import app.choppa.domain.history.History
 import app.choppa.domain.history.HistoryService
-import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.squad.SquadService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant.MIN
 import java.util.*
 
 @Service
@@ -33,7 +31,7 @@ class RotationService(
         return rotatedTribe
     }
 
-    //MD485: (TODO) Replace this when Uways's history saving is in. This is why it is untested.
+    // MD485: (TODO) Replace this when Uways's history saving is in. This is why it is untested.
     private fun updateTribeHistory(originalTribe: Tribe, rotatedTribe: Tribe): Tribe = rotatedTribe.apply {
         this.history.addAll(
             rotatedTribe.squads.let { squadList ->
@@ -54,4 +52,3 @@ class RotationService(
         )
     }
 }
-

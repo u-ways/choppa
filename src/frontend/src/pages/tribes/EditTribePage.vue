@@ -117,10 +117,10 @@
                 <StandardLabel for-id="rotation-filter" label-text="Filter"/>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <StandardRadio inputName="rotation-filter"
-                                 id="rotation-filter-none"
-                                 label="None"
-                                 :value="filters.none"
-                                 :checked="rotation.filter === filters.none"
+                                 id="rotation-filter-distributed"
+                                 label="Distributed"
+                                 :value="filters.distributed"
+                                 :checked="rotation.filter === filters.distributed"
                                  @onChanged="(event) => rotation.filter = event.target.value"/>
                   <StandardRadio inputName="rotation-filter"
                                  id="rotation-filter-oldest"
@@ -222,11 +222,11 @@ export default {
       rotation: {
         amount: 1,
         chapter: undefined,
-        filter: rotationFilter.NONE,
+        filter: rotationFilter.DISTRIBUTED,
         strategy: rotationStrategy.CLOCKWISE,
       },
       filters: {
-        oldest: rotationFilter.OLDEST,
+        distributed: rotationFilter.DISTRIBUTED,
         random: rotationFilter.RANDOM,
         none: rotationFilter.NONE,
       },

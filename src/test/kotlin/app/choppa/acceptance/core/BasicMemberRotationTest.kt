@@ -1,12 +1,12 @@
 package app.choppa.acceptance.core
 
-import app.choppa.core.rotation.Options
-import app.choppa.core.rotation.Rotation
-import app.choppa.core.rotation.filter.Filter.NONE
-import app.choppa.core.rotation.filter.Filter.OLDEST
-import app.choppa.core.rotation.strategy.Strategy.ANTI_CLOCKWISE
-import app.choppa.core.rotation.strategy.Strategy.CLOCKWISE
-import app.choppa.core.rotation.strategy.Strategy.RANDOM
+import app.choppa.core.Options
+import app.choppa.core.Rotation
+import app.choppa.core.filter.Filter.NONE
+import app.choppa.core.filter.Filter.OLDEST
+import app.choppa.core.strategy.Strategy.ANTI_CLOCKWISE
+import app.choppa.core.strategy.Strategy.CLOCKWISE
+import app.choppa.core.strategy.Strategy.RANDOM
 import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
 import app.choppa.support.factory.TribeFactory
 import org.junit.jupiter.api.Test

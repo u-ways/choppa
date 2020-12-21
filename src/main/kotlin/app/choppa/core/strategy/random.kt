@@ -1,4 +1,4 @@
-package app.choppa.core.rotation.strategy
+package app.choppa.core.strategy
 
 import app.choppa.domain.member.Member
 import java.lang.Math.floorDiv

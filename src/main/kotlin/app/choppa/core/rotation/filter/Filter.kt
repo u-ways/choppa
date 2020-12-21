@@ -4,13 +4,13 @@ import app.choppa.domain.member.Member
 
 enum class Filter : Contract {
     NONE {
-        override fun invoke(members: MutableList<Member>, amount: Int): MutableList<Member> = none(members, amount)
+        override fun invoke(members: MutableList<Member>, amount: Int): MutableList<Member> = members
+            .take(amount).toMutableList()
     },
     OLDEST {
-        override fun invoke(members: MutableList<Member>, amount: Int): MutableList<Member> = oldest(members, amount)
-    },
-    RANDOM {
-        override fun invoke(members: MutableList<Member>, amount: Int): MutableList<Member> = random(members, amount)
+        override fun invoke(members: MutableList<Member>, amount: Int): MutableList<Member> = members.apply {
+            if (this.count() > 1) this.sortBy { it.history.last().iteration.startDate }
+        }.take(amount).toMutableList()
     };
 }
 

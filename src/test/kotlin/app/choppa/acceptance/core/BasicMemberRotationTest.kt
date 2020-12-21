@@ -1,6 +1,6 @@
 package app.choppa.acceptance.core
 
-import app.choppa.core.rotation.RotationOptions
+import app.choppa.core.rotation.Options
 import app.choppa.core.rotation.Rotation
 import app.choppa.core.rotation.filter.Filter.NONE
 import app.choppa.core.rotation.filter.Filter.OLDEST
@@ -19,14 +19,14 @@ class BasicMemberRotationTest {
     @Test
     fun `Given Tribe with no members, when tribe is rotated, it should not do any changes`() {
         val testTribe = TribeFactory.create()
-        val rotatedTribe = Rotation.rotate(testTribe, RotationOptions(1, UNASSIGNED_ROLE, OLDEST, CLOCKWISE))
+        val rotatedTribe = Rotation.rotate(testTribe, Options(1, UNASSIGNED_ROLE, OLDEST, CLOCKWISE))
         assert(testTribe === rotatedTribe)
     }
 
     @Test
     fun `Given Tribe with 2 squads with 1 member each, when tribe rotates, members should swap squads`() {
         val testTribe = TribeFactory.create(2, 1)
-        val rotatedTribe = Rotation.rotate(testTribe, RotationOptions(1, UNASSIGNED_ROLE, OLDEST, CLOCKWISE))
+        val rotatedTribe = Rotation.rotate(testTribe, Options(1, UNASSIGNED_ROLE, OLDEST, CLOCKWISE))
         assert(testTribe.squads[0].members[0] === rotatedTribe.squads[1].members[0])
         assert(testTribe.squads[1].members[0] === rotatedTribe.squads[0].members[0])
     }
@@ -37,7 +37,7 @@ class BasicMemberRotationTest {
         val oldestMemberSquadOne = testTribe.squads[0].members[0]
         val oldestMemberSquadTwo = testTribe.squads[1].members[0]
         val oldestMemberSquadThree = testTribe.squads[2].members[0]
-        val rotatedTribe = Rotation.rotate(testTribe, RotationOptions(1, UNASSIGNED_ROLE, OLDEST, CLOCKWISE))
+        val rotatedTribe = Rotation.rotate(testTribe, Options(1, UNASSIGNED_ROLE, OLDEST, CLOCKWISE))
 
         assert(rotatedTribe.squads[0].members.contains(oldestMemberSquadThree))
         assert(rotatedTribe.squads[1].members.contains(oldestMemberSquadOne))
@@ -50,7 +50,7 @@ class BasicMemberRotationTest {
         val oldestMemberSquadOne = testTribe.squads[0].members[0]
         val oldestMemberSquadTwo = testTribe.squads[1].members[0]
         val oldestMemberSquadThree = testTribe.squads[2].members[0]
-        val rotatedTribe = Rotation.rotate(testTribe, RotationOptions(1, UNASSIGNED_ROLE, OLDEST, ANTI_CLOCKWISE))
+        val rotatedTribe = Rotation.rotate(testTribe, Options(1, UNASSIGNED_ROLE, OLDEST, ANTI_CLOCKWISE))
 
         assert(rotatedTribe.squads[0].members.contains(oldestMemberSquadTwo))
         assert(rotatedTribe.squads[1].members.contains(oldestMemberSquadThree))
@@ -65,7 +65,7 @@ class BasicMemberRotationTest {
         squadRotationAmount: Int
     ) {
         val testTribe = TribeFactory.create(squadAmount, squadMemberAmount)
-        val rotatedTribe = Rotation.rotate(testTribe, RotationOptions(squadRotationAmount, UNASSIGNED_ROLE, NONE, RANDOM))
+        val rotatedTribe = Rotation.rotate(testTribe, Options(squadRotationAmount, UNASSIGNED_ROLE, NONE, RANDOM))
 
         val distinctRotatedMemberCounts = testTribe.squads.mapIndexed { index, squad ->
             squad.members.filter { !rotatedTribe.squads[index].members.contains(it) }.count()

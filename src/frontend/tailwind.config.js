@@ -19,8 +19,8 @@ module.exports = {
         emerald: colors.emerald,
         rose: colors.rose,
         gray: {
-          "666": "#444e5d",
-          ...colors.coolGray
+          666: "#444e5d",
+          ...colors.coolGray,
         },
         "choppa-light": {
           extra: colors.emerald["500"],
@@ -40,15 +40,15 @@ module.exports = {
         "fade-in": {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 },
-        }
-      }
+        },
+      },
     },
     container: {
       screens: {
-        "sm": "2640px",
-        "md": "768px",
-        "lg": "1024px",
-        "xl": "1280px",
+        sm: "2640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
       },
     },
   },

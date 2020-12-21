@@ -1,7 +1,6 @@
 package app.choppa.acceptance.domain.member
 
 import app.choppa.domain.chapter.Chapter
-import app.choppa.domain.chapter.ChapterService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.member.MemberService
@@ -19,15 +18,12 @@ import java.util.UUID.randomUUID
 
 internal class MemberServiceTest {
     private lateinit var repository: MemberRepository
-    private lateinit var chapterService: ChapterService
     private lateinit var service: MemberService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(MemberRepository::class)
-        chapterService = mockkClass(ChapterService::class, relaxed = true)
-
-        service = MemberService(repository, chapterService)
+        service = MemberService(repository)
     }
 
     @Test
@@ -35,7 +31,6 @@ internal class MemberServiceTest {
         val relatedEntityChapter = Chapter()
         val entity = Member(chapter = relatedEntityChapter)
 
-        every { chapterService.find(entity.chapter.id) } returns relatedEntityChapter
         every { repository.save(entity) } returns entity
 
         val savedEntity = service.save(entity)

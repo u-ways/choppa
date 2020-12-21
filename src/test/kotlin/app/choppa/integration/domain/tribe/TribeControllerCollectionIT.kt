@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.tribe
 
+import app.choppa.domain.rotation.RotationService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeController
 import app.choppa.domain.tribe.TribeService
@@ -32,6 +33,9 @@ internal class TribeControllerCollectionIT @Autowired constructor(
 
     @MockkBean
     private lateinit var tribeService: TribeService
+
+    @MockkBean
+    private lateinit var rotationService: RotationService
 
     @Nested
     inner class HappyPath {

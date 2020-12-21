@@ -2,23 +2,21 @@ package app.choppa.domain.tribe
 
 import app.choppa.domain.base.BaseController
 import app.choppa.domain.base.BaseController.Companion.API_PREFIX
+import app.choppa.domain.rotation.RotationOptions
+import app.choppa.domain.rotation.RotationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.created
 import org.springframework.http.ResponseEntity.noContent
 import org.springframework.http.ResponseEntity.ok
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 @RequestMapping("$API_PREFIX/tribes")
 class TribeController(
-    @Autowired private val tribeService: TribeService
+    @Autowired private val tribeService: TribeService,
+    @Autowired private val rotationService: RotationService
 ) : BaseController<Tribe>(tribeService) {
     @GetMapping
     fun listTribes(): ResponseEntity<List<Tribe>> =
@@ -40,4 +38,16 @@ class TribeController(
     fun postCollection(@RequestBody newCollection: List<Tribe>): ResponseEntity<List<Tribe>> = tribeService
         .save(newCollection)
         .run { created(location()).build() }
+
+    @PostMapping("$ID_PATH:rotate")
+    fun executeRotation(
+        @PathVariable id: UUID,
+        @RequestBody(required = false) options: RotationOptions?
+    ): ResponseEntity<Tribe> =
+        ok().body(
+            rotationService.rotate(
+                tribeService.find(id),
+                options ?: RotationOptions.DEFAULT_OPTIONS
+            )
+        )
 }

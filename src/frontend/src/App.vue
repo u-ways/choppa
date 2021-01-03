@@ -1,20 +1,16 @@
 <template>
-  <div class="h-100">
-    <router-view/>
+  <div class="min-h-screen font-open-sans text-gray-800 bg-gray-50 dark:text-gray-200 dark:bg-gray-800">
+    <ToastDraw/>
+    <router-view :key="$route.fullPath"/>
   </div>
 </template>
 
-<style lang="scss">
-@import "src/assets/scss/colours";
-@import "src/assets/scss/typography";
+<script>
+import ToastDraw from "@/components/toasts/ToastDraw";
 
-body {
-  background: $bg-off-white !important;
-  font-family: $font-family-body !important;
-  font-weight: $font-weight-body-medium !important;
-}
-
-#app {
-  height: 100%;
-}
-</style>
+export default {
+  components: {
+    ToastDraw,
+  },
+};
+</script>

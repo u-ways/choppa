@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`Choppa Logo Atom test Renders correctly 1`] = `
-"<div>
-  <font-awesome-icon-stub icon=\\"helicopter\\" class=\\"my-css-test\\"></font-awesome-icon-stub>
-</div>"
-`;

@@ -2,7 +2,6 @@ package app.choppa.domain.squad.history
 
 import app.choppa.domain.squad.Squad
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Pageable.unpaged
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.domain.Sort.by
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Repository
 interface SquadMemberHistoryRepository : JpaRepository<SquadMemberHistory, SquadMemberHistoryId> {
     fun findAllBySquad(
         squad: Squad,
-        pageable: Pageable = unpaged()
+        pageable: Pageable,
     ): List<SquadMemberHistory>
 
     fun findAllBySquad(

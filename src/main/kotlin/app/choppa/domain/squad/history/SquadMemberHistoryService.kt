@@ -4,10 +4,13 @@ import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.history.RevisionType.ADD
+import app.choppa.domain.squad.history.RevisionType.REMOVE
 import app.choppa.exception.EntityNotFoundException
 import org.hibernate.type.IntegerType.ZERO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest.of
+import org.springframework.data.domain.Sort.Direction.DESC
+import org.springframework.data.domain.Sort.by
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -33,6 +36,16 @@ class SquadMemberHistoryService(
         .apply { squadHistoryRepository.deleteAll(entities) }
 
     @Transactional
+    fun generateRevisions(squad: Squad) = with(nextRevisionNumber(squad)) {
+        differentiate(
+            squad.members,
+            memberRepository.findAllBySquadId(squad.id)
+        ).map { (member, revisionType) ->
+            SquadMemberHistory(squad, member, this, revisionType)
+        }
+    }
+
+    @Transactional
     fun concentrateAllSquadRevisions(squad: Squad): List<List<Member>> = squadHistoryRepository
         .findAllBySquad(squad)
         .foldRight(listOf()) { record: SquadMemberHistory, accumulator: List<List<Member>> ->
@@ -46,7 +59,7 @@ class SquadMemberHistoryService(
                         .plusElement(
                             when (record.revisionType) {
                                 ADD -> accumulator.last().plus(memberRepository.findById(record.member.id).get())
-                                RevisionType.REMOVE -> accumulator.last().minus(record.member)
+                                REMOVE -> accumulator.last().minus(record.member)
                             }
                         )
             }
@@ -63,11 +76,31 @@ class SquadMemberHistoryService(
         ?.findAllBySquad(squad, of(ZERO, revisionAmount))
         ?.backtrack(squad.members) ?: emptyList()
 
+    private fun nextRevisionNumber(squad: Squad) = squadHistoryRepository
+        .findAllBySquad(
+            squad,
+            of(ZERO, 1, by(DESC, SquadMemberHistory::revisionNumber.name))
+        ).let {
+            if (it.isEmpty()) ZERO else it.first().revisionNumber + 1
+        }
+
+    private fun differentiate(newerFormation: List<Member>, olderFormation: List<Member>) =
+        with(newerFormation.intersect(olderFormation)) {
+            newerFormation
+                .minus(this)
+                .map { Pair(it, ADD) }
+                .plus(
+                    olderFormation
+                        .minus(this)
+                        .map { Pair(it, REMOVE) }
+                )
+        }
+
     private fun List<SquadMemberHistory>.backtrack(members: List<Member>) = this
         .fold(members) { acc, record ->
             when (record.revisionType) {
                 ADD -> acc.minus(record.member)
-                RevisionType.REMOVE -> acc.plus(memberRepository.findById(record.member.id).get())
+                REMOVE -> acc.plus(memberRepository.findById(record.member.id).get())
             }
         }.toMutableList()
 

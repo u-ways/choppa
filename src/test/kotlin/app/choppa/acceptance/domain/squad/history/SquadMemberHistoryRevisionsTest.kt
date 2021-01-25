@@ -1,18 +1,15 @@
-package app.choppa.acceptance.domain.squad
+package app.choppa.acceptance.domain.squad.history
 
 import app.choppa.domain.member.Member
-import app.choppa.domain.member.MemberService
+import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.squad.Squad
-import app.choppa.domain.squad.SquadRepository
-import app.choppa.domain.squad.SquadService
 import app.choppa.domain.squad.history.RevisionType.ADD
 import app.choppa.domain.squad.history.RevisionType.REMOVE
 import app.choppa.domain.squad.history.SquadMemberHistory
+import app.choppa.domain.squad.history.SquadMemberHistoryRepository
 import app.choppa.domain.squad.history.SquadMemberHistoryService
-import app.choppa.support.factory.SquadMemberHistoryFactory
 import app.choppa.support.matchers.containsInAnyOrder
 import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.equalTo
 import io.mockk.every
 import io.mockk.mockkClass
 import org.amshove.kluent.shouldBeEqualTo
@@ -22,39 +19,19 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
-import java.util.Optional.of
-import java.util.UUID.randomUUID
+import org.springframework.data.domain.PageRequest
 import java.util.stream.Stream
 
-internal class SquadServiceMemberRevisionsTest {
-    private lateinit var repository: SquadRepository
-    private lateinit var memberService: MemberService
-    private lateinit var squadMemberHistoryService: SquadMemberHistoryService
-    private lateinit var service: SquadService
+internal class SquadMemberHistoryRevisionsTest {
+    private lateinit var repository: SquadMemberHistoryRepository
+    private lateinit var memberRepository: MemberRepository
+    private lateinit var service: SquadMemberHistoryService
 
     @BeforeEach
     internal fun setUp() {
-        repository = mockkClass(SquadRepository::class)
-        memberService = mockkClass(MemberService::class)
-        squadMemberHistoryService = mockkClass(SquadMemberHistoryService::class)
-        service = SquadService(repository, memberService, squadMemberHistoryService)
-    }
-
-    @Test
-    fun `Given no revisions, when service requests all revisions, then service should return empty list of members`() {
-        val existingSquad = Squad()
-
-        every {
-            repository.findById(existingSquad.id)
-        } returns of(existingSquad)
-
-        every {
-            squadMemberHistoryService.findAllSquadMemberRevisions(existingSquad)
-        } returns emptyList()
-
-        val actualSquadMembersRevisions = service.findAllSquadMembersRevisions(existingSquad.id)
-
-        assertThat(actualSquadMembersRevisions, equalTo(emptyList()))
+        repository = mockkClass(SquadMemberHistoryRepository::class)
+        memberRepository = mockkClass(MemberRepository::class)
+        service = SquadMemberHistoryService(repository, memberRepository)
     }
 
     /**
@@ -75,26 +52,22 @@ internal class SquadServiceMemberRevisionsTest {
      */
     @ParameterizedTest
     @MethodSource("findAllRevisionsTestArgs")
-    fun `Given revision scenario, when service requests all revisions, then service should return a pair of revision number and correct squad formation at said revision`(
+    fun `Given revision scenario, when service concentrateAllSquadRevisions, then service should return a pair of revision number and correct squad formation at said revision`(
         revisionScenario: List<SquadMemberHistory>,
         expectedResult: List<List<Member>>
     ) {
         val existingSquad = revisionScenario.first().squad
         val relatedMembers = revisionScenario.distinctBy { it.member }.map { it.member }
 
-        every {
-            repository.findById(existingSquad.id)
-        } returns of(existingSquad)
-
         relatedMembers.forEach {
-            every { memberService.find(it.id) } returns it
+            every { memberRepository.findById(it.id).get() } returns it
         }
 
         every {
-            squadMemberHistoryService.findAllSquadMemberRevisions(existingSquad)
+            repository.findAllBySquad(existingSquad)
         } returns revisionScenario.reversed()
 
-        val actualSquadMembersRevisions = service.findAllSquadMembersRevisions(existingSquad.id)
+        val actualSquadMembersRevisions = service.concentrateAllSquadRevisions(existingSquad)
 
         actualSquadMembersRevisions.forEachIndexed { index, actualRevisionMembers: List<Member> ->
             actualRevisionMembers.size shouldBeEqualTo expectedResult[index].size
@@ -120,8 +93,8 @@ internal class SquadServiceMemberRevisionsTest {
      * |  10    | Revert to rev #  0 | R0 ADD M1, R1 ADD M2, R2 REMOVE M2, R3 ADD M3 | [ M1 ]                            |
      */
     @ParameterizedTest
-    @MethodSource("revertToTestArgs")
-    fun `Given revision scenario, when service requests squad formation to revision number, then service should return correct members formation`(
+    @MethodSource("concentrateSquadRevisionsToTestArgs")
+    fun `Given revision scenario, when service concentrateSquadRevisionsTo, then service should return correct members formation`(
         requestedRevision: Int,
         revisionScenario: List<SquadMemberHistory>,
         expectedResult: List<Member>
@@ -129,48 +102,25 @@ internal class SquadServiceMemberRevisionsTest {
         val existingSquad = revisionScenario.first().squad
         val relatedMembers = revisionScenario.distinctBy { it.member }.map { it.member }
 
-        every {
-            repository.findById(existingSquad.id)
-        } returns of(existingSquad)
-
         relatedMembers.forEach {
-            every { memberService.find(it.id) } returns it
+            every { memberRepository.findById(it.id).get() } returns it
         }
 
         every {
-            squadMemberHistoryService.findSquadMemberRevisionsAfter(
-                existingSquad,
-                requestedRevision
-            )
+            repository.findAllBySquadAndRevisionNumberAfter(existingSquad, requestedRevision)
         } returns revisionScenario.subList(requestedRevision + 1, revisionScenario.size).reversed()
 
-        val actualMembersAtRequestedRevision = service
-            .revertSquadMembersFormationTo(existingSquad.id, requestedRevision)
-            .members
+        val actualMembersAtRequestedRevision = service.concentrateSquadRevisionsTo(existingSquad, requestedRevision)
 
         actualMembersAtRequestedRevision.size shouldBeEqualTo expectedResult.size
         assertThat(actualMembersAtRequestedRevision, List<Member>::containsInAnyOrder, expectedResult)
     }
 
     @Test
-    fun `Given existing entity with no member revisions, when service reverts by an invalid number, then service should return same list of members`() {
-        val id = randomUUID()
-        val existingEntity = Squad(id)
-
-        val relatedSquadMemberRevisions = SquadMemberHistoryFactory.create(0)
-
-        every { repository.findById(id) } returns of(existingEntity)
-
-        every {
-            squadMemberHistoryService.findLastNSquadMemberRevisions(
-                existingEntity,
-                0
-            )
-        } returns relatedSquadMemberRevisions
-
-        val result = service.revertSquadMembersFormationBy(id, 0)
-
-        existingEntity.members shouldBeEqualTo result.members
+    fun `Given existing entity, when service concentrateLastNSquadRevisions by zero, then service should return emptyList`() {
+        val existingEntity = Squad()
+        val result = service.concentrateLastNSquadRevisions(existingEntity, 0)
+        result shouldBeEqualTo emptyList()
     }
 
     /**
@@ -179,17 +129,16 @@ internal class SquadServiceMemberRevisionsTest {
      *
      * | Test # | Req Revision #    | Revision Scenario                     | Expected Result of Req Revision # |
      * |:-------|:------------------|:--------------------------------------|-----------------------------------|
-     * |  1     | Revert by 0 revs  | R0 ADD M1                             | [ M1 ]                            |
-     * |  2     | Revert by 1 revs  | R0 ADD M1                             | Empty List of Members             |
-     * |  3     | Revert by 1 revs  | R0 ADD M1, R1 REMOVE M1               | [ M1 ]                            |
-     * |  4     | Revert by 2 revs  | R0 ADD M1, R1 ADD M2                  | Empty List of Members             |
-     * |  5     | Revert by 1 revs  | R0 ADD M1, R1 ADD M2, R2 REMOVE M1    | [ M1, M2 ]                        |
-     * |  6     | Revert by 2 revs  | R0 ADD M1, R1 ADD M2, R2 REMOVE M2    | [ M1 ]                            |
-     * |  7     | Revert by 3 revs  | R0 ADD M1, R1 ADD M2, R2 REMOVE M1    | Empty List of Members             |
+     * |  1     | Revert by 1 revs  | R0 ADD M1                             | Empty List of Members             |
+     * |  2     | Revert by 1 revs  | R0 ADD M1, R1 REMOVE M1               | [ M1 ]                            |
+     * |  3     | Revert by 2 revs  | R0 ADD M1, R1 ADD M2                  | Empty List of Members             |
+     * |  4     | Revert by 1 revs  | R0 ADD M1, R1 ADD M2, R2 REMOVE M1    | [ M1, M2 ]                        |
+     * |  5     | Revert by 2 revs  | R0 ADD M1, R1 ADD M2, R2 REMOVE M2    | [ M1 ]                            |
+     * |  6     | Revert by 3 revs  | R0 ADD M1, R1 ADD M2, R2 REMOVE M1    | Empty List of Members             |
      */
     @ParameterizedTest
-    @MethodSource("revertByTestArgs")
-    fun `Given revision scenario, when service reverts squad by amountOfRevisionToUndo, then service should return correct members formation`(
+    @MethodSource("concentrateLastNSquadRevisionsTestArgs")
+    fun `Given revision scenario, when service concentrateLastNSquadRevisions, then service should return correct members formation`(
         amountOfRevisionToUndo: Int,
         revisionScenario: List<SquadMemberHistory>,
         expectedResult: List<Member>
@@ -197,21 +146,16 @@ internal class SquadServiceMemberRevisionsTest {
         val existingSquad = revisionScenario.first().squad
         val relatedMembers = revisionScenario.distinctBy { it.member }.map { it.member }
 
-        every {
-            repository.findById(existingSquad.id)
-        } returns of(existingSquad)
-
         relatedMembers.forEach {
-            every { memberService.find(it.id) } returns it
+            every { memberRepository.findById(it.id).get() } returns it
         }
 
         every {
-            squadMemberHistoryService.findLastNSquadMemberRevisions(existingSquad, amountOfRevisionToUndo)
+            repository.findAllBySquad(existingSquad, PageRequest.of(0, amountOfRevisionToUndo))
         } returns revisionScenario.takeLast(amountOfRevisionToUndo).reversed()
 
         val actualMembersAtRequestedRevision = service
-            .revertSquadMembersFormationBy(existingSquad.id, amountOfRevisionToUndo)
-            .members
+            .concentrateLastNSquadRevisions(existingSquad, amountOfRevisionToUndo)
 
         actualMembersAtRequestedRevision.size shouldBeEqualTo expectedResult.size
         assertThat(actualMembersAtRequestedRevision, List<Member>::containsInAnyOrder, expectedResult)
@@ -219,7 +163,7 @@ internal class SquadServiceMemberRevisionsTest {
 
     companion object {
         @JvmStatic
-        fun revertToTestArgs(): Stream<Arguments?>? {
+        fun concentrateSquadRevisionsToTestArgs(): Stream<Arguments?>? {
             val existingSquad = Squad()
             return Stream.of(
                 arguments(
@@ -524,27 +468,9 @@ internal class SquadServiceMemberRevisionsTest {
         }
 
         @JvmStatic
-        fun revertByTestArgs(): Stream<Arguments?>? {
+        fun concentrateLastNSquadRevisionsTestArgs(): Stream<Arguments?>? {
             val existingSquad = Squad()
             return Stream.of(
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
-                    arguments(
-                        0,
-                        listOf(
-                            SquadMemberHistory(
-                                existingSquad,
-                                Member().apply {
-                                    existingSquad.members.add(this)
-                                    expectedResult.add(this)
-                                },
-                                0,
-                                ADD
-                            )
-                        ),
-                        expectedResult
-                    )
-                },
-
                 Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         1,

@@ -1,16 +1,20 @@
 package app.choppa.domain.squad.history
 
+import app.choppa.domain.member.Member
+import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.squad.Squad
+import app.choppa.domain.squad.history.RevisionType.ADD
 import app.choppa.exception.EntityNotFoundException
+import org.hibernate.type.IntegerType.ZERO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest.of
-import org.springframework.data.domain.Sort.Direction.DESC
-import org.springframework.data.domain.Sort.by
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SquadMemberHistoryService(
     @Autowired private val squadHistoryRepository: SquadMemberHistoryRepository,
+    @Autowired private val memberRepository: MemberRepository,
 ) {
     fun find(): List<SquadMemberHistory> = squadHistoryRepository
         .findAll()
@@ -28,17 +32,47 @@ class SquadMemberHistoryService(
     fun delete(entities: List<SquadMemberHistory>): List<SquadMemberHistory> = entities
         .apply { squadHistoryRepository.deleteAll(entities) }
 
-    fun findAllSquadMemberRevisions(squad: Squad) = squadHistoryRepository
-        .findAllBySquad(squad, by(DESC, SquadMemberHistory::revisionNumber.name))
-        .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist for Squad [${squad.id}] yet.") }
+    @Transactional
+    fun concentrateAllSquadRevisions(squad: Squad): List<List<Member>> = squadHistoryRepository
+        .findAllBySquad(squad)
+        .foldRight(listOf()) { record: SquadMemberHistory, accumulator: List<List<Member>> ->
+            when (accumulator.size) {
+                0 ->
+                    accumulator
+                        .plusElement(listOf(memberRepository.findById(record.member.id).get()))
+                else ->
+                    accumulator
+                        .dropLastIf(accumulator.size != record.revisionNumber)
+                        .plusElement(
+                            when (record.revisionType) {
+                                ADD -> accumulator.last().plus(memberRepository.findById(record.member.id).get())
+                                RevisionType.REMOVE -> accumulator.last().minus(record.member)
+                            }
+                        )
+            }
+        }
 
-    fun findLastNSquadMemberRevisions(squad: Squad, revisionAmount: Int) = squadHistoryRepository
-        .findAllBySquad(squad, of(0, revisionAmount, by(DESC, SquadMemberHistory::revisionNumber.name)))
-        .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist for Squad [${squad.id}] yet.") }
-
-    fun findSquadMemberRevisionsAfter(squad: Squad, revisionNumber: Int) = squadHistoryRepository
+    @Transactional
+    fun concentrateSquadRevisionsTo(squad: Squad, revisionNumber: Int): List<Member> = squadHistoryRepository
         .findAllBySquadAndRevisionNumberAfter(squad, revisionNumber)
-        .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist after revision number [$revisionNumber] for Squad [${squad.id}].") }
+        .backtrack(squad.members)
+
+    @Transactional
+    fun concentrateLastNSquadRevisions(squad: Squad, revisionAmount: Int): List<Member> = squadHistoryRepository
+        .takeIf { revisionAmount > 0 }
+        ?.findAllBySquad(squad, of(ZERO, revisionAmount))
+        ?.backtrack(squad.members) ?: emptyList()
+
+    private fun List<SquadMemberHistory>.backtrack(members: List<Member>) = this
+        .fold(members) { acc, record ->
+            when (record.revisionType) {
+                ADD -> acc.minus(record.member)
+                RevisionType.REMOVE -> acc.plus(memberRepository.findById(record.member.id).get())
+            }
+        }.toMutableList()
+
+    private fun List<List<Member>>.dropLastIf(predicate: Boolean): List<List<Member>> =
+        if (predicate) this.dropLast(1) else this
 
     private fun <E> List<E>.orElseThrow(exception: () -> Nothing): List<E> = when {
         this.isEmpty() -> exception.invoke()

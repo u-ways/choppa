@@ -1,5 +1,6 @@
 package app.choppa.acceptance.domain.squad.history
 
+import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.squad.history.SquadMemberHistoryRepository
 import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
@@ -14,12 +15,14 @@ import org.junit.jupiter.api.Test
 
 internal class SquadMemberHistoryServiceTest {
     private lateinit var repository: SquadMemberHistoryRepository
+    private lateinit var memberRepository: MemberRepository
     private lateinit var service: SquadMemberHistoryService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(SquadMemberHistoryRepository::class)
-        service = SquadMemberHistoryService(repository)
+        memberRepository = mockkClass(MemberRepository::class)
+        service = SquadMemberHistoryService(repository, memberRepository)
     }
 
     @Test

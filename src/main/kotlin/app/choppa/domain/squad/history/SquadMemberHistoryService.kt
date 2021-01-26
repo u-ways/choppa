@@ -23,6 +23,10 @@ class SquadMemberHistoryService(
         .findAll()
         .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist yet.") }
 
+    fun find(squad: Squad): List<SquadMemberHistory> = squadHistoryRepository
+        .findAllBySquad(squad)
+        .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist yet for squad [${squad.id}].") }
+
     fun save(entity: SquadMemberHistory): SquadMemberHistory = squadHistoryRepository
         .save(entity)
 
@@ -36,11 +40,8 @@ class SquadMemberHistoryService(
         .apply { squadHistoryRepository.deleteAll(entities) }
 
     @Transactional
-    fun generateRevisions(squad: Squad) = with(nextRevisionNumber(squad)) {
-        differentiate(
-            squad.members,
-            memberRepository.findAllBySquadId(squad.id)
-        ).map { (member, revisionType) ->
+    fun generateRevisions(squad: Squad, olderFormation: List<Member>) = with(nextRevisionNumber(squad)) {
+        differentiate(squad.members, olderFormation).map { (member, revisionType) ->
             SquadMemberHistory(squad, member, this, revisionType)
         }
     }

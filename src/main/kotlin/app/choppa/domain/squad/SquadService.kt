@@ -28,6 +28,10 @@ class SquadService(
         .findAllById(ids)
         .orElseThrow { throw EntityNotFoundException("No squads found with given ids.") }
 
+    fun findAllSquadMembersRevisions(id: UUID): Pair<Squad, List<List<Member>>> = find(id).run {
+        this to squadMemberHistoryService.concentrateAllSquadRevisions(this)
+    }
+
     // NOTE(u-ways) #149 Squad also allows the persistence of non-existent members on top of
     //                   persisting existing members from/to the squad's current members table.
     @Transactional

@@ -1,7 +1,6 @@
 package app.choppa.domain.base
 
 import app.choppa.domain.chapter.ChapterController
-import app.choppa.domain.history.HistoryController
 import app.choppa.domain.iteration.IterationController
 import app.choppa.domain.member.MemberController
 import app.choppa.domain.squad.SquadController
@@ -25,7 +24,6 @@ abstract class BaseSerializer<T>(
         MEMBERS(MemberController::class, MemberController::listMembers),
         SQUADS(SquadController::class, SquadController::listSquads),
         ITERATIONS(IterationController::class, IterationController::listIterations),
-        HISTORY(HistoryController::class, HistoryController::listHistory),
     }
 
     internal fun <T : BaseModel> JsonGenerator.writeQueryField(queryType: QueryType, type: T) {

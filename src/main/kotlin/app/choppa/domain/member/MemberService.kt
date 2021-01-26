@@ -4,8 +4,7 @@ import app.choppa.domain.base.BaseService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 @Service
 class MemberService(
@@ -23,11 +22,9 @@ class MemberService(
         .findAllById(ids)
         .orElseThrow { throw EntityNotFoundException("No members found.") }
 
-    @Transactional
     override fun save(entity: Member): Member = memberRepository.save(entity)
 
-    @Transactional
-    override fun save(entities: List<Member>): List<Member> = entities.map(::save)
+    override fun save(entities: List<Member>): List<Member> = memberRepository.saveAll(entities)
 
     override fun delete(entities: List<Member>): List<Member> = entities
         .apply { memberRepository.deleteAll(entities) }

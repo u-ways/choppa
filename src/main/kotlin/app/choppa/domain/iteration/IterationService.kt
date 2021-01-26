@@ -4,7 +4,7 @@ import app.choppa.domain.base.BaseService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 
 @Service
 class IterationService(
@@ -33,16 +33,4 @@ class IterationService(
 
     override fun delete(entities: List<Iteration>): List<Iteration> = entities
         .apply { iterationRepository.deleteAll(entities) }
-
-    fun findRelatedByMember(memberId: UUID): List<Iteration> = iterationRepository
-        .findAllByMemberId(memberId)
-        .orElseThrow { throw EntityNotFoundException("No iterations found for member [$memberId].") }
-
-    fun findRelatedBySquad(squadId: UUID): List<Iteration> = iterationRepository
-        .findAllBySquadId(squadId)
-        .orElseThrow { throw EntityNotFoundException("No iterations found for squad [$squadId].") }
-
-    fun findRelatedByTribe(tribeId: UUID): List<Iteration> = iterationRepository
-        .findAllByTribeId(tribeId)
-        .orElseThrow { throw EntityNotFoundException("No iterations found for tribe [$tribeId].") }
 }

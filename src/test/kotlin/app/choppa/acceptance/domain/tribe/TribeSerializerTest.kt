@@ -31,7 +31,6 @@ internal class TribeSerializerTest {
         val members = uniformDto?.read<String>("$.members")
         val squads = uniformDto?.read<String>("$.squads")
         val iterations = uniformDto?.read<String>("$.iterations")
-        val history = uniformDto?.read<String>("$.history")
 
         assertThat(id, equalTo("tribes/${tribe.id}"))
         assertThat(name, equalTo(tribe.name))
@@ -40,6 +39,5 @@ internal class TribeSerializerTest {
         assertThat(members, equalTo("members?tribe=${tribe.id}"))
         assertThat(squads, equalTo("squads?tribe=${tribe.id}"))
         assertThat(iterations, equalTo("iterations?tribe=${tribe.id}"))
-        assertThat(history, equalTo("history?tribe=${tribe.id}"))
     }
 }

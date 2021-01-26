@@ -1,21 +1,15 @@
 package app.choppa.domain.tribe
 
 import app.choppa.domain.base.BaseModel
-import app.choppa.domain.history.History
 import app.choppa.domain.squad.Squad
 import app.choppa.utils.Color.Companion.GREY
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
-import javax.persistence.Column
-import javax.persistence.Entity
+import javax.persistence.*
 import javax.persistence.FetchType.EAGER
-import javax.persistence.FetchType.LAZY
-import javax.persistence.Id
-import javax.persistence.OneToMany
-import javax.persistence.Table
 
 @Entity
 @Table(name = "tribe")
@@ -35,9 +29,6 @@ data class Tribe(
 
     @OneToMany(mappedBy = "tribe", fetch = EAGER)
     val squads: MutableList<Squad> = mutableListOf(),
-
-    @OneToMany(mappedBy = "tribe", fetch = LAZY)
-    val history: MutableList<History> = mutableListOf()
 ) : BaseModel {
     override fun toString() = "Tribe(id=$id, name=$name)"
 

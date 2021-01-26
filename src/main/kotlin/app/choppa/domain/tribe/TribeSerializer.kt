@@ -1,11 +1,7 @@
 package app.choppa.domain.tribe
 
 import app.choppa.domain.base.BaseSerializer
-import app.choppa.domain.base.BaseSerializer.QueryType.CHAPTERS
-import app.choppa.domain.base.BaseSerializer.QueryType.HISTORY
-import app.choppa.domain.base.BaseSerializer.QueryType.ITERATIONS
-import app.choppa.domain.base.BaseSerializer.QueryType.MEMBERS
-import app.choppa.domain.base.BaseSerializer.QueryType.SQUADS
+import app.choppa.domain.base.BaseSerializer.QueryType.*
 import app.choppa.utils.Color.Companion.toRGBAHex
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
@@ -22,7 +18,6 @@ class TribeSerializer(
         gen.writeQueryField(MEMBERS, tribe)
         gen.writeQueryField(SQUADS, tribe)
         gen.writeQueryField(ITERATIONS, tribe)
-        gen.writeQueryField(HISTORY, tribe)
         gen.writeEndObject()
     }
 }

@@ -1,8 +1,6 @@
 package app.choppa.acceptance.domain.squad
 
 import app.choppa.domain.chapter.Chapter
-import app.choppa.domain.history.History
-import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.tribe.Tribe
@@ -19,7 +17,6 @@ class SquadTest {
             .withPrefabValues(Member::class.java, Member(), Member())
             .withPrefabValues(Chapter::class.java, Chapter(), Chapter())
             .withPrefabValues(Tribe::class.java, Tribe(), Tribe())
-            .withPrefabValues(History::class.java, History(Iteration(), Tribe(), Squad(), Member()), History(Iteration(), Tribe(), Squad(), Member()))
             .verify()
     }
 }

@@ -2,7 +2,6 @@ package app.choppa.domain.squad
 
 import app.choppa.domain.base.BaseSerializer
 import app.choppa.domain.base.BaseSerializer.QueryType.CHAPTERS
-import app.choppa.domain.base.BaseSerializer.QueryType.HISTORY
 import app.choppa.domain.base.BaseSerializer.QueryType.ITERATIONS
 import app.choppa.domain.tribe.TribeController
 import app.choppa.utils.Color.Companion.toRGBAHex
@@ -21,7 +20,6 @@ class SquadSerializer(
         gen.writeObjectField(squad::members.name, squad.members)
         gen.writeQueryField(CHAPTERS, squad)
         gen.writeQueryField(ITERATIONS, squad)
-        gen.writeQueryField(HISTORY, squad)
         gen.writeEndObject()
     }
 }

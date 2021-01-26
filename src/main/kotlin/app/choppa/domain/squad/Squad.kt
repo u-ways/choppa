@@ -1,7 +1,6 @@
 package app.choppa.domain.squad
 
 import app.choppa.domain.base.BaseModel
-import app.choppa.domain.history.History
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.Member.Companion.NO_MEMBERS
 import app.choppa.domain.tribe.Tribe
@@ -10,19 +9,11 @@ import app.choppa.utils.Color.Companion.GREY
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
-import java.util.UUID
+import java.util.*
 import java.util.UUID.fromString
 import java.util.UUID.randomUUID
-import javax.persistence.Column
-import javax.persistence.Entity
+import javax.persistence.*
 import javax.persistence.FetchType.EAGER
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.JoinTable
-import javax.persistence.ManyToMany
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
-import javax.persistence.Table
 
 @Entity
 @Table(name = "squad")
@@ -51,9 +42,6 @@ data class Squad(
         inverseJoinColumns = [JoinColumn(name = "member_id", referencedColumnName = "member_id")]
     )
     val members: MutableList<Member> = NO_MEMBERS,
-
-    @OneToMany(mappedBy = "squad")
-    val history: MutableList<History> = mutableListOf()
 ) : BaseModel {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 

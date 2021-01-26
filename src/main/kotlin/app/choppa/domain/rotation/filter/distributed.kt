@@ -1,4 +1,4 @@
-package app.choppa.core.rotation.filter
+package app.choppa.domain.rotation.filter
 
 import app.choppa.domain.member.Member
 

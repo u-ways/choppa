@@ -1,15 +1,13 @@
-package app.choppa.acceptance.core
+package app.choppa.acceptance.domain.rotation
 
-import app.choppa.core.rotation.Context
-import app.choppa.core.rotation.filter.Filter
-import app.choppa.core.rotation.filter.Filter.DISTRIBUTED
-import app.choppa.core.rotation.filter.Filter.OLDEST
-import app.choppa.core.rotation.strategy.Strategy
-import app.choppa.core.rotation.strategy.Strategy.ANTI_CLOCKWISE
-import app.choppa.core.rotation.strategy.Strategy.CLOCKWISE
-import app.choppa.core.rotation.strategy.Strategy.RANDOM
 import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
+import app.choppa.domain.rotation.RotationContext
 import app.choppa.domain.rotation.RotationOptions
+import app.choppa.domain.rotation.filter.Filter
+import app.choppa.domain.rotation.filter.Filter.DISTRIBUTED
+import app.choppa.domain.rotation.filter.Filter.OLDEST
+import app.choppa.domain.rotation.strategy.Strategy
+import app.choppa.domain.rotation.strategy.Strategy.*
 import app.choppa.support.factory.TribeFactory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -21,7 +19,7 @@ class BasicMemberRotationTest {
     @Test
     fun `Given Tribe with no members, when tribe is rotated, it should not do any changes`() {
         val testTribe = TribeFactory.create()
-        val rotatedTribe = Context.rotate(testTribe, RotationOptions(1, UNASSIGNED_ROLE, OLDEST, CLOCKWISE))
+        val rotatedTribe = RotationContext.rotate(testTribe, RotationOptions(1, UNASSIGNED_ROLE, OLDEST, CLOCKWISE))
         assert(testTribe === rotatedTribe)
     }
 
@@ -32,7 +30,7 @@ class BasicMemberRotationTest {
         strategy: Strategy
     ) {
         val testTribe = TribeFactory.create(2, 1)
-        val rotatedTribe = Context.rotate(testTribe, RotationOptions(2, UNASSIGNED_ROLE, filter, strategy))
+        val rotatedTribe = RotationContext.rotate(testTribe, RotationOptions(2, UNASSIGNED_ROLE, filter, strategy))
         assert(testTribe.squads[0].members[0] === rotatedTribe.squads[1].members[0])
         assert(testTribe.squads[1].members[0] === rotatedTribe.squads[0].members[0])
     }
@@ -43,7 +41,7 @@ class BasicMemberRotationTest {
         val topMemberOne = testTribe.squads[0].members[0]
         val topMemberTwo = testTribe.squads[1].members[0]
         val topMemberThree = testTribe.squads[2].members[0]
-        val rotatedTribe = Context.rotate(testTribe, RotationOptions(3, UNASSIGNED_ROLE, DISTRIBUTED, CLOCKWISE))
+        val rotatedTribe = RotationContext.rotate(testTribe, RotationOptions(3, UNASSIGNED_ROLE, DISTRIBUTED, CLOCKWISE))
 
         assert(rotatedTribe.squads[0].members.contains(topMemberThree))
         assert(rotatedTribe.squads[1].members.contains(topMemberOne))
@@ -56,7 +54,7 @@ class BasicMemberRotationTest {
         val oldestMemberOne = testTribe.squads[0].members[1]
         val oldestMemberTwo = testTribe.squads[0].members[0]
         val oldestMemberThree = testTribe.squads[1].members[0]
-        val rotatedTribe = Context.rotate(testTribe, RotationOptions(3, UNASSIGNED_ROLE, OLDEST, ANTI_CLOCKWISE))
+        val rotatedTribe = RotationContext.rotate(testTribe, RotationOptions(3, UNASSIGNED_ROLE, OLDEST, ANTI_CLOCKWISE))
 
         assert(rotatedTribe.squads[2].members.contains(oldestMemberOne))
         assert(rotatedTribe.squads[2].members.contains(oldestMemberTwo))
@@ -71,7 +69,7 @@ class BasicMemberRotationTest {
         squadRotationAmount: Int
     ) {
         val testTribe = TribeFactory.create(squadAmount, squadMemberAmount)
-        val rotatedTribe = Context.rotate(testTribe, RotationOptions(squadRotationAmount, UNASSIGNED_ROLE, Filter.RANDOM, RANDOM))
+        val rotatedTribe = RotationContext.rotate(testTribe, RotationOptions(squadRotationAmount, UNASSIGNED_ROLE, Filter.RANDOM, RANDOM))
 
         val rotatedMemberCounts = testTribe.squads.mapIndexed { index, squad ->
             squad.members.filter { !rotatedTribe.squads[index].members.contains(it) }.count()

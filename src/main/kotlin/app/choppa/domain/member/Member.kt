@@ -3,21 +3,13 @@ package app.choppa.domain.member
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
-import app.choppa.domain.history.History
 import app.choppa.domain.squad.Squad
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToMany
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "member")
@@ -38,9 +30,6 @@ data class Member(
 
     @ManyToMany(mappedBy = "members")
     val squads: MutableList<Squad> = mutableListOf(),
-
-    @OneToMany(mappedBy = "member")
-    val history: MutableList<History> = mutableListOf()
 ) : BaseModel {
     override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
 

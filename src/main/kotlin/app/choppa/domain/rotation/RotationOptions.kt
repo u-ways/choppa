@@ -1,14 +1,15 @@
 package app.choppa.domain.rotation
 
-import app.choppa.core.rotation.filter.Filter
-import app.choppa.core.rotation.filter.Filter.OLDEST
-import app.choppa.core.rotation.strategy.Strategy
-import app.choppa.core.rotation.strategy.Strategy.CLOCKWISE
 import app.choppa.domain.chapter.Chapter
+import app.choppa.domain.rotation.filter.Filter
+import app.choppa.domain.rotation.filter.Filter.OLDEST
+import app.choppa.domain.rotation.strategy.Strategy
+import app.choppa.domain.rotation.strategy.Strategy.CLOCKWISE
+import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE as UNASSIGNED_ROLE1
 
 data class RotationOptions(
     val amount: Int = 1,
-    val chapter: Chapter = Chapter.UNASSIGNED_ROLE,
+    val chapter: Chapter = UNASSIGNED_ROLE1,
     val filter: Filter = OLDEST,
     val strategy: Strategy = CLOCKWISE
 ) {

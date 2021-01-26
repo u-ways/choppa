@@ -1,4 +1,4 @@
-package app.choppa.core.rotation.strategy
+package app.choppa.domain.rotation.strategy
 
 import app.choppa.domain.member.Member
 import kotlin.math.floor

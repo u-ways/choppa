@@ -1,4 +1,4 @@
-package app.choppa.core.rotation.filter
+package app.choppa.domain.rotation.filter
 
 import app.choppa.domain.member.Member
 
@@ -8,7 +8,8 @@ internal fun oldest(members: List<MutableList<Member>>, amount: Int): List<Mutab
     members.mapIndexed { index, squadMembers ->
         squadMembers.map { Pair(index, it) }
     }.flatten().apply {
-        if (this.count() > 1) this.sortedBy { it.second.history.last().iteration.startDate }
+//        FIXME(u-ways) #175 use Squad revisions to find oldest members
+//        if (this.count() > 1) this.sortedBy { it.second.history.last().iteration.startDate }
     }.take(amount).forEach {
         selectedMembers[it.first].add(it.second)
     }

@@ -31,9 +31,15 @@ class SquadService(
     // NOTE(u-ways) #149 Squad also allows the persistence of non-existent members on top of
     //                   persisting existing members from/to the squad's current members table.
     @Transactional
-    override fun save(entity: Squad): Squad = memberService
-        .save(entity.members)
-        .run { squadRepository.save(entity) }
+    override fun save(entity: Squad): Squad = squadRepository
+        .findById(entity.id)
+        .getMembersIfPresent()
+        .run {
+            memberService.save(entity.members)
+            squadRepository
+                .save(entity)
+                .createSquadMembersRevision(this)
+        }
 
     @Transactional
     override fun save(entities: List<Squad>): List<Squad> = entities.map(::save)
@@ -52,6 +58,14 @@ class SquadService(
         .findAllByTribeId(tribeId)
         .orElseThrow { throw EntityNotFoundException("No squads found belonging to tribe [$tribeId] yet.") }
 
-    private fun List<List<Member>>.dropLastIf(predicate: Boolean): List<List<Member>> =
-        if (predicate) this.dropLast(1) else this
+    private fun Optional<Squad>.getMembersIfPresent() = when {
+        this.isPresent -> this.get().members.toMutableList()
+        else -> emptyList()
+    }
+
+    private fun Squad.createSquadMembersRevision(olderFormation: List<Member>) = this.apply {
+        squadMemberHistoryService.save(
+            squadMemberHistoryService.generateRevisions(this, olderFormation)
+        )
+    }
 }

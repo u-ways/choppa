@@ -27,7 +27,7 @@ internal class SquadServiceTest {
     internal fun setUp() {
         repository = mockkClass(SquadRepository::class)
         memberService = mockkClass(MemberService::class)
-        squadMemberHistoryService = mockkClass(SquadMemberHistoryService::class)
+        squadMemberHistoryService = mockkClass(SquadMemberHistoryService::class, relaxed = true)
         service = SquadService(repository, memberService, squadMemberHistoryService)
     }
 
@@ -38,6 +38,9 @@ internal class SquadServiceTest {
         val members = entity.members
 
         every { memberService.save(entity.members) } returns members
+
+        every { repository.findById(entity.id) } returns empty()
+
         every { repository.save(Squad(entity.id, entity.name, entity.color, tribe, members)) } returns entity
 
         val savedEntity = service.save(entity)

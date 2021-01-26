@@ -48,14 +48,9 @@ internal class SquadMemberHistoryGenerateRevisionsTest {
             )
         } returns emptyList()
 
-        every {
-            memberRepository.findAllBySquadId(existingSquad.id)
-        } returns emptyList()
-
         val actualRevisionsGenerated = service.generateRevisions(
-            existingSquad.apply {
-                this.members.addAll(revisedFormation)
-            }
+            existingSquad.apply { this.members.addAll(revisedFormation) },
+            emptyList()
         )
 
         actualRevisionsGenerated.size shouldBeEqualTo 1
@@ -91,15 +86,14 @@ internal class SquadMemberHistoryGenerateRevisionsTest {
             )
         } returns listOf(SquadMemberHistoryFactory.create(revisionNumber = nextRevisionNumber - 1))
 
-        every {
-            memberRepository.findAllBySquadId(existingSquad.id)
-        } returns mutableListOf<Member>().apply { this.addAll(existingSquad.members) }
+        val olderFormation = mutableListOf<Member>().apply { this.addAll(existingSquad.members) }
 
         val actualRevisionsGenerated = service.generateRevisions(
             existingSquad.apply {
                 this.members.clear()
                 this.members.addAll(revisedFormation)
-            }
+            },
+            olderFormation
         )
 
         actualRevisionsGenerated.size shouldBeEqualTo expectedRevisionsGenerated.size

@@ -3,12 +3,11 @@ package app.choppa.domain.tribe
 import app.choppa.domain.base.BaseController
 import app.choppa.domain.base.BaseController.Companion.API_PREFIX
 import app.choppa.domain.rotation.RotationOptions
+import app.choppa.domain.rotation.RotationOptions.Companion.DEFAULT_OPTIONS
 import app.choppa.domain.rotation.RotationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.http.ResponseEntity.created
-import org.springframework.http.ResponseEntity.noContent
-import org.springframework.http.ResponseEntity.ok
+import org.springframework.http.ResponseEntity.*
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -47,7 +46,7 @@ class TribeController(
         ok().body(
             rotationService.rotate(
                 tribeService.find(id),
-                options ?: RotationOptions.DEFAULT_OPTIONS
+                options ?: DEFAULT_OPTIONS
             )
         )
 }

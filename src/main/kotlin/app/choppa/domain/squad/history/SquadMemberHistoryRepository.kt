@@ -17,12 +17,12 @@ interface SquadMemberHistoryRepository : JpaRepository<SquadMemberHistory, Squad
 
     fun findAllBySquad(
         squad: Squad,
-        sort: Sort = by(DESC, SquadMemberHistory::revisionNumber.name)
+        sort: Sort = by(DESC, SquadMemberHistory::createDate.name)
     ): List<SquadMemberHistory>
 
     fun findAllBySquadAndRevisionNumberAfter(
         squad: Squad,
         revisionNumber: Int,
-        sort: Sort = by(DESC, SquadMemberHistory::revisionNumber.name)
+        sort: Sort = by(DESC, SquadMemberHistory::createDate.name)
     ): List<SquadMemberHistory>
 }

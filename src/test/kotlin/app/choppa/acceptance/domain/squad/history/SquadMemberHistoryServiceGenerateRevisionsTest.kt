@@ -24,7 +24,7 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.domain.Sort.by
 import java.util.stream.Stream
 
-internal class SquadMemberHistoryGenerateRevisionsTest {
+internal class SquadMemberHistoryServiceGenerateRevisionsTest {
     private lateinit var repository: SquadMemberHistoryRepository
     private lateinit var memberRepository: MemberRepository
     private lateinit var service: SquadMemberHistoryService

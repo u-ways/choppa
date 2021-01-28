@@ -28,10 +28,6 @@ class SquadService(
         .findAllById(ids)
         .orElseThrow { throw EntityNotFoundException("No squads found with given ids.") }
 
-    fun findAllSquadMembersRevisions(id: UUID): Pair<Squad, List<List<Member>>> = find(id).run {
-        this to squadMemberHistoryService.concentrateAllSquadRevisions(this)
-    }
-
     // NOTE(u-ways) #149 Squad also allows the persistence of non-existent members on top of
     //                   persisting existing members from/to the squad's current members table.
     @Transactional
@@ -61,6 +57,18 @@ class SquadService(
     fun findRelatedByTribe(tribeId: UUID): List<Squad> = squadRepository
         .findAllByTribeId(tribeId)
         .orElseThrow { throw EntityNotFoundException("No squads found belonging to tribe [$tribeId] yet.") }
+
+    @Transactional
+    fun findAllSquadMembersRevisions(id: UUID) = find(id).run {
+        this to squadMemberHistoryService.concentrateAllSquadRevisions(this)
+    }
+
+    @Transactional
+    fun findLastNSquadMembersRevisions(id: UUID, revisionAmount: Int) = find(id).run {
+        this to (1..revisionAmount).map {
+            squadMemberHistoryService.concentrateLastNSquadRevisions(this, it)
+        }
+    }
 
     private fun Optional<Squad>.getMembersIfPresent() = when {
         this.isPresent -> this.get().members.toMutableList()

@@ -19,11 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 import java.util.UUID.randomUUID
 
 @WebMvcTest(controllers = [TribeController::class])
@@ -141,7 +137,7 @@ internal class TribeControllerIT @Autowired constructor(
         fun `POST rotation request no payload`() {
             val entity = tribe
 
-            every { rotationService.rotate(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
+            every { rotationService.executeRotation(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
             every { tribeService.find(entity.id) } returns entity
 
             mvc.post("/api/tribes/${entity.id}:rotate") {
@@ -159,7 +155,7 @@ internal class TribeControllerIT @Autowired constructor(
             val entity = tribe
             val rotation = RotationOptions.DEFAULT_OPTIONS
 
-            every { rotationService.rotate(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
+            every { rotationService.executeRotation(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
             every { tribeService.find(entity.id) } returns entity
 
             mvc.post("/api/tribes/${entity.id}:rotate") {

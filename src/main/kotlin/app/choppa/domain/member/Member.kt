@@ -31,7 +31,7 @@ data class Member(
     @ManyToMany(mappedBy = "members")
     val squads: MutableList<Squad> = mutableListOf(),
 ) : BaseModel {
-    override fun toString() = "Member(id=$id, name=$name, chapter=$chapter)"
+    override fun toString() = "Member(id=$id, name=$name, chapter=${chapter.name})"
 
     override fun hashCode(): Int = id.hashCode()
 

@@ -1,11 +1,15 @@
 package app.choppa.acceptance.domain.squad
 
+import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadRepository
 import app.choppa.domain.squad.SquadService
 import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
+import app.choppa.support.factory.SquadFactory
+import app.choppa.support.matchers.containsInAnyOrder
+import com.natpryce.hamkrest.assertion.assertThat
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
@@ -85,5 +89,49 @@ internal class SquadServiceTest {
         every { repository.findById(id) } returns empty()
 
         assertThrows(EntityNotFoundException::class.java) { service.find(id) }
+    }
+
+    @Test
+    fun `Given existing entity, when service findAllSquadMembersRevisions for existing entity, then service should pair entity with related revisions`() {
+        val existingEntity = SquadFactory.create(membersAmount = 5)
+
+        every { repository.findById(existingEntity.id) } returns of(existingEntity)
+        every { squadMemberHistoryService.concentrateAllSquadRevisions(existingEntity) } returns listOf(existingEntity.members)
+
+        val squadMembersRevisions = service.findAllSquadMembersRevisions(existingEntity.id)
+
+        squadMembersRevisions.first shouldBe existingEntity
+        squadMembersRevisions.second.first() shouldBe existingEntity.members
+    }
+
+    @Test
+    fun `Given existing entity, when service findLastNSquadMembersRevisions for existing entity, then service should pair entity with correct revisions`() {
+        val existingEntity = SquadFactory.create(membersAmount = 5)
+
+        every { repository.findById(existingEntity.id) } returns of(existingEntity)
+
+        every {
+            squadMemberHistoryService.concentrateLastNSquadRevisions(existingEntity, 1)
+        } returns existingEntity.members.subList(0, 4)
+
+        every {
+            squadMemberHistoryService.concentrateLastNSquadRevisions(existingEntity, 2)
+        } returns existingEntity.members.subList(0, 3)
+
+        val squadMembersRevisions = service.findLastNSquadMembersRevisions(existingEntity.id, 2)
+
+        squadMembersRevisions.first shouldBe existingEntity
+
+        assertThat(
+            squadMembersRevisions.second.first(),
+            List<Member>::containsInAnyOrder,
+            existingEntity.members.subList(0, 4)
+        )
+
+        assertThat(
+            squadMembersRevisions.second.last(),
+            List<Member>::containsInAnyOrder,
+            existingEntity.members.subList(0, 3)
+        )
     }
 }

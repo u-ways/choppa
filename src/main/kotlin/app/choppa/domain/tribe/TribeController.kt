@@ -44,9 +44,17 @@ class TribeController(
         @RequestBody(required = false) options: RotationOptions?
     ): ResponseEntity<Tribe> =
         ok().body(
-            rotationService.rotate(
+            rotationService.executeRotation(
                 tribeService.find(id),
                 options ?: DEFAULT_OPTIONS
             )
+        )
+
+    @GetMapping("$ID_PATH:undoRotation")
+    fun undoRotation(
+        @PathVariable id: UUID,
+    ): ResponseEntity<Tribe> =
+        ok().body(
+            rotationService.undoRotation(tribeService.find(id))
         )
 }

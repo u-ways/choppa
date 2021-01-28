@@ -9,6 +9,7 @@ import app.choppa.exception.EntityNotFoundException
 import org.hibernate.type.IntegerType.ZERO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest.of
+import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.domain.Sort.by
 import org.springframework.stereotype.Service
@@ -23,9 +24,8 @@ class SquadMemberHistoryService(
         .findAll()
         .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist yet.") }
 
-    fun find(squad: Squad): List<SquadMemberHistory> = squadHistoryRepository
-        .findAllBySquad(squad)
-        .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist yet for squad [${squad.id}].") }
+    fun findBySquad(squad: Squad, sort: Sort = by(DESC, SquadMemberHistory::createDate.name)): List<SquadMemberHistory> = squadHistoryRepository
+        .findAllBySquad(squad, sort)
 
     fun save(entity: SquadMemberHistory): SquadMemberHistory = squadHistoryRepository
         .save(entity)

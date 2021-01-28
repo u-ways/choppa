@@ -6,11 +6,9 @@ import app.choppa.domain.squad.SquadService
 import app.choppa.domain.squad.history.RevisionType.ADD
 import app.choppa.domain.squad.history.RevisionType.REMOVE
 import app.choppa.domain.squad.history.SquadMemberHistoryService
-import app.choppa.exception.EntityNotFoundException
 import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.testcontainers.TestDBContainer
 import org.amshove.kluent.shouldBeEqualTo
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,16 +32,6 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
 
     @Test
     @Transactional
-    fun `Given new squad, when service saves new entity, then no squad member revisions should be generated`() {
-        val newSquad = squadService.save(Squad())
-
-        assertThrows(EntityNotFoundException::class.java) {
-            squadMemberHistoryService.find(newSquad)
-        }
-    }
-
-    @Test
-    @Transactional
     fun `Given existing squad no member formation, when service saves existing squad with revised formation, then a new squad member revision should be generated`() {
         val existingSquad = squadService.save(Squad())
 
@@ -52,7 +40,7 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
         )
 
         assertDoesNotThrow {
-            val result = squadMemberHistoryService.find(existingSquadWithRevisedFormation)
+            val result = squadMemberHistoryService.findBySquad(existingSquadWithRevisedFormation)
 
             result.size shouldBeEqualTo 1
 
@@ -74,7 +62,7 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
             existingSquad.copy(members = existingSquad.members.plus(Member()).toMutableList())
         )
 
-        val result = squadMemberHistoryService.find(existingSquadWithRevisedFormation)
+        val result = squadMemberHistoryService.findBySquad(existingSquadWithRevisedFormation)
 
         result.first().squad shouldBeEqualTo existingSquadWithRevisedFormation
         result.first().member shouldBeEqualTo existingSquadWithRevisedFormation.members[1]
@@ -95,7 +83,7 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
             existingSquad.copy(members = mutableListOf())
         )
 
-        val result = squadMemberHistoryService.find(existingSquadWithRevisedFormation)
+        val result = squadMemberHistoryService.findBySquad(existingSquadWithRevisedFormation)
 
         result.first().squad shouldBeEqualTo existingSquad
         result.first().member shouldBeEqualTo relatedMember

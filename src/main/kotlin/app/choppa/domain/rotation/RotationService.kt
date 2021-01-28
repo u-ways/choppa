@@ -1,5 +1,6 @@
 package app.choppa.domain.rotation
 
+import app.choppa.domain.rotation.RotationContext.Companion.rotate
 import app.choppa.domain.squad.SquadService
 import app.choppa.domain.tribe.Tribe
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,12 +13,20 @@ class RotationService(
 ) {
     // TODO(u-ways) #175 Use Squad revisions to aid in SMR.
     //  For example, if you want a List [ Pair<Squad,Revisions> ] DS. Use the following:
-    //    tribeToRotate.squads.map { squadService.findAllSquadMembersRevisions(it.id) }
+    //    tribe.squads.map { squadService.findAllSquadMembersRevisions(it.id) }
+    @Transactional
+    fun executeRotation(tribe: Tribe, options: RotationOptions): Tribe = tribe.copy(
+        squads = squadService.save(rotate(tribe, options).squads).toMutableList()
+    )
 
     @Transactional
-    fun rotate(tribe: Tribe, options: RotationOptions): Tribe = tribe.copy(
+    fun undoRotation(tribe: Tribe): Tribe = tribe.copy(
         squads = squadService.save(
-            RotationContext.rotate(tribe, options).squads
+            tribe.squads
+                .map { squadService.findLastNSquadMembersRevisions(it.id, 1) }
+                .filter { it.first.members == it.second.first() }
+                .map { it.first.copy(members = it.second.first().toMutableList()) }
+                .toMutableList()
         ).toMutableList()
     )
 }

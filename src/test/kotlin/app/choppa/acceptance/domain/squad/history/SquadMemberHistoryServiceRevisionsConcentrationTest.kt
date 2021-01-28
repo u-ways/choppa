@@ -161,6 +161,8 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
         assertThat(actualMembersAtRequestedRevision, List<Member>::containsInAnyOrder, expectedResult)
     }
 
+    // TODO(U-ways) #165 Convert to scenario factories
+    //  @see https://github.com/U-ways/choppa/pull/180#discussion_r566052924
     companion object {
         @JvmStatic
         fun concentrateSquadRevisionsToTestArgs(): Stream<Arguments?>? {

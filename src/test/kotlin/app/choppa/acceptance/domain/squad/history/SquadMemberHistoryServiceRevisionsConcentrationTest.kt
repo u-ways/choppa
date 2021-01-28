@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.data.domain.PageRequest
 import java.util.stream.Stream
 
-internal class SquadMemberHistoryRevisionsConcentrationTest {
+internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
     private lateinit var repository: SquadMemberHistoryRepository
     private lateinit var memberRepository: MemberRepository
     private lateinit var service: SquadMemberHistoryService

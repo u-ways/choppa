@@ -43,12 +43,12 @@ class SquadMemberHistoryFactory {
             squad: Squad = Squad(),
             member: Member = Member(),
             startingRevisionNumber: Int = 0,
-        ): List<SquadMemberHistory> = (0 until amount).mapIndexed() { index, currentRevisionNumber ->
+        ): List<SquadMemberHistory> = (startingRevisionNumber until amount + startingRevisionNumber).map() { currentRevisionNumber ->
             create(
                 squad,
                 member,
-                (startingRevisionNumber + currentRevisionNumber),
-                if (index % 2 == 0) ADD else REMOVE,
+                currentRevisionNumber,
+                if (currentRevisionNumber % 2 == 0) ADD else REMOVE,
                 now().plusSeconds(currentRevisionNumber.toLong())
             )
         }.sortedByDescending { it.revisionNumber }

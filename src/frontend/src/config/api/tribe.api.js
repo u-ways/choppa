@@ -2,7 +2,7 @@ import httpClient from "@/config/api/http-client";
 import Tribe from "@/models/domain/tribe";
 import { getSquadsByQuery } from "@/config/api/squad.api";
 
-async function deserializeTribe(config, json) {
+async function deserializeTribe(json) {
   return new Tribe({
     id: json.id,
     name: json.name,
@@ -17,11 +17,16 @@ async function deserializeTribe(config, json) {
   });
 }
 
+export async function getAllTribes() {
+  const response = await httpClient.get("tribes");
+  return Promise.all(response.data.map((tribe) => deserializeTribe(tribe)));
+}
+
 export async function getTribe(config) {
   const url = Object.prototype.hasOwnProperty.call(config, "url") ? config.url : `tribes/${config.id}`;
   const response = await httpClient.get(url);
 
-  return deserializeTribe(config, response.data);
+  return deserializeTribe(response.data);
 }
 
 export async function saveTribe(config) {

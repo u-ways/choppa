@@ -16,16 +16,7 @@
                           screenReaderText="Close Menu" icon="times" @click="expandedMenu = false"
               />
             </div>
-            <NavbarLink :url="{ name: 'view-tribe', params: { id: '00000000-0000-0000-0000-000000000001' } }">
-              Tribe-1
-            </NavbarLink>
-            <NavbarLink :url="{ name: 'edit-tribe', params: { id: '00000000-0000-0000-0000-000000000001' } }">
-              Edit
-            </NavbarLink>
-            <NavbarLink :url="{ name: '404' }">404</NavbarLink>
-            <NavbarLink :url="{ name: 'external-github' }">Github</NavbarLink>
-            <NavbarLink :url="{ name: 'external-production' }">Production</NavbarLink>
-            <NavbarLink :url="{ name: 'external-staging' }">Staging</NavbarLink>
+            <NavbarLink :url="{ name: 'dashboard' }">Dashboard</NavbarLink>
           </div>
         </div>
       </div>

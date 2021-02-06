@@ -98,22 +98,10 @@ noArg {
 
 /** Gradle tasks ************************/
 
-tasks.register<Test>("all") {
-    description = "Runs all tests. (except integration tests)"
-    include("org/choppa/unit/**")
-    include("org/choppa/acceptance/**")
-}
-
-tasks.register<Test>("unit") {
-    description = "Runs all unit tests."
-    maxParallelForks = 3
-    include("org/choppa/unit/**")
-}
-
 tasks.register<Test>("acceptance") {
     description = "Runs all acceptance tests."
     maxParallelForks = 3
-    include("org/choppa/acceptance/**")
+    include("app/choppa/acceptance/**")
     filter {
         includeTestsMatching("*Test")
     }
@@ -122,7 +110,7 @@ tasks.register<Test>("acceptance") {
 
 tasks.register<Test>("integration") {
     description = "Runs all integration tests."
-    include("org/choppa/integration/**")
+    include("app/choppa/integration/**")
     filter {
         includeTestsMatching("*IT")
     }

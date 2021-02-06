@@ -37,8 +37,5 @@ jobs:
       - name: Backend Lint
         run: ./gradlew ktlintCheck
 
-      - name: Backend Unit Tests
-        run: ./gradlew unit
-
       - name: Backend Acceptance Tests
         run: ./gradlew acceptance

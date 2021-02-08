@@ -73,7 +73,6 @@
 
     <KnowledgeSharing/>
 
-    <!-- TODO: Sort out this entire section -->
     <section id="Demonstration" class="py-16">
       <div class="container px-3 mx-auto max-w-screen-lg">
         <div class="flex flex-col pb-3 place-items-center gap-1">
@@ -86,9 +85,9 @@
             </template>
           </InformationBlock>
           <div class="pt-12 w-full lg:w-1/2">
-            <DemoButton class="text-center" link="/tribes/00000000-0000-0000-0000-000000000001/"
-                        :replace="true">I'm Ready!
-            </DemoButton>
+            <StyledButton class ="text-center" type="link"
+                          :link="{ name: 'view-tribe', params: { id: '00000000-0000-0000-0000-000000000001' } }"
+                          variant="primary">I'm Ready!</StyledButton>
           </div>
         </div>
       </div>
@@ -110,19 +109,19 @@ import InformationBlock from "@/components/home/InformationBlock";
 import Squad from "@/models/domain/squad";
 import Member from "@/models/domain/member";
 import Chapter from "@/models/domain/chapter";
-import DemoButton from "@/components/home/DemoButton";
 import KnowledgeSharing from "@/components/home/KnowledgeSharing";
+import StyledButton from "@/components/atoms/buttons/StyledButton";
 
 export default {
   name: "HomePage",
   components: {
     InformationBlock,
-    DemoButton,
     Footer,
     SquadCard,
     Navbar,
     InformationCard,
     KnowledgeSharing,
+    StyledButton,
   },
   data() {
     return {

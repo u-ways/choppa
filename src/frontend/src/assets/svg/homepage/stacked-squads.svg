@@ -94,7 +94,7 @@
                 <rect x="289.71" y="303.925" fill="none" width="454.515" height="16.638"/>
                 <rect x="289.711" y="337.438" fill="none" width="454.514" height="16.641"/>
                 <rect x="289.711" y="370.299" fill="none" width="454.514" height="16.641"/>
-                <rect x="290.477" y="155.355" fill="#2D2D2D" width="188.415" height="24.813"/>
+                <rect x="290.477" y="155.355" fill="#6862D9" width="188.415" height="24.813" fill-opacity="0.6"/>
 		</g>
 	</g>
 </g>
@@ -173,11 +173,11 @@
 	<path fill="#674DA4" d="M657.461,378.62c0,4.186-3.601,7.604-8,7.604h-26.392c-4.399,0-8-3.423-8-7.604
 		c0-4.181,3.601-7.604,8-7.604h26.392C653.862,371.015,657.461,374.437,657.461,378.62z"/>
 </g>
-    <rect x="308.575" y="233.604" fill="#2D2D2D" width="103.806" height="11.042"/>
-    <rect x="308.781" y="270.206" fill="#2D2D2D" width="82.828" height="11.042"/>
-    <rect x="308.881" y="306.723" fill="#2D2D2D" width="94.208" height="11.042"/>
-    <rect x="309.047" y="340.238" fill="#2D2D2D" width="142.804" height="11.041"/>
-    <rect x="308.427" y="373.099" fill="#2D2D2D" width="130.2" height="11.041"/>
+    <rect x="308.575" y="233.604" fill="#6862D9" width="103.806" height="11.042" fill-opacity="0.6"/>
+    <rect x="308.781" y="270.206" fill="#6862D9" width="82.828" height="11.042"  fill-opacity="0.6"/>
+    <rect x="308.881" y="306.723" fill="#6862D9" width="94.208" height="11.042" fill-opacity="0.6"/>
+    <rect x="309.047" y="340.238" fill="#6862D9" width="142.804" height="11.041" fill-opacity="0.6"/>
+    <rect x="308.427" y="373.099" fill="#6862D9" width="130.2" height="11.041" fill-opacity="0.6"/>
     <circle fill="#D17589" cx="297.977" cy="239.125" r="7.5"/>
     <circle fill="#CCCB66" cx="297.977" cy="275.727" r="7.5"/>
     <circle fill="#2E5E8C" cx="297.977" cy="312.244" r="7.5"/>

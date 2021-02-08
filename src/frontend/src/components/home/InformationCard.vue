@@ -8,20 +8,10 @@
         <p class="text-xl sm:text-2xl lg:text-3xl font-bold order-first lg:order-last">
           <slot name="heading"/>
         </p>
-        <p class="text-md sm:text-lg lg:text-xl pt-6">
+        <p class="text-md sm:text-lg lg:text-xl">
           <slot name="body"/>
         </p>
       </div>
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: "InformationCard",
-};
-</script>
-
-<style scoped>
-
-</style>

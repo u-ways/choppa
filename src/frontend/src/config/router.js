@@ -65,21 +65,6 @@ const routes = [
     component: () => import("@/pages/squads/EditSquadPage"),
   },
   {
-    name: "external-github",
-    path: "/external/github",
-    beforeEnter() { window.location.href = "https://github.com/u-ways/chopper"; },
-  },
-  {
-    name: "external-production",
-    path: "/external/production",
-    beforeEnter() { window.location.href = "https://www.choppa.app"; },
-  },
-  {
-    name: "external-staging",
-    path: "/external/staging",
-    beforeEnter() { window.location.href = "https://choppa-staging.herokuapp.com/"; },
-  },
-  {
     name: "404",
     path: "/404",
     component: () => import("@/pages/NotFoundPage"),
@@ -91,6 +76,7 @@ const routes = [
 ];
 
 const router = new VueRouter({
+  mode: "history",
   routes,
 });
 

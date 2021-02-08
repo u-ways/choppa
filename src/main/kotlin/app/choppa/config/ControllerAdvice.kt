@@ -4,9 +4,7 @@ import app.choppa.exception.EmptyListException
 import app.choppa.exception.EntityNotFoundException
 import app.choppa.exception.UnprocessableEntityException
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatus.NOT_FOUND
-import org.springframework.http.HttpStatus.NO_CONTENT
-import org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY
+import org.springframework.http.HttpStatus.*
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.status
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -18,6 +16,7 @@ import java.time.Instant.now
 
 @ControllerAdvice
 class ControllerAdvice {
+
     @ExceptionHandler(value = [UnprocessableEntityException::class, HttpMessageNotReadableException::class])
     fun invalidPayLoad(e: Exception, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
         response(UNPROCESSABLE_ENTITY, "Invalid ${req.request.method} request payload.", req, e)
@@ -34,7 +33,7 @@ class ControllerAdvice {
         status: HttpStatus,
         message: String,
         request: ServletWebRequest,
-        error: Exception
+        error: Exception,
     ): ResponseEntity<Map<String, Any>> {
         val response: MutableMap<String, Any> = mutableMapOf()
 

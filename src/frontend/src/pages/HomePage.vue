@@ -71,7 +71,6 @@
       </div>
     </section>
 
-    <!-- TODO: Implement other rotation animations.. Choice Ellipses? -->
     <KnowledgeSharing/>
 
     <!-- TODO: Sort out this entire section -->
@@ -105,7 +104,6 @@
 <script>
 import Navbar from "@/components/navbar/Navbar";
 import SquadCard from "@/components/squads/SquadCard";
-import { getTribe } from "@/config/api/tribe.api";
 import Footer from "@/components/footer/Footer";
 import InformationCard from "@/components/home/InformationCard";
 import InformationBlock from "@/components/home/InformationBlock";
@@ -188,13 +186,5 @@ export default {
     };
   },
   methods: {},
-  async mounted() {
-    try {
-      this.tribe = await getTribe({ id: "00000000-0000-0000-0000-000000000001" });
-      this.isLoaded = true;
-    } catch {
-      await this.$router.replace("/not-found");
-    }
-  },
 };
 </script>

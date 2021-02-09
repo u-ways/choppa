@@ -16,7 +16,7 @@
 <script>
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import LoginSSOButton from "@/pages/auth/LoginSSOButton";
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import router from "@/config/router";
 
 export default {
@@ -25,20 +25,17 @@ export default {
     LoginSSOButton,
     StandardPageTemplate,
   },
-  async mounted() {
-    await this.updateAuthenticationStatus();
-  },
   computed: {
     ...mapGetters(["isAuthenticated"]),
   },
-  methods: {
-    ...mapActions(["updateAuthenticationStatus"]),
+  mounted() {
+    if (this.isAuthenticated) {
+      this.redirectToDashboard();
+    }
   },
-  watch: {
-    isAuthenticated(newValue) {
-      if (newValue === true) {
-        router.push({ path: "dashboard" });
-      }
+  methods: {
+    async redirectToDashboard() {
+      await router.push({ name: "dashboard" });
     },
   },
 };

@@ -6,8 +6,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-
 
 @EnableWebSecurity
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
@@ -18,7 +18,6 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
          */
         val AUTH_ENDPOINTS = arrayOf(
             "/api/**",
-            "/test/**",
         )
     }
 
@@ -28,12 +27,14 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .and().authorizeRequests().anyRequest().permitAll()
             .and().oauth2Login().loginPage("/login")
             .and().oauth2Login().defaultSuccessUrl("/dashboard")
+            .and().csrf().disable().logout().invalidateHttpSession(true)
+            .logoutUrl("/api/logout").logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
             .and().exceptionHandling()
             .defaultAuthenticationEntryPointFor(getRestAuthenticationEntryPoint(), AntPathRequestMatcher("/**"))
             .and().oauth2ResourceServer().jwt()
     }
 
-    private fun getRestAuthenticationEntryPoint(): AuthenticationEntryPoint? {
+    private fun getRestAuthenticationEntryPoint(): AuthenticationEntryPoint {
         return HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
     }
 }

@@ -26,3 +26,7 @@ export async function getAuthenticatedAccountSafe() {
     authenticatedAccount,
   };
 }
+
+export async function invalidateSession() {
+  await httpClient.post("logout");
+}

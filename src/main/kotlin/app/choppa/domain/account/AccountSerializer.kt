@@ -1,8 +1,6 @@
 package app.choppa.domain.account
 
 import app.choppa.domain.base.BaseSerializer
-import app.choppa.domain.base.BaseSerializer.QueryType.MEMBERS
-import app.choppa.utils.Color.Companion.toRGBAHex
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 

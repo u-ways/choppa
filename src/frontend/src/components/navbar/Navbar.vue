@@ -16,8 +16,19 @@
                           screenReaderText="Close Menu" icon="times" @click="expandedMenu = false"
               />
             </div>
-            <NavbarLink :url="{ name: 'dashboard' }">Dashboard</NavbarLink>
-            <NavbarLink :url="{ name: 'my-tribes' }">My Tribes</NavbarLink>
+            <div class="flex-grow flex flex-row gap-3 sm:justify-end">
+              <NavbarLink :url="{ name: 'login' }">Login</NavbarLink>
+              <router-link :to="{ name: 'login' }"
+                           class="px-2 font-bold rounded-md leading-10 text-sm duration-200 outline-none ring-0
+                           focus:ring-4 transform-gpu transition-transform transition-colors hover:-translate-y-0.5
+                           focus:-translate-y-0.5 duration-100 motion-reduce:transition-none"
+                           :class="isOnHomePage === true
+                           ? [ 'bg-white', 'text-gray-600', 'ring-choppa-light-extra', 'hover:bg-gray-200' ]
+                           : [ 'bg-choppa-two', 'text-gray-100', 'ring-indigo-500', 'hover:bg-indigo-500']"
+              >
+                Try Now
+              </router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -35,6 +46,13 @@ export default {
     IconButton,
     ChoppaLogo,
     NavbarLink,
+  },
+  props: {
+    isOnHomePage: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {

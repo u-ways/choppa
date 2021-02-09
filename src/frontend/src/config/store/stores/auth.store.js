@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow, no-param-reassign */
 import { REMOVE_AUTHENTICATED_ACCOUNT, SET_AUTHENTICATED_ACCOUNT } from "@/config/store/mutation-types";
-import { getAuthenticatedAccountSafe } from "@/config/api/account.api";
+import { getAuthenticatedAccountSafe, invalidateSession } from "@/config/api/account.api";
 
 export const authState = {
   authenticatedAccount: undefined,
@@ -17,7 +17,6 @@ export const authMutations = {
   },
   [REMOVE_AUTHENTICATED_ACCOUNT](state) {
     state.authenticatedAccount = undefined;
-    // TODO: should remove the cookie? Although single-sign-off SSO, means we need to actually contact the provider.
   },
 };
 
@@ -29,5 +28,9 @@ export const authActions = {
     } else {
       context.commit(REMOVE_AUTHENTICATED_ACCOUNT);
     }
+  },
+  async logOut(context) {
+    await invalidateSession();
+    context.commit(REMOVE_AUTHENTICATED_ACCOUNT);
   },
 };

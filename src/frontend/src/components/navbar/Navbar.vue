@@ -23,12 +23,13 @@
               <template v-if="isAuthenticated">
                 <div class="font-lg leading-10">
                   Hello, <span class="font-bold">{{authenticatedAccount.name}}</span>
+                  <button class="bg-red-500" @click="onLogOutClicked">Logout</button>
                 </div>
               </template>
               <template v-else>
                 <NavbarLink :url="{ name: 'login' }">Login</NavbarLink>
                 <router-link :to="{ name: 'login' }"
-                             class="px-2 font-bold rounded-md leading-10 text-sm duration-200 outline-none ring-0
+                           class="px-2 font-bold rounded-md leading-10 text-sm duration-200 outline-none ring-0
                            focus:ring-4 transform-gpu transition-transform transition-colors hover:-translate-y-0.5
                            focus:-translate-y-0.5 duration-100 motion-reduce:transition-none"
                              :class="isOnHomePage === true
@@ -49,7 +50,8 @@
 import NavbarLink from "@/components/navbar/NavbarLink";
 import ChoppaLogo from "@/components/atoms/ChoppaLogo";
 import IconButton from "@/components/atoms/buttons/IconButton";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
+import router from "@/config/router";
 
 export default {
   name: "Navbar",
@@ -72,6 +74,13 @@ export default {
     return {
       expandedMenu: false,
     };
+  },
+  methods: {
+    ...mapActions(["logOut"]),
+    async onLogOutClicked() {
+      await this.logOut();
+      await router.push({ name: "home" });
+    },
   },
 };
 </script>

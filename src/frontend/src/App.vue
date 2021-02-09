@@ -7,10 +7,17 @@
 
 <script>
 import ToastDraw from "@/components/toasts/ToastDraw";
+import { mapActions } from "vuex";
 
 export default {
   components: {
     ToastDraw,
+  },
+  async mounted() {
+    await this.updateAuthenticationStatus();
+  },
+  methods: {
+    ...mapActions(["updateAuthenticationStatus"]),
   },
 };
 </script>

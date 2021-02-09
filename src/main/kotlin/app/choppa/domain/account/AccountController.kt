@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RestController
 class AccountController() {
     @GetMapping("me")
     fun listChapters(loggedInUser: Account): Account {
-        return loggedInUser;
+        return loggedInUser
     }
 }

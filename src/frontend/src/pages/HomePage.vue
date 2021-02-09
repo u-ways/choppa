@@ -2,7 +2,7 @@
   <div>
     <section id="hero" class="dark bg-choppa-two pb-6">
       <div class="container mx-auto max-w-screen-lg">
-        <Navbar/>
+        <Navbar :is-on-home-page="true"/>
       </div>
       <div class="text-white flex-grow px-3 mt-3 mx-auto lg:mt-6">
         <div class="container mx-auto max-w-screen-lg">

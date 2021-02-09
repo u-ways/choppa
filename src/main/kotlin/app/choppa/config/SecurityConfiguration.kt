@@ -20,6 +20,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
         http
             .authorizeRequests().antMatchers(*AUTH_ENDPOINTS).authenticated()
             .and().authorizeRequests().anyRequest().permitAll()
+            .and().oauth2Login().loginPage("/login")
+            .and().oauth2Login().defaultSuccessUrl("/dashboard")
             .and().oauth2ResourceServer().jwt()
     }
 }

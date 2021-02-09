@@ -16,6 +16,8 @@
 <script>
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import LoginSSOButton from "@/pages/auth/LoginSSOButton";
+import { mapActions, mapGetters } from "vuex";
+import router from "@/config/router";
 
 export default {
   name: "LoginPage",
@@ -23,9 +25,20 @@ export default {
     LoginSSOButton,
     StandardPageTemplate,
   },
+  async mounted() {
+    await this.updateAuthenticationStatus();
+  },
+  computed: {
+    ...mapGetters(["isAuthenticated"]),
+  },
   methods: {
-    goBack() {
-      this.$router.go(-1);
+    ...mapActions(["updateAuthenticationStatus"]),
+  },
+  watch: {
+    isAuthenticated(newValue) {
+      if (newValue === true) {
+        router.push({ path: "dashboard" });
+      }
     },
   },
 };

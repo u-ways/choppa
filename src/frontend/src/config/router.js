@@ -65,6 +65,11 @@ const routes = [
     component: () => import("@/pages/squads/EditSquadPage"),
   },
   {
+    name: "login",
+    path: "/login",
+    component: () => import("@/pages/auth/Login"),
+  },
+  {
     name: "404",
     path: "/404",
     component: () => import("@/pages/NotFoundPage"),

@@ -16,18 +16,28 @@
                           screenReaderText="Close Menu" icon="times" @click="expandedMenu = false"
               />
             </div>
+            <div class="flex-grow flex flex-row gap-1">
+              <NavbarLink :url="{ name: 'dashboard' }" v-if="isAuthenticated">Dashboard</NavbarLink>
+            </div>
             <div class="flex-grow flex flex-row gap-3 sm:justify-end">
-              <NavbarLink :url="{ name: 'login' }">Login</NavbarLink>
-              <router-link :to="{ name: 'login' }"
-                           class="px-2 font-bold rounded-md leading-10 text-sm duration-200 outline-none ring-0
+              <template v-if="isAuthenticated">
+                <div class="font-lg leading-10">
+                  Hello, <span class="font-bold">{{authenticatedAccount.name}}</span>
+                </div>
+              </template>
+              <template v-else>
+                <NavbarLink :url="{ name: 'login' }">Login</NavbarLink>
+                <router-link :to="{ name: 'login' }"
+                             class="px-2 font-bold rounded-md leading-10 text-sm duration-200 outline-none ring-0
                            focus:ring-4 transform-gpu transition-transform transition-colors hover:-translate-y-0.5
                            focus:-translate-y-0.5 duration-100 motion-reduce:transition-none"
-                           :class="isOnHomePage === true
+                             :class="isOnHomePage === true
                            ? [ 'bg-white', 'text-gray-600', 'ring-choppa-light-extra', 'hover:bg-gray-200' ]
                            : [ 'bg-choppa-two', 'text-gray-100', 'ring-indigo-500', 'hover:bg-indigo-500']"
-              >
-                Try Now
-              </router-link>
+                >
+                  Try Now
+                </router-link>
+              </template>
             </div>
           </div>
         </div>
@@ -39,6 +49,7 @@
 import NavbarLink from "@/components/navbar/NavbarLink";
 import ChoppaLogo from "@/components/atoms/ChoppaLogo";
 import IconButton from "@/components/atoms/buttons/IconButton";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Navbar",
@@ -53,6 +64,9 @@ export default {
       required: false,
       default: false,
     },
+  },
+  computed: {
+    ...mapGetters(["isAuthenticated", "authenticatedAccount"]),
   },
   data() {
     return {

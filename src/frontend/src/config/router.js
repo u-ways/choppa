@@ -1,3 +1,4 @@
+import store from "@/config/store/store";
 import Vue from "vue";
 import VueRouter from "vue-router";
 
@@ -8,11 +9,13 @@ const routes = [
     name: "home",
     path: "/",
     component: () => import("@/pages/HomePage"),
+    meta: { requiresAuthentication: false },
   },
   {
     name: "dashboard",
     path: "/dashboard",
     component: () => import("@/pages/DashboardPage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "my-tribes",
@@ -28,61 +31,85 @@ const routes = [
     name: "edit-tribe",
     path: "/tribes/:id/edit",
     component: () => import("@/pages/tribes/EditTribePage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "view-tribe",
     path: "/tribes/:id",
     component: () => import("@/pages/tribes/ViewTribePage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "create-chapter",
     path: "/chapters/create",
     component: () => import("@/pages/chapters/EditChapterPage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "edit-chapter",
     path: "/chapters/:id/edit",
     component: () => import("@/pages/chapters/EditChapterPage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "create-member",
     path: "/members/create",
     component: () => import("@/pages/members/EditMemberPage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "edit-member",
     path: "/members/:id/edit",
     component: () => import("@/pages/members/EditMemberPage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "create-squad",
     path: "/squads/create",
     component: () => import("@/pages/squads/EditSquadPage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "edit-squad",
     path: "/squads/:id/edit",
     component: () => import("@/pages/squads/EditSquadPage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "login",
     path: "/login",
     component: () => import("@/pages/auth/Login"),
+    meta: { requiresAuthentication: false },
   },
   {
     name: "404",
     path: "/404",
     component: () => import("@/pages/NotFoundPage"),
+    meta: { requiresAuthentication: false },
   },
   {
     path: "/:pathMatch(.*)*",
     component: () => import("@/pages/NotFoundPage"),
+    meta: { requiresAuthentication: false },
   },
 ];
 
 const router = new VueRouter({
   mode: "history",
   routes,
+});
+
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuthentication === true) {
+    await store.dispatch("updateAuthenticationStatus");
+    if (store.getters.isAuthenticated === true) {
+      next();
+    } else {
+      next({ name: "login" });
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;

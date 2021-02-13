@@ -228,7 +228,7 @@ export default {
       filters: {
         distributed: rotationFilter.DISTRIBUTED,
         random: rotationFilter.RANDOM,
-        none: rotationFilter.NONE,
+        oldest: rotationFilter.OLDEST,
       },
       strategies: {
         clockwise: rotationStrategy.CLOCKWISE,

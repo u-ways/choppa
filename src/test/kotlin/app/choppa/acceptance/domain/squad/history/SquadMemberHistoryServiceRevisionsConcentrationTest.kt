@@ -49,6 +49,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
      * |  6     | R0+M1 => R1+M2+M3          | [<R0,{M1}>,<R1,{M1,M2,M3}>]              |
      * |  7     | R0+M1 => R1+M2 => R2+M3    | [<R0,{M1}>,<R1,{M1,M2}>,<R2,{M1,M2,M3}>] |
      * |  8     | R0+M1 => R1-M1 => R2+M1    | [<R0,{M1}>,<R1,{}>,<R2,{M1}>]            |
+     * |  9     | R0+M1 => R1-M1+M2 => R2+M1 | [<R0,{M1}>,<R1,{M2}>,<R1,{M2,M1}>]       |
      */
     @ParameterizedTest
     @MethodSource("findAllRevisionsTestArgs")
@@ -71,7 +72,9 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
         actualSquadMembersRevisions.forEachIndexed { index, actualRevisionMembers: List<Member> ->
             actualRevisionMembers.size shouldBeEqualTo expectedResult[index].size
-            assertThat(actualRevisionMembers, List<Member>::containsInAnyOrder, expectedResult[index])
+            // `shouldBeEqualTo` is used here to assert on the order of the elements as it is part of the acceptance criteria
+            // i.e. oldest member should be first.
+            actualRevisionMembers shouldBeEqualTo expectedResult[index]
         }
     }
 
@@ -906,6 +909,48 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                                 existingSquad,
                                 expectedResult[0][0].apply {
                                     expectedResult.add(mutableListOf(this))
+                                },
+                                2,
+                                ADD
+                            ),
+                        ),
+                        expectedResult
+                    )
+                },
+
+                // TEST 9
+                Pair(
+                    Squad(),
+                    mutableListOf<MutableList<Member>>()
+                ).let { (existingSquad, expectedResult) ->
+                    arguments(
+                        listOf(
+                            SquadMemberHistory(
+                                existingSquad,
+                                Member().apply {
+                                    expectedResult.add(mutableListOf(this))
+                                },
+                                0,
+                                ADD
+                            ),
+                            SquadMemberHistory(
+                                existingSquad,
+                                expectedResult[0][0],
+                                1,
+                                REMOVE
+                            ),
+                            SquadMemberHistory(
+                                existingSquad,
+                                Member().apply {
+                                    expectedResult.add(mutableListOf(this))
+                                },
+                                1,
+                                ADD
+                            ),
+                            SquadMemberHistory(
+                                existingSquad,
+                                expectedResult[0][0].apply {
+                                    expectedResult.add(mutableListOf(expectedResult[1][0], this))
                                 },
                                 2,
                                 ADD

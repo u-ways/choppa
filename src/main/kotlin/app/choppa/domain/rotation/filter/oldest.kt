@@ -2,10 +2,10 @@ package app.choppa.domain.rotation.filter
 
 import app.choppa.domain.member.Member
 
-internal fun oldest(members: List<MutableList<Member>>, amount: Int): List<MutableList<Member>> {
-    val selectedMembers = MutableList<MutableList<Member>>(members.size) { mutableListOf() }
+internal fun oldest(candidates: List<List<Member>>, amount: Int): List<List<Member>> {
+    val selectedMembers = MutableList<MutableList<Member>>(candidates.size) { mutableListOf() }
 
-    members.mapIndexed { index, squadMembers ->
+    candidates.mapIndexed { index, squadMembers ->
         squadMembers.map { Pair(index, it) }
     }.flatten().apply {
 //        FIXME(u-ways) #175 use Squad revisions to find oldest members

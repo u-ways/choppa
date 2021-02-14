@@ -1,5 +1,6 @@
 package app.choppa.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -11,7 +12,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @EnableWebSecurity
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
-
     companion object {
         /**
          * All Endpoints that should require a valid session.
@@ -21,12 +21,15 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
         )
     }
 
+    @Value("\${choppa.auth.success-redirect-location:/dashboard}")
+    private var successfulRedirectLocation: String = ""
+
     override fun configure(http: HttpSecurity) {
         http
             .authorizeRequests().antMatchers(*AUTH_ENDPOINTS).authenticated()
             .and().authorizeRequests().anyRequest().permitAll()
             .and().oauth2Login().loginPage("/login")
-            .and().oauth2Login().defaultSuccessUrl("/dashboard")
+            .and().oauth2Login().defaultSuccessUrl(successfulRedirectLocation)
             .and().csrf().disable().logout().invalidateHttpSession(true)
             .logoutUrl("/api/logout").logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
             .and().exceptionHandling()

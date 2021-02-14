@@ -101,7 +101,6 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuthentication === true) {
-    await store.dispatch("updateAuthenticationStatus");
     if (store.getters.isAuthenticated === true) {
       next();
     } else {

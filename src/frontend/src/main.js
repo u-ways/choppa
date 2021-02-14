@@ -20,8 +20,8 @@ library.add(
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;
-
 Vue.use(Vuelidate);
+Vue.prototype.$store = store;
 
 new Vue({
   mixins: [darkMode],

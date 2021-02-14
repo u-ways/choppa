@@ -8,47 +8,45 @@ import app.choppa.domain.tribe.Tribe
 
 class RotationContext {
     companion object {
-        fun rotate(tribe: Tribe, options: RotationOptions = DEFAULT_OPTIONS): Tribe {
-            if (tribe.squads.count() < 2) return tribe
-
-            return tribe.squads
-                .map {
-                    it.members.find(options.chapter)
-                }.let {
-                    val oldMembers =
-                        if (it.flatten().count() > options.amount)
-                            options.filter.invoke(it.toList(), options.amount)
-                        else
-                            it
-                    options.strategy.invoke(oldMembers.copy()).mapIndexed { index, newMembers ->
-                        Pair(oldMembers[index], newMembers)
-                    }
-                }.let {
-                    Tribe(
-                        tribe.id,
-                        tribe.name,
-                        tribe.color,
-                        it.mapIndexed { index, (oldMembers, newMembers) ->
-                            Squad(
-                                tribe.squads[index].id,
-                                tribe.squads[index].name,
-                                tribe.squads[index].color,
-                                tribe.squads[index].tribe,
-                                tribe.squads[index].members
-                                    .minus(oldMembers)
-                                    .plus(newMembers).toMutableList()
-                            )
-                        }.toMutableList(),
-                    )
+        fun rotate(
+            tribe: Tribe,
+            options: RotationOptions = DEFAULT_OPTIONS,
+            revisions: List<Pair<Squad, List<List<Member>?>>> = defaultRevisions(tribe)
+        ): Tribe =
+            if (tribe.squads.count() < 2) tribe
+            else revisions.map {
+                it.second.last()?.find(options.chapter) ?: emptyList()
+            }.let {
+                options.filter.invoke(it, options.amount).run {
+                    this.zip(options.strategy.invoke(this.deepCopy()))
                 }
+            }.let {
+                tribe.copy(
+                    squads = it.mapIndexed { index, (oldMembers, newMembers) ->
+                        Squad(
+                            tribe.squads[index].id,
+                            tribe.squads[index].name,
+                            tribe.squads[index].color,
+                            tribe.squads[index].tribe,
+                            tribe.squads[index].members
+                                .minus(oldMembers)
+                                .plus(newMembers)
+                                .toMutableList()
+                        )
+                    }.toMutableList(),
+                )
+            }
+
+        private fun defaultRevisions(tribe: Tribe) = List<Pair<Squad, List<List<Member>?>>>(tribe.squads.size) {
+            tribe.squads[it] to listOf(tribe.squads[it].members)
         }
 
-        private fun List<MutableList<Member>>.copy(): List<MutableList<Member>> {
-            return this.map { x -> x.toMutableList() }.toList()
+        private fun List<List<Member>>.deepCopy(): List<List<Member>> {
+            return this.map { it.toList() }.toList()
         }
 
-        private fun MutableList<Member>.find(chapter: Chapter): MutableList<Member> {
-            return this.filter { it.chapter == chapter }.toMutableList()
+        private fun List<Member>.find(chapter: Chapter): List<Member> {
+            return this.filter { it.chapter == chapter }.toList()
         }
     }
 }

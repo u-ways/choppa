@@ -12,10 +12,11 @@ class RotationService(
     @Autowired private val squadService: SquadService,
 ) {
     @Transactional
-    fun executeRotation(tribe: Tribe, options: RotationOptions): Tribe =
-        rotate(tribe, options, tribe.squads
-            .map { squadService.findAllSquadMembersRevisions(it.id) })
-            .apply { squadService.save(this.squads) }
+    fun executeRotation(tribe: Tribe, options: RotationOptions): Tribe = rotate(
+        tribe,
+        options,
+        tribe.squads.map { squadService.findAllSquadMembersRevisions(it.id) }
+    ).apply { squadService.save(this.squads) }
 
     @Transactional
     fun undoRotation(tribe: Tribe): Tribe = tribe.copy(

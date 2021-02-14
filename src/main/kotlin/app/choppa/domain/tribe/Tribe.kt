@@ -5,6 +5,9 @@ import app.choppa.domain.squad.Squad
 import app.choppa.utils.Color.Companion.GREY
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import org.hibernate.annotations.BatchSize
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode.SELECT
 import org.hibernate.annotations.GenericGenerator
 import java.util.*
 import java.util.UUID.randomUUID
@@ -27,6 +30,8 @@ data class Tribe(
     @Column(name = "color", columnDefinition = "INTEGER")
     val color: Int = GREY,
 
+    @Fetch(SELECT)
+    @BatchSize(size = 10)
     @OneToMany(mappedBy = "tribe", fetch = EAGER)
     val squads: MutableList<Squad> = mutableListOf(),
 ) : BaseModel {

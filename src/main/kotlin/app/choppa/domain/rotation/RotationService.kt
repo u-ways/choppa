@@ -11,13 +11,11 @@ import org.springframework.transaction.annotation.Transactional
 class RotationService(
     @Autowired private val squadService: SquadService,
 ) {
-    // TODO(u-ways) #175 Use Squad revisions to aid in SMR.
-    //  For example, if you want a List [ Pair<Squad,Revisions> ] DS. Use the following:
-    //    tribe.squads.map { squadService.findAllSquadMembersRevisions(it.id) }
     @Transactional
-    fun executeRotation(tribe: Tribe, options: RotationOptions): Tribe = tribe.copy(
-        squads = squadService.save(rotate(tribe, options).squads).toMutableList()
-    )
+    fun executeRotation(tribe: Tribe, options: RotationOptions): Tribe =
+        rotate(tribe, options, tribe.squads
+            .map { squadService.findAllSquadMembersRevisions(it.id) })
+            .apply { squadService.save(this.squads) }
 
     @Transactional
     fun undoRotation(tribe: Tribe): Tribe = tribe.copy(

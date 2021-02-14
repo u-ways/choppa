@@ -16,7 +16,8 @@ export default {
   },
   computed: {
     loginLink() {
-      return `/oauth2/authorization/${this.loginEndpoint}`;
+      const authPrefix = process.env.VUE_APP_AUTH_PREFIX || "";
+      return `${authPrefix}oauth2/authorization/${this.loginEndpoint}`;
     },
   },
 };

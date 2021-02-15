@@ -4,6 +4,9 @@
                  :append="linkAppend">
       <slot></slot>
     </router-link>
+    <a :href="link" v-if="type === 'a-link'" :to="link" :class="[sharedCss, getVariantCss, css]">
+      <slot></slot>
+    </a>
     <button v-if="type === 'button'" @click="() => this.$emit('click')" :class="[sharedCss, getVariantCss, css]">
       <slot></slot>
     </button>
@@ -31,7 +34,7 @@ export default {
   props: {
     type: {
       required: true,
-      validator: (value) => ["button", "link"].indexOf(value) !== -1,
+      validator: (value) => ["button", "link", "a-link"].indexOf(value) !== -1,
     },
     link: {
       type: Object,

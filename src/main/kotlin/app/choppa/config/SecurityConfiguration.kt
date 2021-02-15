@@ -19,6 +19,14 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
         val AUTH_ENDPOINTS = arrayOf(
             "/api/**",
         )
+
+        /**
+         * Endpoints that do not require a valid session. By default endpoints are permitted
+         * so only include endpoints that are covered in AUTH_ENDPOINTS but should not be.
+         */
+        val NO_AUTH_ENDPOINTS = arrayOf(
+            "/api/accounts/demo"
+        )
     }
 
     @Value("\${choppa.auth.success-redirect-location:/dashboard}")
@@ -26,7 +34,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
         http
-            .authorizeRequests().antMatchers(*AUTH_ENDPOINTS).authenticated()
+            .authorizeRequests().antMatchers(*NO_AUTH_ENDPOINTS).permitAll()
+            .and().authorizeRequests().antMatchers(*AUTH_ENDPOINTS).authenticated()
             .and().authorizeRequests().anyRequest().permitAll()
             .and().oauth2Login().loginPage("/login")
             .and().oauth2Login().defaultSuccessUrl(successfulRedirectLocation)

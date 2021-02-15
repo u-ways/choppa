@@ -30,3 +30,7 @@ export async function getAuthenticatedAccountSafe() {
 export async function invalidateSession() {
   await httpClient.post("logout");
 }
+
+export async function getDemoAccount() {
+  await httpClient.get("accounts/demo");
+}

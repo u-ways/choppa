@@ -78,8 +78,14 @@ const routes = [
   {
     name: "login",
     path: "/login",
-    component: () => import("@/pages/auth/Login"),
+    component: () => import("@/pages/auth/LoginPage"),
     meta: { requiresAuthentication: false },
+  },
+  {
+    name: "welcome",
+    path: "/welcome",
+    component: () => import("@/pages/auth/WelcomePage"),
+    meta: { requiresAuthentication: true },
   },
   {
     name: "404",
@@ -100,6 +106,12 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+  // On first load we should load authentication status
+  if (router.doneFirstLoad === undefined) {
+    await store.dispatch("updateAuthenticationStatus");
+    router.doneFirstLoad = true;
+  }
+
   if (to.meta.requiresAuthentication === true) {
     if (store.getters.isAuthenticated === true) {
       next();

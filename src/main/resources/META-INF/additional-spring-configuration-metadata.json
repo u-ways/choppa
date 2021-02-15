@@ -1,9 +1,9 @@
 {
   "properties": [
     {
-      "name": "choppa.auth.success-redirect-location",
+      "name": "choppa.auth.success-redirect-location-prefix",
       "type": "java.lang.String",
-      "description": "Where will Spring redirect on a successful authentication."
+      "description": "Adds a prefix to the redirect url on successful authentication"
     }
   ]
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <StandardLabel :label-text="labelText" :for-id="id" :validator="validator"/>
+      <StandardLabel :label-text="labelText" :for-id="id" :validator="validator" :class="[ labelTextCSS ]"/>
     </div>
     <div class="mt-1">
       <StandardInput :type="type"
@@ -11,8 +11,9 @@
                      :place-holder="placeHolder"
                      :validator="validator"
                      :max-length="maxLength"
+                     :isErroredState="shouldShowError"
       />
-      <ErrorPrompt v-if="validator" v-show="validator.$invalid" :validator="validator" :label-text="labelText" />
+      <ErrorPrompt v-if="validator" v-show="shouldShowError" :validator="validator" :label-text="labelText" />
     </div>
   </div>
 </template>
@@ -38,12 +39,23 @@ export default {
       type: String,
       required: true,
     },
+    labelTextCSS: String,
     maxLength: Number,
     placeHolder: String,
     validator: Object,
+    customShowError: Function,
     type: {
       type: String,
       default: "text",
+    },
+  },
+  computed: {
+    shouldShowError() {
+      if (this.customShowError) {
+        return this.customShowError(this.validator);
+      }
+
+      return this.validator.$invalid;
     },
   },
 };

@@ -22,8 +22,6 @@ async function deserializeSquad(json) {
       tribeId: json.tribe.replace("tribes/", ""),
       tribe: json.tribe,
       chapters: json.chapters,
-      iterations: json.iterations,
-      history: json.history,
     },
   });
 }

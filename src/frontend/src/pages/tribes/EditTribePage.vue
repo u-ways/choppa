@@ -168,6 +168,21 @@
             </div>
           </div>
         </section>
+        <div class="px-3 py-5">
+          <section>
+            <FormHeader>
+              <template v-slot:heading>DANGER</template>
+              <template v-slot:subheading>These features permanently affect this Squad.</template>
+            </FormHeader>
+            <div class="flex flex-col gap-2 mt-4 text-center">
+              <DoubleConfirmationButton
+                :buttonMessage="deleteMessage"
+                variant="danger"
+                css="px-2 pr-5 pl-4"
+                @click="deleteTribe" />
+            </div>
+          </section>
+        </div>
       </div>
     </template>
   </StandardPageTemplate>
@@ -178,7 +193,7 @@ import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
-import { getTribe, rotateTribe, saveTribe } from "@/config/api/tribe.api";
+import { getTribe, rotateTribe, saveTribe, deleteTribe } from "@/config/api/tribe.api";
 import NoSquadsToShowAlert from "@/components/squads/NoSquadsToShowAlert";
 import { required, minLength, maxLength, minValue, maxValue } from "vuelidate/lib/validators";
 import { mapActions } from "vuex";
@@ -193,6 +208,7 @@ import { rotationFilter } from "@/enums/rotationFilter";
 import { rotationStrategy } from "@/enums/rotationStrategy";
 import ChapterOverview from "@/components/chapters/ChapterOverview";
 import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
+import DoubleConfirmationButton from "@/components/atoms/buttons/DoubleConfirmationButton";
 
 export default {
   name: "EditTribePage",
@@ -208,10 +224,14 @@ export default {
     FormHeader,
     StandardPageTemplate,
     StyledButton,
+    DoubleConfirmationButton,
   },
   computed: {
     tribeNameHeader() {
       return this.tribe.name ? this.tribe.name : "Untitled";
+    },
+    deleteMessage() {
+      return this.deleteConfirmation ? "Confirm Deletion" : "Delete Tribe";
     },
   },
   data() {
@@ -235,6 +255,7 @@ export default {
         antiClockwise: rotationStrategy.ANTI_CLOCKWISE,
         random: rotationStrategy.RANDOM,
       },
+      deleteConfirmation: false,
     };
   },
   validations: {
@@ -300,6 +321,22 @@ export default {
         }));
 
         throw error;
+      }
+    },
+    async deleteTribe() {
+      if (this.deleteConfirmation === true) {
+        try {
+          await deleteTribe({ tribe: this.tribe });
+          await this.$router.push({ name: "dashboard" });
+        } catch (error) {
+          this.newToast(new ToastData({
+            variant: toastVariants.ERROR,
+            message: "Deletion failed, please try again later",
+          }));
+          throw error;
+        }
+      } else {
+        this.deleteConfirmation = true;
       }
     },
   },

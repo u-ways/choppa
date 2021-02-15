@@ -17,8 +17,6 @@ export async function deserializeMember(json) {
     chapter: await deserializeChapter(json.chapter),
     relations: {
       squads: json.squads,
-      iterations: json.iterations,
-      history: json.history,
     },
   });
 }
@@ -49,4 +47,8 @@ export async function saveMember(config) {
 
 export async function createMember(config) {
   await httpClient.post("members", [serializeMember(config.member)]);
+}
+
+export async function deleteMember(config) {
+  await httpClient.delete(config.member.id, { data: config.member.id });
 }

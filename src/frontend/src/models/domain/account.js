@@ -8,4 +8,12 @@ export default class Account {
   get name() {
     return this._name;
   }
+
+  get shortName() {
+    return this._name.substr(0, this._name.indexOf(" "));
+  }
+
+  get avatarSeed() {
+    return this._name;
+  }
 }

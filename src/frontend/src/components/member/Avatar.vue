@@ -11,14 +11,13 @@
 </template>
 
 <script>
-import Member from "@/models/domain/member";
 import { updateSvg } from "jdenticon";
 
 export default {
   name: "Avatar",
   props: {
-    member: {
-      type: Member,
+    seed: {
+      type: String,
       required: true,
     },
   },
@@ -34,7 +33,7 @@ export default {
     renderProfilePicture() {
       this.$nextTick(() => {
         try {
-          updateSvg(this.$refs.canvas, `${this.member.id}${this.member.name}`);
+          updateSvg(this.$refs.canvas, this.seed);
           this.rendered = true;
         } catch (error) {
           this.rendered = false;

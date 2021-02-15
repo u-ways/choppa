@@ -1,14 +1,17 @@
 package app.choppa.domain.tribe
 
 import app.choppa.domain.base.BaseService
+import app.choppa.domain.squad.SquadService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.UUID
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class TribeService(
     @Autowired private val tribeRepository: TribeRepository,
+    @Autowired private val squadService: SquadService,
 ) : BaseService<Tribe> {
     override fun find(): List<Tribe> = tribeRepository
         .findAll()
@@ -28,9 +31,12 @@ class TribeService(
     override fun save(entities: List<Tribe>): List<Tribe> = tribeRepository
         .saveAll(entities)
 
-    override fun delete(entity: Tribe): Tribe = entity
-        .apply { tribeRepository.delete(entity) }
+    @Transactional
+    override fun delete(entity: Tribe): Tribe = entity.apply {
+        squadService.deleteRelatedByTribe(entity.id)
+        tribeRepository.delete(entity)
+    }
 
-    override fun delete(entities: List<Tribe>): List<Tribe> = entities
-        .apply { tribeRepository.deleteAll(entities) }
+    @Transactional
+    override fun delete(entities: List<Tribe>): List<Tribe> = entities.map(::delete)
 }

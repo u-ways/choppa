@@ -1,11 +1,14 @@
 package app.choppa.integration.domain.tribe
 
+import app.choppa.domain.squad.Squad
+import app.choppa.domain.squad.SquadService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeService
 import app.choppa.exception.EntityNotFoundException
 import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.testcontainers.TestDBContainer
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -24,6 +27,7 @@ import javax.transaction.Transactional
 @ActiveProfiles("test")
 internal class TribeServiceIT @Autowired constructor(
     private val tribeService: TribeService,
+    private val squadService: SquadService,
 ) {
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
@@ -61,6 +65,19 @@ internal class TribeServiceIT @Autowired constructor(
         val removedEntity = tribeService.delete(existingEntity)
 
         assertThrows(EntityNotFoundException::class.java) { tribeService.find(removedEntity.id) }
+    }
+
+    @Test
+    @Transactional
+    fun `Given existing entity in db with related records, when service deletes entity, then service should removes entity and related records from db`() {
+        val existingEntity = tribeService.save(Tribe())
+        val relatedSquad = squadService.save(Squad(tribe = existingEntity))
+
+        squadService.findRelatedByTribe(existingEntity.id).first() shouldBeEqualTo relatedSquad
+
+        val removedEntity = tribeService.delete(existingEntity)
+
+        assertThrows(EntityNotFoundException::class.java) { squadService.findRelatedByTribe(removedEntity.id) }
     }
 
     @AfterEach

@@ -9,6 +9,8 @@ class AccountSerializer(
 ) : BaseSerializer<Account>(supportedClass) {
     override fun serialize(account: Account, gen: JsonGenerator, provider: SerializerProvider) {
         gen.writeStartObject()
+        gen.writeStringField(account::provider.name, account.provider)
+        gen.writeStringField(account::providerId.name, account.providerId)
         gen.writeStringField(account::name.name, account.name)
         gen.writeEndObject()
     }

@@ -1,11 +1,15 @@
 package app.choppa.integration.domain.squad
 
+import app.choppa.domain.member.Member
+import app.choppa.domain.member.MemberService
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadService
+import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.testcontainers.TestDBContainer
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -24,6 +28,8 @@ import javax.transaction.Transactional
 @ActiveProfiles("test")
 internal class SquadServiceIT @Autowired constructor(
     private val squadService: SquadService,
+    private val memberService: MemberService,
+    private val squadMemberHistoryService: SquadMemberHistoryService,
 ) {
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
@@ -61,6 +67,21 @@ internal class SquadServiceIT @Autowired constructor(
         val removedEntity = squadService.delete(existingEntity)
 
         assertThrows(EntityNotFoundException::class.java) { squadService.find(removedEntity.id) }
+    }
+
+    @Test
+    @Transactional
+    fun `Given existing entity in db with related records, when service deletes entity, then service should removes entity and related records from db`() {
+        val relatedMember = memberService.save(Member())
+        val existingEntity = squadService.save(Squad(members = mutableListOf(relatedMember)))
+
+        memberService.findRelatedBySquad(existingEntity.id).first() shouldBeEqualTo relatedMember
+        assert(squadMemberHistoryService.findBySquad(existingEntity).isNotEmpty())
+
+        val removedEntity = squadService.delete(existingEntity)
+
+        assertThrows(EntityNotFoundException::class.java) { memberService.findRelatedBySquad(removedEntity.id) }
+        assert(squadMemberHistoryService.findBySquad(removedEntity).isEmpty())
     }
 
     @AfterEach

@@ -44,11 +44,25 @@ class SquadService(
     @Transactional
     override fun save(entities: List<Squad>): List<Squad> = entities.map(::save)
 
-    override fun delete(entities: List<Squad>) = entities
-        .apply { squadRepository.deleteAll(entities) }
+    @Transactional
+    override fun delete(entity: Squad): Squad = entity.apply {
+        // Update members with 0 squad assignment to inactive.
+        this.members.forEach {
+            if (findRelatedByMember(it.id).size == 1) {
+                memberService.save(it.copy(active = false))
+            }
+        }
+        squadMemberHistoryService.deleteAllFor(entity)
+        squadRepository.deleteAllSquadMemberRecordsFor(entity.id)
+        squadRepository.delete(this)
+    }
 
-    override fun delete(entity: Squad): Squad = entity
-        .apply { squadRepository.delete(entity) }
+    @Transactional
+    override fun delete(entities: List<Squad>): List<Squad> = entities.map(::delete)
+
+    fun deleteRelatedByTribe(tribeId: UUID): List<Squad> = squadRepository
+        .findAllByTribeId(tribeId)
+        .run { delete(this) }
 
     fun findRelatedByMember(memberId: UUID): List<Squad> = squadRepository
         .findAllByMemberId(memberId)

@@ -1,14 +1,19 @@
 package app.choppa.domain.member
 
 import app.choppa.domain.base.BaseService
+import app.choppa.domain.chapter.Chapter
+import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
+import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
 class MemberService(
-    @Autowired private val memberRepository: MemberRepository
+    @Autowired private val memberRepository: MemberRepository,
+    @Autowired private val squadMemberHistoryService: SquadMemberHistoryService,
 ) : BaseService<Member> {
     override fun find(): List<Member> = memberRepository
         .findAll()
@@ -26,11 +31,15 @@ class MemberService(
 
     override fun save(entities: List<Member>): List<Member> = memberRepository.saveAll(entities)
 
-    override fun delete(entities: List<Member>): List<Member> = entities
-        .apply { memberRepository.deleteAll(entities) }
+    @Transactional
+    override fun delete(entity: Member): Member = entity.apply {
+        squadMemberHistoryService.deleteAllFor(entity)
+        memberRepository.deleteAllSquadMemberRecordsFor(entity.id)
+        memberRepository.delete(entity)
+    }
 
-    override fun delete(entity: Member): Member = entity
-        .apply { memberRepository.delete(entity) }
+    @Transactional
+    override fun delete(entities: List<Member>): List<Member> = entities.map(::delete)
 
     fun findRelatedByChapter(chapterId: UUID): List<Member> = memberRepository
         .findAllByChapterId(chapterId)
@@ -43,4 +52,9 @@ class MemberService(
     fun findRelatedByTribe(tribeId: UUID): List<Member> = memberRepository
         .findAllByTribeId(tribeId)
         .orElseThrow { throw EntityNotFoundException("No members joined tribe [$tribeId] yet.") }
+
+    @Transactional
+    fun unAssignMembersWithChapter(chapter: Chapter) = memberRepository
+        .findAllByChapterId(chapter.id)
+        .forEach { save(it.copy(chapter = UNASSIGNED_ROLE)) }
 }

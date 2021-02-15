@@ -28,6 +28,9 @@ data class Member(
     @JoinColumn(name = "chapter", referencedColumnName = "chapter_id")
     val chapter: Chapter = UNASSIGNED_ROLE,
 
+    @Column(name = "active", columnDefinition = "BOOLEAN")
+    val active: Boolean = true,
+
     @ManyToMany(mappedBy = "members")
     val squads: MutableList<Squad> = mutableListOf(),
 ) : BaseModel {

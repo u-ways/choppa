@@ -1,5 +1,6 @@
 package app.choppa.domain.squad.history
 
+import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -20,9 +21,18 @@ interface SquadMemberHistoryRepository : JpaRepository<SquadMemberHistory, Squad
         sort: Sort = by(DESC, SquadMemberHistory::createDate.name)
     ): List<SquadMemberHistory>
 
+    fun findAllByMember(
+        member: Member,
+        sort: Sort = by(DESC, SquadMemberHistory::createDate.name)
+    ): List<SquadMemberHistory>
+
     fun findAllBySquadAndRevisionNumberAfter(
         squad: Squad,
         revisionNumber: Int,
         sort: Sort = by(DESC, SquadMemberHistory::createDate.name)
     ): List<SquadMemberHistory>
+
+    fun deleteAllByMember(member: Member)
+
+    fun deleteAllBySquad(squad: Squad)
 }

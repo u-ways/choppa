@@ -471,7 +471,6 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
         @JvmStatic
         fun concentrateLastNSquadRevisionsTestArgs(): Stream<Arguments?>? {
-            val existingSquad = Squad()
             return Stream.of(
                 Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
@@ -646,7 +645,6 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
         @JvmStatic
         fun findAllRevisionsTestArgs(): Stream<Arguments?>? {
-            val existingSquad = Squad()
             return Stream.of(
                 // TEST 1
                 Pair(

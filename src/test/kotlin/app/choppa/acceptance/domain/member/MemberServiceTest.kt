@@ -4,6 +4,7 @@ import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.member.MemberService
+import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import io.mockk.every
 import io.mockk.mockkClass
@@ -18,12 +19,14 @@ import java.util.UUID.randomUUID
 
 internal class MemberServiceTest {
     private lateinit var repository: MemberRepository
+    private lateinit var squadMemberHistoryService: SquadMemberHistoryService
     private lateinit var service: MemberService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(MemberRepository::class)
-        service = MemberService(repository)
+        squadMemberHistoryService = mockkClass(SquadMemberHistoryService::class)
+        service = MemberService(repository, squadMemberHistoryService)
     }
 
     @Test

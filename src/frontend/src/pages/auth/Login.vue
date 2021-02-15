@@ -12,7 +12,10 @@
             <LoginSSOButton name="Okta" image-name="okta" loginEndpoint="okta" />
           </div>
           <p class="text-xs text-gray-600 dark:text-gray-300 mb-1">OR</p>
-          <StyledButton type="button" variant="primary" css="bg-red-500 w-full">
+          <StyledButton type="button"
+                        variant="primary"
+                        css="bg-red-500 w-full"
+                        @click="continueWithDemo">
             Continue with demo
           </StyledButton>
         </div>
@@ -25,8 +28,9 @@
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import LoginSSOButton from "@/pages/auth/LoginSSOButton";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import router from "@/config/router";
+import { getDemoAccount } from "@/config/api/account.api";
 
 export default {
   name: "LoginPage",
@@ -37,6 +41,10 @@ export default {
   },
   computed: {
     ...mapGetters(["isAuthenticated"]),
+    demoLink() {
+      const authPrefix = process.env.VUE_APP_AUTH_PREFIX || "";
+      return `${authPrefix}api/accounts/demo`;
+    },
   },
   mounted() {
     if (this.isAuthenticated) {
@@ -44,7 +52,13 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["updateAuthenticationStatus"]),
     async redirectToDashboard() {
+      await router.push({ name: "dashboard" });
+    },
+    async continueWithDemo() {
+      await getDemoAccount();
+      await this.updateAuthenticationStatus();
       await router.push({ name: "dashboard" });
     },
   },

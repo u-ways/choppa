@@ -1,4 +1,4 @@
-package app.choppa.config
+package app.choppa.domain.account
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

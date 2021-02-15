@@ -16,6 +16,8 @@ focus:outline-none ring-opacity-30 block transform-gpu transition-transform tran
 focus:-translate-y-0.5 duration-100 motion-reduce:transition-none border-1 ring-purple-600`;
 const PRIMARY = "primary";
 const PRIMARY_CSS = "bg-choppa-two border-transparent";
+const DANGER = "danger";
+const DANGER_CSS = "bg-red-500 border-transparent";
 const SECONDARY_LIGHT = "secondary-light";
 const SECONDARY_LIGHT_CSS = `bg-gray-100 text-gray-600 border-grey-200`;
 const SECONDARY_DARK = "secondary-dark";
@@ -44,7 +46,7 @@ export default {
     },
     variant: {
       required: true,
-      validator: (value) => [PRIMARY, SECONDARY, SECONDARY_LIGHT, SECONDARY_DARK, CUSTOM].indexOf(value) !== -1,
+      validator: (value) => [PRIMARY, SECONDARY, SECONDARY_LIGHT, SECONDARY_DARK, DANGER, CUSTOM].indexOf(value) !== -1,
     },
     css: {
       type: String,
@@ -68,6 +70,8 @@ export default {
           return SECONDARY_LIGHT_CSS;
         case SECONDARY_DARK:
           return SECONDARY_DARK_CSS;
+        case DANGER:
+          return DANGER_CSS;
         case CUSTOM:
         default:
           return "";

@@ -55,6 +55,21 @@
             <SquadsOverview :squads="squads"/>
           </div>
         </section>
+        <div class="px-3 py-5" v-if="!creatingMember">
+          <section>
+            <FormHeader>
+              <template v-slot:heading>DANGER</template>
+              <template v-slot:subheading>These features permanently affect this Squad.</template>
+            </FormHeader>
+            <div class="flex flex-col gap-2 mt-4 text-center">
+              <DoubleConfirmationButton
+                :buttonMessage="deleteMessage"
+                variant="danger"
+                css="px-2 pr-5 pl-4"
+                @click="deleteMember" />
+            </div>
+          </section>
+        </div>
       </div>
     </template>
   </StandardPageTemplate>
@@ -63,7 +78,7 @@
 <script>
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import { mapActions } from "vuex";
-import { createMember, getMember, saveMember } from "@/config/api/member.api";
+import { createMember, getMember, saveMember, deleteMember } from "@/config/api/member.api";
 import { maxLength, minLength, required } from "vuelidate/lib/validators";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
@@ -77,6 +92,7 @@ import { getSquad, getSquadsByQuery, saveSquad } from "@/config/api/squad.api";
 import ChapterRadioButton from "@/components/chapters/ChapterRadioButton";
 import Member from "@/models/domain/member";
 import ErrorPrompt from "@/components/forms/ErrorPrompt";
+import DoubleConfirmationButton from "@/components/atoms/buttons/DoubleConfirmationButton";
 
 export default {
   name: "EditMemberPage",
@@ -89,6 +105,7 @@ export default {
     StandardInputWithLabel,
     FormHeader,
     StandardPageTemplate,
+    DoubleConfirmationButton,
   },
   computed: {
     memberNameHeader() {
@@ -96,6 +113,9 @@ export default {
     },
     saveOrCreateVerb() {
       return this.creatingMember ? "created" : "updated";
+    },
+    deleteMessage() {
+      return this.deleteConfirmation ? "Confirm Deletion" : "Delete Member";
     },
   },
   data() {
@@ -105,6 +125,7 @@ export default {
       chapters: undefined,
       squads: undefined,
       selectedSquad: undefined,
+      deleteConfirmation: false,
     };
   },
   validations: {
@@ -168,6 +189,22 @@ export default {
         }));
 
         throw error;
+      }
+    },
+    async deleteMember() {
+      if (this.deleteConfirmation === true) {
+        try {
+          await deleteMember({ member: this.member });
+          await this.$router.push({ name: "dashboard" });
+        } catch (error) {
+          this.newToast(new ToastData({
+            variant: toastVariants.ERROR,
+            message: "Deletion failed, please try again later",
+          }));
+          throw error;
+        }
+      } else {
+        this.deleteConfirmation = true;
       }
     },
   },

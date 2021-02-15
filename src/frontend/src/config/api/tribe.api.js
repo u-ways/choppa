@@ -11,8 +11,6 @@ async function deserializeTribe(json) {
       chapters: json.chapters,
       members: json.members,
       squads: json.squads,
-      iterations: json.iterations,
-      history: json.history,
     },
   });
 }
@@ -43,4 +41,8 @@ export async function rotateTribe(config) {
     filter: config.filter,
     strategy: config.strategy,
   });
+}
+
+export async function deleteTribe(config) {
+  await httpClient.delete(config.tribe.id, { data: config.tribe.id });
 }

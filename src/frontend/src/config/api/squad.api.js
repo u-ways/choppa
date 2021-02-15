@@ -22,8 +22,6 @@ async function deserializeSquad(json) {
       tribeId: json.tribe.replace("tribes/", ""),
       tribe: json.tribe,
       chapters: json.chapters,
-      iterations: json.iterations,
-      history: json.history,
     },
   });
 }
@@ -54,4 +52,8 @@ export async function saveSquad(config) {
 
 export async function createSquad(config) {
   await httpClient.post("squads", [serializeSquad(config.squad)]);
+}
+
+export async function deleteSquad(config) {
+  await httpClient.delete(config.squad.id, { data: config.squad.id });
 }

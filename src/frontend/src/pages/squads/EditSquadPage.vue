@@ -4,7 +4,7 @@
       <div class="flex flex-row place-content-between place-items-center">
         <div class="text-3xl font-normal truncate">
           <span class="hidden sm:inline">Squad </span>
-          <span class="font-bold truncate">{{squadNameHeader}}</span>
+          <span class="font-bold truncate">{{ squadNameHeader }}</span>
         </div>
         <div class="flex-shrink-0">
           <StyledButton type="link" variant="secondary"
@@ -81,10 +81,26 @@
         <section class="mt-5" v-if="!creatingSquad && tribe && allSquadsExceptOneBeingEdited.length > 0">
           <FormHeader>
             <template v-slot:heading>Related Squads</template>
-            <template v-slot:subheading>Squads belonging to Tribe {{tribe.name}}.</template>
+            <template v-slot:subheading>Squads belonging to Tribe {{ tribe.name }}.</template>
           </FormHeader>
           <div class="pt-3">
             <SquadsOverview :squads="allSquadsExceptOneBeingEdited"/>
+          </div>
+        </section>
+      </div>
+
+      <div class="px-3 py-5" v-if="!creatingSquad">
+        <section>
+          <FormHeader>
+            <template v-slot:heading>DANGER</template>
+            <template v-slot:subheading>These features permanently affect this Squad.</template>
+          </FormHeader>
+          <div class="flex flex-col gap-2 mt-4 text-center">
+            <DoubleConfirmationButton
+              :buttonMessage="deleteMessage"
+              variant="danger"
+              css="px-2 pr-5 pl-4"
+              @click="deleteSquad" />
           </div>
         </section>
       </div>
@@ -97,7 +113,7 @@ import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
-import { createSquad, getSquad, saveSquad } from "@/config/api/squad.api";
+import { createSquad, deleteSquad, getSquad, saveSquad } from "@/config/api/squad.api";
 import { maxLength, minLength, required } from "vuelidate/lib/validators";
 import { mapActions } from "vuex";
 import ToastData from "@/models/toastData";
@@ -108,10 +124,12 @@ import SquadsOverview from "@/components/squads/SquadsOverview";
 import NoMembersToShowAlert from "@/components/member/NoMembersToShowAlert";
 import MembersOverview from "@/components/member/MembersOverview";
 import Squad from "@/models/domain/squad";
+import DoubleConfirmationButton from "@/components/atoms/buttons/DoubleConfirmationButton";
 
 export default {
   name: "EditSquadPage",
   components: {
+    DoubleConfirmationButton,
     MembersOverview,
     NoMembersToShowAlert,
     SquadsOverview,
@@ -131,12 +149,16 @@ export default {
     saveOrCreateVerb() {
       return this.creatingSquad ? "created" : "updated";
     },
+    deleteMessage() {
+      return this.deleteConfirmation ? "Confirm Deletion" : "Delete Squad";
+    },
   },
   data() {
     return {
       creatingSquad: false,
       tribe: undefined,
       squad: undefined,
+      deleteConfirmation: false,
     };
   },
   validations: {
@@ -192,6 +214,22 @@ export default {
         }));
 
         throw error;
+      }
+    },
+    async deleteSquad() {
+      if (this.deleteConfirmation === true) {
+        try {
+          await deleteSquad({ squad: this.squad });
+          await this.$router.push({ name: "view-tribe", params: { id: this.tribe.path } });
+        } catch (error) {
+          this.newToast(new ToastData({
+            variant: toastVariants.ERROR,
+            message: "Deletion failed, please try again later",
+          }));
+          throw error;
+        }
+      } else {
+        this.deleteConfirmation = true;
       }
     },
   },

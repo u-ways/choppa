@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white dark:bg-gray-700 shadow rounded-sm ring-1 ring-black ring-opacity-5 px-3 py-4">
     <div class="flex flex-row items-center gap-2">
-      <Avatar class="w-8 h-8 flex-shrink-0" :member="member" />
+      <Avatar class="w-8 h-8 flex-shrink-0" :seed="member.avatarSeed" />
       <div class="leading-2 flex-grow text-lg truncate" >{{ member.name }}</div>
       <ChapterTag v-if="member.chapter"
                   :chapter="member.chapter"

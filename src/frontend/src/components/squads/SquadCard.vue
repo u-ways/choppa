@@ -6,7 +6,7 @@
       <div class="text-sm leading-8 flex flex-row gap-1">
         <div class="self-center">{{squad.members.length}} Members</div>
         <div class="self-center flex -space-x-1 overflow-hidden">
-          <Avatar v-for="member in limitedMembersAvatars(squad.members)" :key="member.id" :member="member"
+          <Avatar v-for="member in limitedMembersAvatars(squad.members)" :key="member.id" :seed="member.avatarSeed"
                   class="inline w-8 h-8 text-xl self-center"
           />
           <div v-if="squad.members.length > memberShowCount" class="bg-white dark:bg-gray-700 text-gray-500
@@ -28,7 +28,7 @@
         <div v-for="member in squad.members" :key="member.id" class="py-3 px-4 sm:px-7 grid grid-cols-4
         bg-gray-100 even:bg-gray-50 dark:bg-gray-666 dark:even:bg-gray-600">
           <div class="self-center flex flex-row gap-3 col-span-3">
-            <Avatar class="self-center flex-shrink-0 w-8 h-8 text-2xl" :member="member"/>
+            <Avatar class="self-center flex-shrink-0 w-8 h-8 text-2xl" :seed="member.avatarSeed"/>
             <div class="self-center flex-grow text-lg font-normal leading-8">
               {{member.name}}
             </div>

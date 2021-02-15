@@ -1,6 +1,6 @@
 <template>
   <div>
-    <section id="hero" class="dark bg-choppa-two pb-6">
+    <section id="hero" class="bg-choppa-two pb-6">
       <div class="container mx-auto max-w-screen-lg">
         <Navbar :is-on-home-page="true"/>
       </div>

@@ -36,4 +36,8 @@ export default class Member {
   get path() {
     return this._id.replace("members/", "");
   }
+
+  get avatarSeed() {
+    return `${this.id}${this.name}`;
+  }
 }

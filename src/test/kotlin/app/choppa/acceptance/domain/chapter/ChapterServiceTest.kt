@@ -3,6 +3,7 @@ package app.choppa.acceptance.domain.chapter
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterRepository
 import app.choppa.domain.chapter.ChapterService
+import app.choppa.domain.member.MemberService
 import app.choppa.exception.EntityNotFoundException
 import io.mockk.every
 import io.mockk.mockkClass
@@ -17,12 +18,14 @@ import java.util.UUID.randomUUID
 
 internal class ChapterServiceTest {
     private lateinit var repository: ChapterRepository
+    private lateinit var memberService: MemberService
     private lateinit var service: ChapterService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(ChapterRepository::class)
-        service = ChapterService(repository)
+        memberService = mockkClass(MemberService::class)
+        service = ChapterService(repository, memberService)
     }
 
     @Test

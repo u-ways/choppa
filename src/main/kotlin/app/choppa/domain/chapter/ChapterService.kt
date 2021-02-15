@@ -1,14 +1,16 @@
 package app.choppa.domain.chapter
 
 import app.choppa.domain.base.BaseService
+import app.choppa.domain.member.MemberService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 
 @Service
 class ChapterService(
-    @Autowired private val chapterRepository: ChapterRepository
+    @Autowired private val chapterRepository: ChapterRepository,
+    @Autowired private val memberService: MemberService
 ) : BaseService<Chapter> {
     override fun find(): List<Chapter> = chapterRepository
         .findAll()
@@ -28,11 +30,13 @@ class ChapterService(
     override fun save(entities: List<Chapter>): List<Chapter> = chapterRepository
         .saveAll(entities)
 
-    override fun delete(entities: List<Chapter>): List<Chapter> = entities
-        .apply { chapterRepository.deleteAll(entities) }
+    override fun delete(entity: Chapter): Chapter = entity.apply {
+        // convert all related members to UNASSIGNED_ROLE
+        memberService.unAssignMembersWithChapter(entity)
+        chapterRepository.delete(entity)
+    }
 
-    override fun delete(entity: Chapter): Chapter = entity
-        .apply { chapterRepository.delete(entity) }
+    override fun delete(entities: List<Chapter>): List<Chapter> = entities.map(::delete)
 
     fun findRelatedBySquad(squadId: UUID): List<Chapter> = chapterRepository
         .findAllBySquadId(squadId)

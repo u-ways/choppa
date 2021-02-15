@@ -1,5 +1,6 @@
 package app.choppa.acceptance.domain.tribe
 
+import app.choppa.domain.squad.SquadService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeRepository
 import app.choppa.domain.tribe.TribeService
@@ -17,13 +18,15 @@ import java.util.UUID.randomUUID
 
 internal class TribeServiceTest {
     private lateinit var repository: TribeRepository
+    private lateinit var squadService: SquadService
     private lateinit var service: TribeService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(TribeRepository::class)
+        squadService = mockkClass(SquadService::class)
 
-        service = TribeService(repository)
+        service = TribeService(repository, squadService)
     }
 
     @Test

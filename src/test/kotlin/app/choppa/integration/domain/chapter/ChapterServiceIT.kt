@@ -2,10 +2,13 @@ package app.choppa.integration.domain.chapter
 
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterService
+import app.choppa.domain.member.Member
+import app.choppa.domain.member.MemberService
 import app.choppa.exception.EntityNotFoundException
 import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.testcontainers.TestDBContainer
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -23,7 +26,8 @@ import javax.transaction.Transactional
 @Import(FlywayMigrationConfig::class)
 @ActiveProfiles("test")
 internal class ChapterServiceIT @Autowired constructor(
-    private val chapterService: ChapterService
+    private val chapterService: ChapterService,
+    private val memberService: MemberService,
 ) {
 
     @Container
@@ -61,6 +65,19 @@ internal class ChapterServiceIT @Autowired constructor(
         val removedEntity = chapterService.delete(existingEntity)
 
         assertThrows(EntityNotFoundException::class.java) { chapterService.find(removedEntity.id) }
+    }
+
+    @Test
+    @Transactional
+    fun `Given existing entity in db with related records, when service deletes entity, then service should removes entity and related records from db`() {
+        val existingEntity = chapterService.save(Chapter())
+        val relatedMember = memberService.save(Member(chapter = existingEntity))
+
+        memberService.findRelatedByChapter(existingEntity.id).first() shouldBeEqualTo relatedMember
+
+        val removedEntity = chapterService.delete(existingEntity)
+
+        assertThrows(EntityNotFoundException::class.java) { memberService.findRelatedByChapter(removedEntity.id) }
     }
 
     @AfterEach

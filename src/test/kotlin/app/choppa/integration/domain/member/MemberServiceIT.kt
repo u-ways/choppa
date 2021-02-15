@@ -4,10 +4,14 @@ import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
+import app.choppa.domain.squad.Squad
+import app.choppa.domain.squad.SquadService
+import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.testcontainers.TestDBContainer
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -26,7 +30,9 @@ import javax.transaction.Transactional
 @ActiveProfiles("test")
 internal class MemberServiceIT @Autowired constructor(
     private val chapterService: ChapterService,
-    private val memberService: MemberService
+    private val memberService: MemberService,
+    private val squadService: SquadService,
+    private val squadMemberHistoryService: SquadMemberHistoryService,
 ) {
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
@@ -70,6 +76,21 @@ internal class MemberServiceIT @Autowired constructor(
         val removedEntity = memberService.delete(existingEntity)
 
         assertThrows(EntityNotFoundException::class.java) { memberService.find(removedEntity.id) }
+    }
+
+    @Test
+    @Transactional
+    fun `Given existing entity in db with related records, when service deletes entity, then service should removes entity and related records from db`() {
+        val existingEntity = memberService.save(Member())
+        val relatedSquad = squadService.save(Squad(members = mutableListOf(existingEntity)))
+
+        squadService.findRelatedByMember(existingEntity.id).first() shouldBeEqualTo relatedSquad
+        assert(squadMemberHistoryService.findByMember(existingEntity).isNotEmpty())
+
+        val removedEntity = memberService.delete(existingEntity)
+
+        assertThrows(EntityNotFoundException::class.java) { squadService.findRelatedByMember(removedEntity.id) }
+        assert(squadMemberHistoryService.findByMember(removedEntity).isEmpty())
     }
 
     @AfterEach

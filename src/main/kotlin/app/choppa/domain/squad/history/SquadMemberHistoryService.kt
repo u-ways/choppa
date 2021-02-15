@@ -24,14 +24,29 @@ class SquadMemberHistoryService(
         .findAll()
         .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist yet.") }
 
-    fun findBySquad(squad: Squad, sort: Sort = by(DESC, SquadMemberHistory::createDate.name)): List<SquadMemberHistory> = squadHistoryRepository
+    fun findBySquad(
+        squad: Squad,
+        sort: Sort = by(DESC, SquadMemberHistory::createDate.name)
+    ): List<SquadMemberHistory> = squadHistoryRepository
         .findAllBySquad(squad, sort)
+
+    fun findByMember(
+        member: Member,
+        sort: Sort = by(DESC, SquadMemberHistory::createDate.name)
+    ): List<SquadMemberHistory> = squadHistoryRepository
+        .findAllByMember(member, sort)
 
     fun save(entity: SquadMemberHistory): SquadMemberHistory = squadHistoryRepository
         .save(entity)
 
     fun save(entities: List<SquadMemberHistory>): List<SquadMemberHistory> = squadHistoryRepository
         .saveAll(entities)
+
+    fun deleteAllFor(member: Member) = member
+        .apply { squadHistoryRepository.deleteAllByMember(member) }
+
+    fun deleteAllFor(squad: Squad) = squad
+        .apply { squadHistoryRepository.deleteAllBySquad(squad) }
 
     fun delete(entity: SquadMemberHistory): SquadMemberHistory = entity
         .apply { squadHistoryRepository.delete(entity) }

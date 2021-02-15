@@ -1,10 +1,11 @@
 package app.choppa.domain.squad
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
-import java.util.UUID
+import java.util.*
 
 @Repository
 interface SquadRepository : JpaRepository<Squad, UUID> {
@@ -22,4 +23,15 @@ interface SquadRepository : JpaRepository<Squad, UUID> {
         nativeQuery = true
     )
     fun findAllByMemberId(@Param("memberId") memberId: UUID): List<Squad>
+
+    @Modifying
+    @Query(
+        value =
+            """
+            DELETE FROM squad_current_members
+            WHERE squad_current_members.squad_id = cast(:squadId AS UUID)
+        """,
+        nativeQuery = true
+    )
+    fun deleteAllSquadMemberRecordsFor(@Param("squadId") squadId: UUID)
 }

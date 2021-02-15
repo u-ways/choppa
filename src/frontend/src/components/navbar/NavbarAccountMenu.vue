@@ -10,7 +10,7 @@
         <Avatar class="w-20 h-20" :seed="authenticatedAccount.avatarSeed"/>
         <div class="text-center text-sm flex flex-col dark:text-gray-200">
           <div class="font-bold">{{authenticatedAccount.name}}</div>
-          <div>Organisation</div>
+          <div>{{ authenticatedAccount.organisationName }}</div>
         </div>
         <StyledButton type="button" variant="primary" @click="onLogoutClicked">
           Logout

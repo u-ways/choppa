@@ -1,9 +1,23 @@
 import httpClient from "@/config/api/http-client";
 import Account from "@/models/domain/account";
 
+function serializeAccount(account) {
+  return {
+    id: account.id,
+    provider: account.provider,
+    providerId: account.providerId,
+    name: account.name,
+    organisationName: account.organisationName,
+  };
+}
+
 async function deserializeAccount(json) {
   return new Account({
+    id: json.id,
+    provider: json.provider,
+    providerId: json.providerId,
     name: json.name,
+    organisationName: json.organisationName,
   });
 }
 
@@ -33,4 +47,8 @@ export async function invalidateSession() {
 
 export async function getDemoAccount() {
   await httpClient.get("accounts/demo");
+}
+
+export async function createAccount(account) {
+  await httpClient.post("accounts", serializeAccount(account));
 }

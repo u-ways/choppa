@@ -6,6 +6,7 @@ function serializeTribe(tribe) {
   return {
     id: tribe.id,
     name: tribe.name,
+    color: tribe.color,
   };
 }
 
@@ -13,6 +14,7 @@ async function deserializeTribe(json) {
   return new Tribe({
     id: json.id,
     name: json.name,
+    color: json.color,
     squads: await getSquadsByQuery({ url: json.squads }),
     relations: {
       chapters: json.chapters,
@@ -35,7 +37,7 @@ export async function getTribe(config) {
 }
 
 export async function createTribe(config) {
-  await httpClient.post("squads", [serializeTribe(config.tribe)]);
+  await httpClient.post("tribes", [serializeTribe(config.tribe)]);
 }
 
 export async function saveTribe(config) {

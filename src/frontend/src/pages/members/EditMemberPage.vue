@@ -59,7 +59,7 @@
           <section>
             <FormHeader>
               <template v-slot:heading>DANGER</template>
-              <template v-slot:subheading>These features permanently affect this Squad.</template>
+              <template v-slot:subheading>These features permanently affect this Member.</template>
             </FormHeader>
             <div class="flex flex-col gap-2 mt-4 text-center">
               <DoubleConfirmationButton
@@ -195,7 +195,11 @@ export default {
       if (this.deleteConfirmation === true) {
         try {
           await deleteMember({ member: this.member });
-          await this.$router.push({ name: "dashboard" });
+          await this.$router.go(-1);
+          this.newToast(new ToastData({
+            variant: toastVariants.SUCCESS,
+            message: `Member ${this.member.name} has been deleted`,
+          }));
         } catch (error) {
           this.newToast(new ToastData({
             variant: toastVariants.ERROR,

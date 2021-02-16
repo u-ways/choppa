@@ -17,6 +17,7 @@
               />
             </div>
             <NavbarLink :url="{ name: 'dashboard' }">Dashboard</NavbarLink>
+            <NavbarLink :url="{ name: 'my-tribes' }">My Tribes</NavbarLink>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <template>
   <StandardPageTemplate>
-    <template v-slot:page-header v-if="tribe && chaptersInUse">
+    <template v-slot:page-header v-if="tribe">
       <div class="flex flex-row place-content-between place-items-center">
         <div class="text-3xl font-normal truncate">
           <span class="hidden sm:inline">Tribe </span>
@@ -17,7 +17,7 @@
         </div>
       </div>
     </template>
-    <template v-slot:fixed-width v-if="tribe && chaptersInUse">
+    <template v-slot:fixed-width v-if="tribe">
       <div class="px-3 py-5">
         <section>
           <FormHeader>
@@ -33,6 +33,12 @@
                                     :validator="$v.tribe.name"
                                     :max-length="100"
             />
+            <ColorPaletteWithLabel id="tribe-color"
+                                   label-text="Tribe Color"
+                                   :current-color="tribe.color"
+                                   @colorSelected="(newColor) => tribe.color = newColor"
+                                   :validator="$v.tribe.color"
+            />
             <div class="self-end flex flex-row gap-1">
               <StyledButton type="button" variant="secondary" css="px-2 pr-5 pl-4" @click="$router.go(-1)">
                 <font-awesome-icon icon="times"/>
@@ -40,12 +46,17 @@
               </StyledButton>
               <StyledButton type="button" variant="primary" css="px-2 pr-5 pl-4" @click="save">
                 <font-awesome-icon icon="check"/>
-                Save
+                <template v-if="creatingTribe">
+                  Create
+                </template>
+                <template v-else>
+                  Save
+                </template>
               </StyledButton>
             </div>
           </div>
         </section>
-        <section class="mt-5">
+        <section class="mt-5" v-if="!creatingTribe && tribe">
           <FormHeader>
             <template v-slot:heading>Squads</template>
             <template v-slot:subheading>Now lets add some Squads.</template>
@@ -66,13 +77,13 @@
             <NoSquadsToShowAlert v-else :tribe="tribe" />
           </div>
         </section>
-        <section class="mt-5">
+        <section class="mt-5" v-if="!creatingTribe">
           <FormHeader>
             <template v-slot:heading>Chapters</template>
             <template v-slot:subheading>Now lets add some Chapters.</template>
           </FormHeader>
           <div class="pt-3">
-            <div v-if="allChapters.length > 0" class="flex flex-col gap-2">
+            <div v-if="allChapters && allChapters.length > 0" class="flex flex-col gap-2">
               <ChapterOverview :chapters="allChapters"/>
               <div class="self-end">
                 <StyledButton type="link"
@@ -168,11 +179,11 @@
             </div>
           </div>
         </section>
-        <div class="px-3 py-5">
+        <div class="px-3 py-5" v-if="!creatingTribe">
           <section>
             <FormHeader>
               <template v-slot:heading>DANGER</template>
-              <template v-slot:subheading>These features permanently affect this Squad.</template>
+              <template v-slot:subheading>These features permanently affect this Tribe.</template>
             </FormHeader>
             <div class="flex flex-col gap-2 mt-4 text-center">
               <DoubleConfirmationButton
@@ -193,7 +204,7 @@ import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
-import { getTribe, rotateTribe, saveTribe, deleteTribe } from "@/config/api/tribe.api";
+import { getTribe, rotateTribe, saveTribe, deleteTribe, createTribe } from "@/config/api/tribe.api";
 import NoSquadsToShowAlert from "@/components/squads/NoSquadsToShowAlert";
 import { required, minLength, maxLength, minValue, maxValue } from "vuelidate/lib/validators";
 import { mapActions } from "vuex";
@@ -209,6 +220,8 @@ import { rotationStrategy } from "@/enums/rotationStrategy";
 import ChapterOverview from "@/components/chapters/ChapterOverview";
 import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
 import DoubleConfirmationButton from "@/components/atoms/buttons/DoubleConfirmationButton";
+import Tribe from "@/models/domain/tribe";
+import ColorPaletteWithLabel from "@/components/forms/groups/ColorPaletteWithLabel";
 
 export default {
   name: "EditTribePage",
@@ -225,10 +238,14 @@ export default {
     StandardPageTemplate,
     StyledButton,
     DoubleConfirmationButton,
+    ColorPaletteWithLabel,
   },
   computed: {
     tribeNameHeader() {
       return this.tribe.name ? this.tribe.name : "Untitled";
+    },
+    saveOrCreateVerb() {
+      return this.creatingTribe ? "created" : "updated";
     },
     deleteMessage() {
       return this.deleteConfirmation ? "Confirm Deletion" : "Delete Tribe";
@@ -236,9 +253,10 @@ export default {
   },
   data() {
     return {
+      creatingTribe: false,
       tribe: undefined,
-      allChapters: undefined,
-      chaptersInUse: undefined,
+      allChapters: [],
+      chaptersInUse: [],
       rotation: {
         amount: 1,
         chapter: undefined,
@@ -265,6 +283,9 @@ export default {
         minLength: minLength(3),
         maxLength: maxLength(100),
       },
+      color: {
+        required,
+      },
     },
     rotation: {
       amount: {
@@ -276,9 +297,17 @@ export default {
   },
   async mounted() {
     try {
-      this.tribe = await getTribe({ id: this.$route.params.id });
-      this.allChapters = await getChapters();
-      this.chaptersInUse = await getChaptersByQuery({ url: this.tribe.relations.chapters });
+      if (this.$route.params.id) {
+        this.creatingTribe = false;
+        this.tribe = await getTribe({ id: this.$route.params.id });
+        this.allChapters = await getChapters();
+        this.chaptersInUse = await getChaptersByQuery({ url: this.tribe.relations.chapters });
+      } else {
+        this.creatingTribe = true;
+        this.tribe = new Tribe({ });
+        this.allChapters = await getChapters();
+        this.chaptersInUse = await getChaptersByQuery({ url: this.tribe.relations.chapters });
+      }
     } catch (error) {
       await this.$router.replace("/not-found");
     }
@@ -291,11 +320,15 @@ export default {
       }
 
       try {
-        await saveTribe({ tribe: this.tribe });
+        if (this.creatingTribe) {
+          await createTribe({ tribe: this.tribe });
+        } else {
+          await saveTribe({ tribe: this.tribe });
+        }
         await this.$router.go(-1);
         this.newToast(new ToastData({
           variant: toastVariants.SUCCESS,
-          message: `Tribe ${this.tribe.name} has been updated`,
+          message: `Tribe ${this.tribe.name} has been ${this.saveOrCreateVerb}`,
         }));
       } catch (error) {
         this.newToast(new ToastData({ variant: toastVariants.ERROR, message: "Save failed, please try again later" }));
@@ -328,6 +361,10 @@ export default {
         try {
           await deleteTribe({ tribe: this.tribe });
           await this.$router.push({ name: "dashboard" });
+          this.newToast(new ToastData({
+            variant: toastVariants.SUCCESS,
+            message: `Tribe ${this.tribe.name} has been deleted`,
+          }));
         } catch (error) {
           this.newToast(new ToastData({
             variant: toastVariants.ERROR,

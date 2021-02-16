@@ -221,6 +221,10 @@ export default {
         try {
           await deleteSquad({ squad: this.squad });
           await this.$router.push({ name: "view-tribe", params: { id: this.tribe.path } });
+          this.newToast(new ToastData({
+            variant: toastVariants.SUCCESS,
+            message: `Squad ${this.squad.name} has been deleted`,
+          }));
         } catch (error) {
           this.newToast(new ToastData({
             variant: toastVariants.ERROR,

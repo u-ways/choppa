@@ -1,9 +1,9 @@
 package app.choppa.domain.account
 
-import app.choppa.domain.account.converter.NoOAuth2UserToAccountConverterFoundException
-import app.choppa.domain.account.converter.impl.ChoppaOAuth2UserToAccountConverter
-import app.choppa.domain.account.converter.impl.GithubOAuth2UserToAccountConverter
-import app.choppa.domain.account.converter.impl.OpenIdOAuth2UserToAccountConverter
+import app.choppa.domain.account.provider.ChoppaOAuth2Provider
+import app.choppa.domain.account.provider.GithubOAuth2Provider
+import app.choppa.domain.account.provider.OpenIdOAuth2Provider
+import app.choppa.exception.NoOAuth2UserToAccountConverterFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
@@ -18,11 +18,11 @@ class AccountService(
 
     companion object {
         val CONVERTERS = mapOf(
-            "choppa" to ChoppaOAuth2UserToAccountConverter(),
-            "github" to GithubOAuth2UserToAccountConverter(),
-            "microsoft" to OpenIdOAuth2UserToAccountConverter(),
-            "google" to OpenIdOAuth2UserToAccountConverter(),
-            "okta" to OpenIdOAuth2UserToAccountConverter(),
+            "choppa" to ChoppaOAuth2Provider(),
+            "github" to GithubOAuth2Provider(),
+            "microsoft" to OpenIdOAuth2Provider(),
+            "google" to OpenIdOAuth2Provider(),
+            "okta" to OpenIdOAuth2Provider(),
         )
     }
 

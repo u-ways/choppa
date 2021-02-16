@@ -25,7 +25,7 @@ class AccountController(
         return ok().build()
     }
 
-    @PostMapping()
+    @PostMapping
     fun createAccount(@RequestBody account: Account): ResponseEntity<Account> {
         accountService.createAccount(account)
         return ok().build()

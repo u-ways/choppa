@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.domain.Sort.by
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
 
 @Service
@@ -81,12 +82,12 @@ class SquadMemberHistoryService(
             }
         }
 
-    @Transactional
+    @Transactional(isolation = REPEATABLE_READ)
     fun concentrateSquadRevisionsTo(squad: Squad, revisionNumber: Int): List<Member> = squadHistoryRepository
         .findAllBySquadAndRevisionNumberAfter(squad, revisionNumber)
         .backtrack(squad.members)
 
-    @Transactional
+    @Transactional(isolation = REPEATABLE_READ)
     fun concentrateLastNSquadRevisions(squad: Squad, revisionAmount: Int): List<Member> = squadHistoryRepository
         .takeIf { revisionAmount > 0 }
         ?.findAllBySquad(squad, of(ZERO, revisionAmount))

@@ -7,6 +7,7 @@ import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
@@ -30,7 +31,7 @@ class SquadService(
 
     // NOTE(u-ways) #149 Squad also allows the persistence of non-existent members on top of
     //                   persisting existing members from/to the squad's current members table.
-    @Transactional
+    @Transactional(isolation = REPEATABLE_READ)
     override fun save(entity: Squad): Squad = squadRepository
         .findById(entity.id)
         .getMembersIfPresent()
@@ -41,7 +42,7 @@ class SquadService(
                 .createSquadMembersRevision(this)
         }
 
-    @Transactional
+    @Transactional(isolation = REPEATABLE_READ)
     override fun save(entities: List<Squad>): List<Squad> = entities.map(::save)
 
     @Transactional

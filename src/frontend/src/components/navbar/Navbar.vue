@@ -19,6 +19,7 @@
             <Avatar class="w-8 h-8"
                     :class="[ expandedMenu === true ? 'border-2 border-choppa-two' : '' ]"
                     :seed="authenticatedAccount.avatarSeed"
+                    :imageUrlOverride="authenticatedAccount.profilePicture"
             />
           </button>
         </template>

@@ -7,6 +7,7 @@ export default class Account {
     this._providerId = hasPropertyOrDefault(config, "providerId", "");
     this._name = hasPropertyOrDefault(config, "name", "");
     this._organisationName = hasPropertyOrDefault(config, "organisationName", "");
+    this._profilePicture = hasPropertyOrDefault(config, "profilePicture", "");
   }
 
   get id() {
@@ -25,6 +26,10 @@ export default class Account {
     return this._name;
   }
 
+  get shortName() {
+    return this._name.substr(0, this._name.indexOf(" "));
+  }
+
   get organisationName() {
     return this._organisationName;
   }
@@ -33,10 +38,10 @@ export default class Account {
     this._organisationName = newName;
   }
 
-  get shortName() {
-    return this._name.substr(0, this._name.indexOf(" "));
+  get profilePicture() {
+    return this._profilePicture;
   }
-
+  
   get avatarSeed() {
     return this._name;
   }

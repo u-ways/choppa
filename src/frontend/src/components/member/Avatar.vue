@@ -1,7 +1,9 @@
 <template>
   <div class="inline bg-white text-gray-500 ring-2 ring-opacity-5 ring-black dark:ring-gray-600 dark:ring-opacity-50
   rounded-full overflow-hidden grid">
-    <svg v-show="rendered" ref="canvas" width="20" height="20" class="w-full h-full">
+    <img :src="imageUrlOverride" v-if="shouldUseImageOverride && rendered"
+         class="w-full h-full object-cover">
+    <svg v-show="!shouldUseImageOverride && rendered" ref="canvas" width="20" height="20" class="w-full h-full">
     </svg>
     <font-awesome-icon v-if="!rendered"
                        icon="user-alt"
@@ -20,14 +22,27 @@ export default {
       type: String,
       required: true,
     },
+    imageUrlOverride: {
+      type: String,
+      required: false,
+    },
   },
   data() {
     return {
       rendered: false,
     };
   },
+  computed: {
+    shouldUseImageOverride() {
+      return this.imageUrlOverride.length > 0;
+    },
+  },
   mounted() {
-    this.renderProfilePicture();
+    if (this.shouldUseImageOverride) {
+      this.rendered = true;
+    } else {
+      this.renderProfilePicture();
+    }
   },
   methods: {
     renderProfilePicture() {

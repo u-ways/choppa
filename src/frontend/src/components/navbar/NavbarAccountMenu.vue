@@ -7,7 +7,10 @@
                   @click="hideAccountMenu"
       />
       <div class="px-5 py-3 flex flex-col items-center gap-2 h-full justify-center -mt-12">
-        <Avatar class="w-20 h-20" :seed="authenticatedAccount.avatarSeed"/>
+        <Avatar class="w-20 h-20"
+                :seed="authenticatedAccount.avatarSeed"
+                :imageUrlOverride="authenticatedAccount.profilePicture"
+        />
         <div class="text-center text-sm flex flex-col dark:text-gray-200">
           <div class="font-bold">{{authenticatedAccount.name}}</div>
           <div>{{ authenticatedAccount.organisationName }}</div>

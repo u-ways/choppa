@@ -2,7 +2,7 @@ import Member from "@/models/domain/member";
 import { deserializeChapter } from "@/config/api/chapter.api";
 import httpClient from "@/config/api/http-client";
 
-function serializeMember(member) {
+export function serializeMember(member) {
   return {
     id: member.id,
     name: member.name,

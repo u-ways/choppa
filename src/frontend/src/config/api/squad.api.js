@@ -1,6 +1,6 @@
 import httpClient from "@/config/api/http-client";
 import Squad from "@/models/domain/squad";
-import { deserializeMember } from "@/config/api/member.api";
+import { deserializeMember, serializeMember } from "@/config/api/member.api";
 
 function serializeSquad(squad) {
   return {
@@ -8,7 +8,7 @@ function serializeSquad(squad) {
     tribe: squad.relations.tribeId,
     name: squad.name,
     color: squad.color,
-    members: squad.members.map((member) => member.id),
+    members: squad.members.map((member) => serializeMember(member)),
   };
 }
 

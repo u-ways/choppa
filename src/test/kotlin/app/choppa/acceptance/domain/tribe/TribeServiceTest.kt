@@ -61,6 +61,7 @@ internal class TribeServiceTest {
         val existingEntity = Tribe()
 
         every { repository.delete(existingEntity) } returns Unit
+        every { squadService.deleteRelatedByTribe(existingEntity.id) } returns existingEntity.squads
         every { repository.findById(existingEntity.id) } returns empty()
 
         val removedEntity = service.delete(existingEntity)

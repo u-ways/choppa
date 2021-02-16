@@ -74,6 +74,7 @@ internal class SquadServiceTest {
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(existingEntity.id) } returns empty()
+        every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
 
         val removedEntity = service.delete(existingEntity)
 
@@ -96,6 +97,7 @@ internal class SquadServiceTest {
         val existingEntity = SquadFactory.create(membersAmount = 5)
 
         every { repository.findById(existingEntity.id) } returns of(existingEntity)
+        every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
         every { squadMemberHistoryService.concentrateAllSquadRevisions(existingEntity) } returns listOf(existingEntity.members)
 
         val squadMembersRevisions = service.findAllSquadMembersRevisions(existingEntity.id)

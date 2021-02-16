@@ -1,8 +1,6 @@
 package app.choppa.domain.account
 
-import app.choppa.domain.account.provider.ChoppaOAuth2Provider
-import app.choppa.domain.account.provider.GithubOAuth2Provider
-import app.choppa.domain.account.provider.OpenIdOAuth2Provider
+import app.choppa.domain.account.provider.*
 import app.choppa.exception.NoOAuth2UserToAccountConverterFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
@@ -20,9 +18,9 @@ class AccountService(
         val CONVERTERS = mapOf(
             "choppa" to ChoppaOAuth2Provider(),
             "github" to GithubOAuth2Provider(),
-            "microsoft" to OpenIdOAuth2Provider(),
-            "google" to OpenIdOAuth2Provider(),
-            "okta" to OpenIdOAuth2Provider(),
+            "microsoft" to MicrosoftOAuth2Provider(),
+            "google" to GoogleOAuth2Provider(),
+            "okta" to OktaOAuth2Provider(),
         )
     }
 
@@ -41,6 +39,7 @@ class AccountService(
         return if (accountRepository.existsAccountByProviderAndProviderId(provider, providerId)) {
             val savedAccount = accountRepository.findAccountByProviderAndProviderId(provider, providerId)
             savedAccount.name = name
+            savedAccount.profilePicture = converter.profilePicture(oauth2User)
             savedAccount
         } else {
             Account(provider, providerId, name)

@@ -25,6 +25,9 @@ data class Account(
 
     @Column(name = "organisation_name", columnDefinition = "VARCHAR(4096)")
     val organisationName: String,
+
+    @Transient
+    var profilePicture: String = "",
 ) {
     constructor(
         provider: String,

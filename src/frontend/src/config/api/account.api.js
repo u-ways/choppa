@@ -6,7 +6,6 @@ function serializeAccount(account) {
     id: account.id,
     provider: account.provider,
     providerId: account.providerId,
-    name: account.name,
     organisationName: account.organisationName,
   };
 }
@@ -18,6 +17,7 @@ async function deserializeAccount(json) {
     providerId: json.providerId,
     name: json.name,
     organisationName: json.organisationName,
+    profilePicture: json.profilePicture,
   });
 }
 

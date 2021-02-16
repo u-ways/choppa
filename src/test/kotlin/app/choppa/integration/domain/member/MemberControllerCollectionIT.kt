@@ -17,11 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 
 @WebMvcTest(controllers = [MemberController::class])
 @ActiveProfiles("test")
@@ -43,6 +39,22 @@ internal class MemberControllerCollectionIT @Autowired constructor(
             every { memberService.find() } returns entities
 
             mvc.get("/api/members") {
+                contentType = APPLICATION_JSON
+                accept = APPLICATION_JSON
+            }.andExpect {
+                status { isOk }
+                content { contentType(APPLICATION_JSON) }
+                content { json(mapper.writeValueAsString(entities)) }
+            }
+        }
+
+        @Test
+        fun `LIST inactive entities`() {
+            val entities = listOf(Member(active = false))
+
+            every { memberService.findInactive() } returns entities
+
+            mvc.get("/api/members?active=false") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
             }.andExpect {

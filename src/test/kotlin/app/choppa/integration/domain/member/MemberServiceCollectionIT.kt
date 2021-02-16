@@ -60,4 +60,14 @@ internal class MemberServiceCollectionIT @Autowired constructor(
 
         assertThrows(EntityNotFoundException::class.java) { memberService.find(removedListOfMembers.map { it.id }) }
     }
+
+    @Test
+    @Transactional
+    fun `Given an existing list of inactive members, when service finds said list of active members, then service should remove the existing list of members`() {
+        memberService.save(MemberFactory.create(amount = 3)) // existingListOfActiveMembers
+        val existingListOfInactiveMembers = memberService.save(listOf(Member(active = false), Member(active = false), Member(active = false)))
+        val result = memberService.findInactive()
+
+        assertThat(result, List<Member>::containsInAnyOrder, existingListOfInactiveMembers)
+    }
 }

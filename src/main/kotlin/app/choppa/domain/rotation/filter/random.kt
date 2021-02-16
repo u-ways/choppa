@@ -1,23 +1,20 @@
 package app.choppa.domain.rotation.filter
 
 import app.choppa.domain.member.Member
-import kotlin.random.Random
 
-internal fun random(candidates: List<List<Member>>, amount: Int): List<MutableList<Member>> {
-    val selectedMembers = MutableList<MutableList<Member>>(candidates.size) { mutableListOf() }
-
-    val indexedMembers = candidates.mapIndexed { index, squadMembers ->
-        squadMembers.map { Pair(index, it) }.toMutableList()
-    }.flatten().toMutableList()
-
-    (0 until amount).map {
-        val selectedMember = Random.nextInt(indexedMembers.count())
-        val member = indexedMembers[selectedMember]
-        indexedMembers.remove(member)
-        member
-    }.forEach {
-        selectedMembers[it.first].add(it.second)
+internal fun random(candidates: List<List<Member>>, amount: Int): List<List<Member>> =
+    if (candidates.flatten().count() < 1) candidates
+    else MutableList<MutableList<Member>>(candidates.size) { mutableListOf() }.apply {
+        candidates
+            .mapIndexed { i, sc -> sc.map { i to it } }
+            .flatten()
+            .toMutableList()
+            .let { indexedCandidates ->
+                (0 until amount).map {
+                    indexedCandidates[indexedCandidates.indices.random()].also {
+                        indexedCandidates.remove(it)
+                        this[it.first].add(it.second)
+                    }
+                }
+            }
     }
-
-    return selectedMembers
-}

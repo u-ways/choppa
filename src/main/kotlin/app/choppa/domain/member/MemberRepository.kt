@@ -47,4 +47,6 @@ interface MemberRepository : JpaRepository<Member, UUID> {
         nativeQuery = true
     )
     fun deleteAllSquadMemberRecordsFor(@Param("memberId") memberId: UUID)
+
+    fun findAllByActiveFalse(): List<Member>
 }

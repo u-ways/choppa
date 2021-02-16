@@ -41,6 +41,9 @@ class MemberService(
     @Transactional
     override fun delete(entities: List<Member>): List<Member> = entities.map(::delete)
 
+    fun findInactive(): List<Member> = memberRepository.findAllByActiveFalse()
+        .orElseThrow { throw EntityNotFoundException("No inactive members found.") }
+
     fun findRelatedByChapter(chapterId: UUID): List<Member> = memberRepository
         .findAllByChapterId(chapterId)
         .orElseThrow { throw EntityNotFoundException("No members joined chapter [$chapterId] yet.") }

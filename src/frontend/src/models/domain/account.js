@@ -8,6 +8,7 @@ export default class Account {
     this._name = hasPropertyOrDefault(config, "name", "");
     this._organisationName = hasPropertyOrDefault(config, "organisationName", "");
     this._profilePicture = hasPropertyOrDefault(config, "profilePicture", "");
+    this._firstLogin = hasPropertyOrDefault(config, "firstLogin", false);
   }
 
   get id() {
@@ -41,8 +42,12 @@ export default class Account {
   get profilePicture() {
     return this._profilePicture;
   }
-  
+
   get avatarSeed() {
     return this._name;
+  }
+
+  get isFirstLogin() {
+    return this._firstLogin;
   }
 }

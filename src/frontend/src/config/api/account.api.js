@@ -18,6 +18,7 @@ async function deserializeAccount(json) {
     name: json.name,
     organisationName: json.organisationName,
     profilePicture: json.profilePicture,
+    firstLogin: json.firstLogin,
   });
 }
 

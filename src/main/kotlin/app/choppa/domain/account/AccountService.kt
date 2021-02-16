@@ -1,7 +1,7 @@
 package app.choppa.domain.account
 
 import app.choppa.domain.account.provider.*
-import app.choppa.exception.NoOAuth2UserToAccountConverterFoundException
+import app.choppa.exception.NoOAuth2ProviderFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
@@ -32,7 +32,7 @@ class AccountService(
     }
 
     fun convert(provider: String, oauth2User: OAuth2User): Account {
-        val converter = CONVERTERS[provider] ?: throw NoOAuth2UserToAccountConverterFoundException(provider)
+        val converter = CONVERTERS[provider] ?: throw NoOAuth2ProviderFoundException(provider)
         val providerId = converter.uniqueIdentifier(oauth2User)
         val name = converter.name(oauth2User)
 
@@ -42,7 +42,7 @@ class AccountService(
             savedAccount.profilePicture = converter.profilePicture(oauth2User)
             savedAccount
         } else {
-            Account(provider, providerId, name)
+            Account.createFirstLogin(provider, providerId, name)
         }
     }
 

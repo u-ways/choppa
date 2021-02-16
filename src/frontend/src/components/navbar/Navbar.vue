@@ -44,12 +44,8 @@
 </template>
 
 <script>
-/* eslint-disable */
 import NavbarLink from "@/components/navbar/NavbarLink";
-import ChoppaLogo from "@/components/atoms/ChoppaLogo";
-import IconButton from "@/components/atoms/buttons/IconButton";
-import { mapActions, mapGetters } from "vuex";
-import router from "@/config/router";
+import { mapGetters } from "vuex";
 import Avatar from "@/components/member/Avatar";
 import NavbarAccountMenu from "@/components/navbar/NavbarAccountMenu";
 
@@ -58,8 +54,6 @@ export default {
   components: {
     NavbarAccountMenu,
     Avatar,
-    IconButton,
-    ChoppaLogo,
     NavbarLink,
   },
   props: {
@@ -76,6 +70,6 @@ export default {
     return {
       expandedMenu: false,
     };
-  }
+  },
 };
 </script>

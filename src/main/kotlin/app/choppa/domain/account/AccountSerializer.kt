@@ -15,6 +15,7 @@ class AccountSerializer(
         gen.writeStringField(account::name.name, account.name)
         gen.writeStringField(account::organisationName.name, account.organisationName)
         gen.writeStringField(account::profilePicture.name, account.profilePicture)
+        gen.writeBooleanField(account::firstLogin.name, account.firstLogin)
         gen.writeEndObject()
     }
 }

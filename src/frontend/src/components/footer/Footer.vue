@@ -3,9 +3,11 @@
     <div class="pt-3 container mx-auto grid justify-items-center text-gray-600 dark:text-gray-300">
       <div class="justify-self-center">
         Support Choppa's development at
-        <StyledLink link="/external/github" class="pl-1">
-          <font-awesome-icon :icon="['fab', 'github']"/> Github
-        </StyledLink>
+        <a href="https://github.com/U-ways/choppa" class="font-bold hover:underline focus:underline
+        active:outline-none focus:outline-none text-choppa-light hover:text-choppa-light-hover dark:text-choppa-dark
+        dark:hover:text-choppa-dark-hover">
+          Github
+        </a>
       </div>
       <div class="justify-self-center flex flex-row flex-none h-6">
         <span class="pr-2">Theme</span>
@@ -26,14 +28,12 @@
 
 <script>
 import IconButton from "@/components/atoms/buttons/IconButton";
-import StyledLink from "@/components/atoms/links/StyledLink";
 import { themeSetting } from "@/enums/themeSetting";
 import { mapActions } from "vuex";
 
 export default {
   name: "Footer",
   components: {
-    StyledLink,
     IconButton,
   },
   data() {

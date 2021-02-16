@@ -28,18 +28,21 @@ data class Account(
 
     @Transient
     var profilePicture: String = "",
+
+    @Transient
+    var firstLogin: Boolean = false,
 ) {
-    constructor(
-        provider: String,
-        providerId: String,
-        name: String
-    ) : this(
-        UUID.randomUUID(),
-        provider,
-        providerId,
-        name,
-        "",
-    )
+    companion object {
+        fun createFirstLogin(provider: String, providerId: String, name: String): Account = Account(
+            UUID.randomUUID(),
+            provider,
+            providerId,
+            name,
+            "",
+            "",
+            true
+        )
+    }
 
     override fun toString() = "Account(provider=$provider, providerId=$providerId, name=$name)"
 }

@@ -34,7 +34,7 @@ export default {
   },
   computed: {
     shouldUseImageOverride() {
-      return this.imageUrlOverride.length > 0;
+      return this.imageUrlOverride && this.imageUrlOverride.length > 0;
     },
   },
   mounted() {

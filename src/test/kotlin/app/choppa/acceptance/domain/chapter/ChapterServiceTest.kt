@@ -60,6 +60,7 @@ internal class ChapterServiceTest {
         val existingEntity = Chapter()
 
         every { repository.delete(existingEntity) } returns Unit
+        every { memberService.unAssignMembersWithChapter(existingEntity) } returns Unit
         every { repository.findById(existingEntity.id) } returns empty()
 
         val removedEntity = service.delete(existingEntity)

@@ -64,6 +64,8 @@ internal class MemberServiceTest {
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(existingEntity.id) } returns empty()
+        every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
+        every { squadMemberHistoryService.deleteAllFor(existingEntity) } returns existingEntity
 
         val removedEntity = service.delete(existingEntity)
 

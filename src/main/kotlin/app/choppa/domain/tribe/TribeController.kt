@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.*
 import org.springframework.web.bind.annotation.*
+import java.io.Serializable
 import java.util.*
 
 @RestController
@@ -57,4 +58,7 @@ class TribeController(
         ok().body(
             rotationService.undoRotation(tribeService.find(id))
         )
+
+    @GetMapping("stats")
+    fun getStatistics(): ResponseEntity<Map<String, Serializable>> = ok().body(tribeService.statistics())
 }

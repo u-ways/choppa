@@ -6,7 +6,9 @@ import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.io.Serializable
 import java.util.*
+import kotlin.collections.HashMap
 
 @Service
 class TribeService(
@@ -39,4 +41,19 @@ class TribeService(
 
     @Transactional
     override fun delete(entities: List<Tribe>): List<Tribe> = entities.map(::delete)
+
+    fun statistics(): Map<String, Serializable> = tribeRepository.findAll().run {
+        mapOf(
+            "Total" to this.size,
+            "Knowledge Sharing Points" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
+                tribeMap.also {
+                    tribeMap[tribe.name] = tribe.squads.fold(HashMap<String, HashMap<String, Any>>(this.size)) { squadMap, squad ->
+                        squadMap.also {
+                            squadMap[squad.name] = squadService.calculateKspForLastNRevisionsFor(squad.id, amount = 7)
+                        }
+                    }
+                }
+            }
+        )
+    }
 }

@@ -18,11 +18,15 @@ class MemberDeserializer(supportedClass: Class<Member>? = null) : BaseDeserializ
                 else -> {
                     val id = node["id"].extractUUID()
                     val name = node["name"].textValue()
+                    val active = when (val child: JsonNode? = node["active"]) {
+                        null -> true
+                        else -> child.booleanValue()
+                    }
                     val chapter = when (val child: JsonNode? = node["chapter"]) {
                         null -> UNASSIGNED_ROLE
                         else -> mapper.readValue("$child", Chapter::class.java)
                     }
-                    Member(id, name, chapter)
+                    Member(id, name, chapter, active)
                 }
             }
         } catch (e: Exception) {

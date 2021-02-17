@@ -14,6 +14,7 @@ class MemberSerializer(
         gen.writeStringField(member::id.name, reverseRouter.route(MemberController::class, member.id))
         gen.writeStringField(member::name.name, member.name)
         gen.writeObjectField(member::chapter.name, member.chapter)
+        gen.writeBooleanField(member::active.name, member.active)
         gen.writeQueryField(SQUADS, member)
         gen.writeQueryField(ITERATIONS, member)
         gen.writeEndObject()

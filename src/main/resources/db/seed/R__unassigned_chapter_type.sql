@@ -7,7 +7,7 @@ $$
     BEGIN
         -- Chapter for members with unassigned roles
         insert into chapter (chapter_id, name, color)
-        values (chapter_unassigned_id, 'Unassigned', color_grey)
+        values (chapter_unassigned_id, 'UNASSIGNED', color_grey)
         ON CONFLICT (chapter_id) DO NOTHING;
     END
 $$;

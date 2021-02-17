@@ -5,6 +5,7 @@ export default class Tribe {
   constructor(config) {
     this._id = hasPropertyOrDefault(config, "id", `tribes/${uuidv4()}`);
     this._name = hasPropertyOrDefault(config, "name", "");
+    this._color = hasPropertyOrDefault(config, "color", "");
     this._squads = hasPropertyOrDefault(config, "squads", []);
     this._relations = hasPropertyOrDefault(config, "relations", {});
   }
@@ -19,6 +20,14 @@ export default class Tribe {
 
   set name(newName) {
     this._name = newName;
+  }
+
+  get color() {
+    return this._color;
+  }
+
+  set color(newColor) {
+    this._color = newColor;
   }
 
   get squads() {

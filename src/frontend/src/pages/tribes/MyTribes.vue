@@ -3,7 +3,7 @@
     <StandardPageTemplate>
       <template v-slot:page-header>
         <div class="text-3xl font-bold">
-          Dashboard
+          My Tribes
         </div>
       </template>
       <template v-slot:full-width>
@@ -11,8 +11,8 @@
           <div class="grid grid-cols-1 gap-3" v-if="isLoaded">
             <template v-if="tribes.length > 0">
               <router-link :to="{ name: 'view-tribe', params: { id: tribe.path } }"
-                         v-for="tribe in tribes" :key="tribe.id"
-                         class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
+                           v-for="tribe in tribes" :key="tribe.id"
+                           class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
                 <TribeCard :tribe="tribe" />
               </router-link>
             </template>
@@ -52,7 +52,7 @@ import StyledButton from "@/components/atoms/buttons/StyledButton";
 import NoTribesToShowAlert from "@/components/tribes/NoTribesToShowAlert";
 
 export default {
-  name: "Dashboard",
+  name: "MyTribes",
   components: {
     NoTribesToShowAlert,
     TribeSkeleton,

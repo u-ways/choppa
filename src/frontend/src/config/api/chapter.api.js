@@ -52,3 +52,7 @@ export async function saveChapter(config) {
 export async function createChapter(config) {
   await httpClient.post("chapters", [serializeChapter(config.chapter)]);
 }
+
+export async function deleteChapter(config) {
+  await httpClient.delete(config.chapter.id, { data: config.chapter.id });
+}

@@ -3,8 +3,8 @@
     type="button"
     :variant="variant"
     :css="css"
-    @click="() => this.$emit('click')">
-    {{ buttonMessage }}
+    @click="confirmationCheck">
+    {{ clicked ? buttonMessageTwo : buttonMessageOne }}
   </StyledButton>
 </template>
 
@@ -16,21 +16,27 @@ export default {
   name: "DoubleConfirmationButton",
   components: { StyledButton },
   props: {
-    buttonMessage: {
-      type: String,
-      required: true,
-    },
+    buttonMessageOne: String,
+    buttonMessageTwo: String,
     css: {
       type: String,
       required: false,
     },
-    variant: {
-      required: true,
+    variant: String,
+  },
+  data() {
+    return {
+      clicked: false,
+    };
+  },
+  methods: {
+    confirmationCheck() {
+      if (this.clicked) {
+        this.$emit("click");
+      } else {
+        this.clicked = true;
+      }
     },
   },
 };
 </script>
-
-<style scoped>
-
-</style>

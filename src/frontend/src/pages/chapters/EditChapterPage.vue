@@ -49,6 +49,22 @@
             <MembersOverview :members="members"/>
           </div>
         </section>
+        <div class="px-3 py-5" v-if="!creatingChapter">
+          <section>
+            <FormHeader>
+              <template v-slot:heading>DANGER</template>
+              <template v-slot:subheading>These features permanently affect this Chapter.</template>
+            </FormHeader>
+            <div class="flex flex-col gap-2 mt-4 text-center">
+              <DoubleConfirmationButton
+                buttonMessageOne="Delete Chapter"
+                buttonMessageTwo="Confirm Deletion"
+                variant="danger"
+                css="px-2 pr-5 pl-4"
+                @click="deleteChapter" />
+            </div>
+          </section>
+        </div>
       </div>
     </template>
   </StandardPageTemplate>
@@ -57,7 +73,7 @@
 <script>
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import { mapActions } from "vuex";
-import { createChapter, getChapter, saveChapter } from "@/config/api/chapter.api";
+import { createChapter, deleteChapter, getChapter, saveChapter } from "@/config/api/chapter.api";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
 import { maxLength, minLength, required } from "vuelidate/lib/validators";
@@ -68,6 +84,7 @@ import { toastVariants } from "@/enums/toastVariants";
 import { getMembersByQuery } from "@/config/api/member.api";
 import MembersOverview from "@/components/member/MembersOverview";
 import Chapter from "@/models/domain/chapter";
+import DoubleConfirmationButton from "@/components/atoms/buttons/DoubleConfirmationButton";
 
 export default {
   name: "EditSquadPage",
@@ -78,6 +95,7 @@ export default {
     StandardInputWithLabel,
     FormHeader,
     StandardPageTemplate,
+    DoubleConfirmationButton,
   },
   computed: {
     chapterNameHeader() {
@@ -143,6 +161,23 @@ export default {
         this.newToast(new ToastData({
           variant: toastVariants.ERROR,
           message: `${this.saveOrCreateVerb} failed, please try again later`,
+        }));
+
+        throw error;
+      }
+    },
+    async deleteChapter() {
+      try {
+        await deleteChapter({ chapter: this.chapter });
+        await this.$router.go(-1);
+        this.newToast(new ToastData({
+          variant: toastVariants.SUCCESS,
+          message: `Chapter ${this.chapter.name} has been deleted`,
+        }));
+      } catch (error) {
+        this.newToast(new ToastData({
+          variant: toastVariants.ERROR,
+          message: "Deletion failed, please try again later",
         }));
 
         throw error;

@@ -15,6 +15,21 @@ const routes = [
     component: () => import("@/pages/DashboardPage"),
   },
   {
+    name: "my-tribes",
+    path: "/mytribes",
+    component: () => import("@/pages/tribes/MyTribes"),
+  },
+  {
+    name: "my-tribes",
+    path: "/my-tribes",
+    component: () => import("@/pages/tribes/MyTribes"),
+  },
+  {
+    name: "create-tribe",
+    path: "/tribes/create",
+    component: () => import("@/pages/tribes/EditTribePage"),
+  },
+  {
     name: "edit-tribe",
     path: "/tribes/:id/edit",
     component: () => import("@/pages/tribes/EditTribePage"),

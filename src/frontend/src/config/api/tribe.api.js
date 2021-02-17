@@ -2,10 +2,19 @@ import httpClient from "@/config/api/http-client";
 import Tribe from "@/models/domain/tribe";
 import { getSquadsByQuery } from "@/config/api/squad.api";
 
+function serializeTribe(tribe) {
+  return {
+    id: tribe.id,
+    name: tribe.name,
+    color: tribe.color,
+  };
+}
+
 async function deserializeTribe(json) {
   return new Tribe({
     id: json.id,
     name: json.name,
+    color: json.color,
     squads: await getSquadsByQuery({ url: json.squads }),
     relations: {
       chapters: json.chapters,
@@ -27,11 +36,12 @@ export async function getTribe(config) {
   return deserializeTribe(response.data);
 }
 
+export async function createTribe(config) {
+  await httpClient.post("tribes", [serializeTribe(config.tribe)]);
+}
+
 export async function saveTribe(config) {
-  await httpClient.put(config.tribe.id, {
-    id: config.tribe.id,
-    name: config.tribe.name,
-  });
+  await httpClient.put(config.tribe.id, serializeTribe(config.tribe));
 }
 
 export async function rotateTribe(config) {

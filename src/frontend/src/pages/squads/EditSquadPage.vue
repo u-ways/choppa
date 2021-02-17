@@ -97,10 +97,10 @@
           </FormHeader>
           <div class="flex flex-col gap-2 mt-4 text-center">
             <DoubleConfirmationButton
-              :buttonMessage="deleteMessage"
+              buttonMessageOne="Delete Squad"
+              buttonMessageTwo="Confirm Deletion"
               variant="danger"
               css="px-2 pr-5 pl-4"
-              @next="deleteConfirmation = true"
               @click="deleteSquad" />
           </div>
         </section>
@@ -150,16 +150,12 @@ export default {
     saveOrCreateVerb() {
       return this.creatingSquad ? "created" : "updated";
     },
-    deleteMessage() {
-      return this.deleteConfirmation ? "Confirm Deletion" : "Delete Squad";
-    },
   },
   data() {
     return {
       creatingSquad: false,
       tribe: undefined,
       squad: undefined,
-      deleteConfirmation: false,
     };
   },
   validations: {

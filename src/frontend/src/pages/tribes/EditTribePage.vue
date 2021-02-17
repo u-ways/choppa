@@ -187,10 +187,10 @@
             </FormHeader>
             <div class="flex flex-col gap-2 mt-4 text-center">
               <DoubleConfirmationButton
-                :buttonMessage="deleteMessage"
+                buttonMessageOne="Delete Tribe"
+                buttonMessageTwo="Confirm Deletion"
                 variant="danger"
                 css="px-2 pr-5 pl-4"
-                @next="deleteConfirmation = true"
                 @click="deleteTribe" />
             </div>
           </section>
@@ -248,9 +248,6 @@ export default {
     saveOrCreateVerb() {
       return this.creatingTribe ? "created" : "updated";
     },
-    deleteMessage() {
-      return this.deleteConfirmation ? "Confirm Deletion" : "Delete Tribe";
-    },
   },
   data() {
     return {
@@ -274,7 +271,6 @@ export default {
         antiClockwise: rotationStrategy.ANTI_CLOCKWISE,
         random: rotationStrategy.RANDOM,
       },
-      deleteConfirmation: false,
     };
   },
   validations: {

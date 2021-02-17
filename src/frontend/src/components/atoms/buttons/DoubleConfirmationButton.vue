@@ -4,7 +4,7 @@
     :variant="variant"
     :css="css"
     @click="confirmationCheck">
-    {{ buttonMessage }}
+    {{ clicked ? buttonMessageTwo : buttonMessageOne }}
   </StyledButton>
 </template>
 
@@ -16,17 +16,13 @@ export default {
   name: "DoubleConfirmationButton",
   components: { StyledButton },
   props: {
-    buttonMessage: {
-      type: String,
-      required: true,
-    },
+    buttonMessageOne: String,
+    buttonMessageTwo: String,
     css: {
       type: String,
       required: false,
     },
-    variant: {
-      required: true,
-    },
+    variant: String,
   },
   data() {
     return {
@@ -36,10 +32,10 @@ export default {
   methods: {
     confirmationCheck() {
       if (this.clicked) {
-        return this.$emit("click");
+        this.$emit("click");
+      } else {
+        this.clicked = true;
       }
-      this.clicked = true;
-      return this.$emit("next");
     },
   },
 };

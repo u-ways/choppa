@@ -57,10 +57,10 @@
             </FormHeader>
             <div class="flex flex-col gap-2 mt-4 text-center">
               <DoubleConfirmationButton
-                :buttonMessage="deleteMessage"
+                buttonMessageOne="Delete Chapter"
+                buttonMessageTwo="Confirm Deletion"
                 variant="danger"
                 css="px-2 pr-5 pl-4"
-                @next="deleteConfirmation = true"
                 @click="deleteChapter" />
             </div>
           </section>
@@ -101,9 +101,6 @@ export default {
     chapterNameHeader() {
       return this.chapter.name ? this.chapter.name : "Untitled";
     },
-    deleteMessage() {
-      return this.deleteConfirmation ? "Confirm Deletion" : "Delete Chapter";
-    },
     saveOrCreateVerb() {
       return this.creatingChapter ? "created" : "updated";
     },
@@ -113,7 +110,6 @@ export default {
       creatingChapter: false,
       chapter: undefined,
       members: undefined,
-      deleteConfirmation: false,
     };
   },
   validations: {

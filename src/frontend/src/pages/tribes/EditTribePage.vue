@@ -190,6 +190,7 @@
                 :buttonMessage="deleteMessage"
                 variant="danger"
                 css="px-2 pr-5 pl-4"
+                @next="deleteConfirmation = true"
                 @click="deleteTribe" />
             </div>
           </section>
@@ -306,7 +307,6 @@ export default {
         this.creatingTribe = true;
         this.tribe = new Tribe({ });
         this.allChapters = await getChapters();
-        this.chaptersInUse = await getChaptersByQuery({ url: this.tribe.relations.chapters });
       }
     } catch (error) {
       await this.$router.replace("/not-found");
@@ -357,23 +357,20 @@ export default {
       }
     },
     async deleteTribe() {
-      if (this.deleteConfirmation === true) {
-        try {
-          await deleteTribe({ tribe: this.tribe });
-          await this.$router.push({ name: "dashboard" });
-          this.newToast(new ToastData({
-            variant: toastVariants.SUCCESS,
-            message: `Tribe ${this.tribe.name} has been deleted`,
-          }));
-        } catch (error) {
-          this.newToast(new ToastData({
-            variant: toastVariants.ERROR,
-            message: "Deletion failed, please try again later",
-          }));
-          throw error;
-        }
-      } else {
-        this.deleteConfirmation = true;
+      try {
+        await deleteTribe({ tribe: this.tribe });
+        await this.$router.push({ name: "dashboard" });
+        this.newToast(new ToastData({
+          variant: toastVariants.SUCCESS,
+          message: `Tribe ${this.tribe.name} has been deleted`,
+        }));
+      } catch (error) {
+        this.newToast(new ToastData({
+          variant: toastVariants.ERROR,
+          message: "Deletion failed, please try again later",
+        }));
+
+        throw error;
       }
     },
   },

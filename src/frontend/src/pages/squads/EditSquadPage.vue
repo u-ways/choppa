@@ -100,6 +100,7 @@
               :buttonMessage="deleteMessage"
               variant="danger"
               css="px-2 pr-5 pl-4"
+              @next="deleteConfirmation = true"
               @click="deleteSquad" />
           </div>
         </section>
@@ -217,23 +218,20 @@ export default {
       }
     },
     async deleteSquad() {
-      if (this.deleteConfirmation === true) {
-        try {
-          await deleteSquad({ squad: this.squad });
-          await this.$router.push({ name: "view-tribe", params: { id: this.tribe.path } });
-          this.newToast(new ToastData({
-            variant: toastVariants.SUCCESS,
-            message: `Squad ${this.squad.name} has been deleted`,
-          }));
-        } catch (error) {
-          this.newToast(new ToastData({
-            variant: toastVariants.ERROR,
-            message: "Deletion failed, please try again later",
-          }));
-          throw error;
-        }
-      } else {
-        this.deleteConfirmation = true;
+      try {
+        await deleteSquad({ squad: this.squad });
+        await this.$router.push({ name: "view-tribe", params: { id: this.tribe.path } });
+        this.newToast(new ToastData({
+          variant: toastVariants.SUCCESS,
+          message: `Squad ${this.squad.name} has been deleted`,
+        }));
+      } catch (error) {
+        this.newToast(new ToastData({
+          variant: toastVariants.ERROR,
+          message: "Deletion failed, please try again later",
+        }));
+
+        throw error;
       }
     },
   },

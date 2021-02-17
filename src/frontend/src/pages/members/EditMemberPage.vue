@@ -66,6 +66,7 @@
                 :buttonMessage="deleteMessage"
                 variant="danger"
                 css="px-2 pr-5 pl-4"
+                @next="deleteConfirmation = true"
                 @click="deleteMember" />
             </div>
           </section>
@@ -192,23 +193,20 @@ export default {
       }
     },
     async deleteMember() {
-      if (this.deleteConfirmation === true) {
-        try {
-          await deleteMember({ member: this.member });
-          await this.$router.go(-1);
-          this.newToast(new ToastData({
-            variant: toastVariants.SUCCESS,
-            message: `Member ${this.member.name} has been deleted`,
-          }));
-        } catch (error) {
-          this.newToast(new ToastData({
-            variant: toastVariants.ERROR,
-            message: "Deletion failed, please try again later",
-          }));
-          throw error;
-        }
-      } else {
-        this.deleteConfirmation = true;
+      try {
+        await deleteMember({ member: this.member });
+        await this.$router.go(-1);
+        this.newToast(new ToastData({
+          variant: toastVariants.SUCCESS,
+          message: `Member ${this.member.name} has been deleted`,
+        }));
+      } catch (error) {
+        this.newToast(new ToastData({
+          variant: toastVariants.ERROR,
+          message: "Deletion failed, please try again later",
+        }));
+
+        throw error;
       }
     },
   },

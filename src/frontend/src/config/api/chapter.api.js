@@ -56,3 +56,7 @@ export async function createChapter(config) {
 export async function deleteChapter(config) {
   await httpClient.delete(config.chapter.id, { data: config.chapter.id });
 }
+
+export async function deleteChapter(config) {
+  await httpClient.delete(config.chapter.id, { data: config.chapter.id });
+}

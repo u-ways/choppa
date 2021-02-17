@@ -3,7 +3,7 @@
     type="button"
     :variant="variant"
     :css="css"
-    @click="() => this.$emit('click')">
+    @click="confirmationCheck">
     {{ buttonMessage }}
   </StyledButton>
 </template>
@@ -28,9 +28,19 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      clicked: false,
+    };
+  },
+  methods: {
+    confirmationCheck() {
+      if (this.clicked) {
+        return this.$emit("click");
+      }
+      this.clicked = true;
+      return this.$emit("next");
+    },
+  },
 };
 </script>
-
-<style scoped>
-
-</style>

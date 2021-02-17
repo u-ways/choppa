@@ -12,6 +12,8 @@ import org.amshove.kluent.shouldBe
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable.unpaged
 
 internal class SquadMemberHistoryServiceTest {
     private lateinit var repository: SquadMemberHistoryRepository
@@ -40,7 +42,7 @@ internal class SquadMemberHistoryServiceTest {
 
     @Test
     fun `Given a no entity records, when service tries to find all records, then service should throw EntityNotFoundException`() {
-        every { repository.findAll() } returns emptyList()
+        every { repository.findAll(unpaged()) } returns Page.empty()
 
         assertThrows(EntityNotFoundException::class.java) { service.find() }
     }

@@ -3,12 +3,16 @@ package app.choppa.domain.squad
 import app.choppa.domain.base.BaseService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
+import app.choppa.domain.squad.history.SquadMemberHistory
 import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest.of
+import org.springframework.data.domain.Sort.by
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
+import java.io.Serializable
 import java.util.*
 
 @Service
@@ -93,6 +97,20 @@ class SquadService(
     private fun Squad.createSquadMembersRevision(olderFormation: List<Member>) = this.apply {
         squadMemberHistoryService.save(
             squadMemberHistoryService.generateRevisions(this, olderFormation)
+        )
+    }
+
+    fun statistics(): HashMap<String, Serializable> = squadRepository.findAll().run {
+        val revisions = squadMemberHistoryService.runCatching {
+            this.find(of(0, 20, by(SquadMemberHistory::createDate.name).descending()))
+        }.getOrElse { emptyList() }
+        hashMapOf(
+            "Total" to this.size,
+            "Latest Changes" to revisions.foldIndexed(HashMap<Int, SquadMemberHistory>(this.size)) { index, acc, revision ->
+                acc.also {
+                    acc[index + 1] = revision
+                }
+            }
         )
     }
 }

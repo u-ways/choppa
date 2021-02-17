@@ -2,6 +2,7 @@ package app.choppa.domain.squad.history
 
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.time.Instant
 import java.time.Instant.now
 import javax.persistence.*
@@ -10,6 +11,7 @@ import javax.persistence.EnumType.STRING
 @Entity
 @IdClass(SquadMemberHistoryId::class)
 @Table(name = "squad_member_history")
+@JsonSerialize(using = SquadMemberHistorySerializer::class)
 data class SquadMemberHistory(
     @Id
     @ManyToOne

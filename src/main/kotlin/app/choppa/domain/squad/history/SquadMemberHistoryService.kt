@@ -8,7 +8,10 @@ import app.choppa.domain.squad.history.RevisionType.REMOVE
 import app.choppa.exception.EntityNotFoundException
 import org.hibernate.type.IntegerType.ZERO
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest.of
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Pageable.unpaged
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.domain.Sort.by
@@ -21,8 +24,8 @@ class SquadMemberHistoryService(
     @Autowired private val squadHistoryRepository: SquadMemberHistoryRepository,
     @Autowired private val memberRepository: MemberRepository,
 ) {
-    fun find(): List<SquadMemberHistory> = squadHistoryRepository
-        .findAll()
+    fun find(pageable: Pageable = unpaged()): Page<SquadMemberHistory> = squadHistoryRepository
+        .findAll(pageable)
         .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist yet.") }
 
     fun findBySquad(
@@ -124,8 +127,8 @@ class SquadMemberHistoryService(
     private fun List<List<Member>>.dropLastIf(predicate: Boolean): List<List<Member>> =
         if (predicate) this.dropLast(1) else this
 
-    private fun <E> List<E>.orElseThrow(exception: () -> Nothing): List<E> = when {
-        this.isEmpty() -> exception.invoke()
+    private fun <T> Page<T>.orElseThrow(exception: () -> Nothing): Page<T> = when {
+        this.isEmpty -> exception.invoke()
         else -> this
     }
 }

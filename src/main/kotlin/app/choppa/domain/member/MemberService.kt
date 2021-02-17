@@ -5,6 +5,7 @@ import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
 import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
+import app.choppa.utils.Numbers.Companion.round
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -60,4 +61,14 @@ class MemberService(
     fun unAssignMembersWithChapter(chapter: Chapter) = memberRepository
         .findAllByChapterId(chapter.id)
         .forEach { save(it.copy(chapter = UNASSIGNED_ROLE)) }
+
+    fun statistics(): HashMap<String, Any> = memberRepository.findAll().run {
+        hashMapOf(
+            "Total" to this.size,
+            "Distribution" to mapOf(
+                "Active" to this.count { it.active }.toDouble().div(this.size).round(),
+                "Inactive" to this.count { !it.active }.toDouble().div(this.size).round(),
+            )
+        )
+    }
 }

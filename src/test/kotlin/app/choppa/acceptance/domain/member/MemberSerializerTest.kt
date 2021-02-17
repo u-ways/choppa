@@ -26,11 +26,13 @@ internal class MemberSerializerTest {
 
         val id = uniformDto?.read<String>("$.id")
         val name = uniformDto?.read<String>("$.name")
+        val active = uniformDto?.read<Boolean>("$.active")
         val squads = uniformDto?.read<String>("$.squads")
         val iterations = uniformDto?.read<String>("$.iterations")
 
         assertThat(id, equalTo("members/${member.id}"))
         assertThat(name, equalTo(member.name))
+        assertThat(active, equalTo(true))
         assertThat(squads, equalTo("squads?member=${member.id}"))
         assertThat(iterations, equalTo("iterations?member=${member.id}"))
     }

@@ -32,6 +32,7 @@ internal class MemberDeserializerTest {
                     "name": "${member.chapter.name}",
                     "members": "members?chapter=${member.chapter.id}"
                 },
+                "active": true,
                 "squads": "squads?member=${member.id}",
                 "iterations": "iterations?member=${member.id}",
                 "history": "history?member=${member.id}"
@@ -42,6 +43,7 @@ internal class MemberDeserializerTest {
 
         assertThat(dao.id, equalTo(member.id))
         assertThat(dao.name, equalTo(member.name))
+        assertThat(dao.active, equalTo(member.active))
     }
 
     @Test

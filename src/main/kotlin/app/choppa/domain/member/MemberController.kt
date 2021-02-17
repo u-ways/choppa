@@ -49,4 +49,7 @@ class MemberController(
     fun postCollection(@RequestBody newCollection: List<Member>): ResponseEntity<List<Member>> = memberService
         .save(newCollection)
         .run { created(location()).build() }
+
+    @GetMapping("stats")
+    fun getStatistics(): ResponseEntity<HashMap<String, Any>> = ok().body(memberService.statistics())
 }

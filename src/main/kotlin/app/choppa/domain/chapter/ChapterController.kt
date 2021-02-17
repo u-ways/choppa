@@ -7,18 +7,10 @@ import app.choppa.domain.tribe.Tribe
 import app.choppa.utils.QueryComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.http.ResponseEntity.created
-import org.springframework.http.ResponseEntity.noContent
-import org.springframework.http.ResponseEntity.ok
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
+import org.springframework.http.ResponseEntity.*
+import org.springframework.web.bind.annotation.*
+import java.io.Serializable
+import java.util.*
 
 @RestController
 @RequestMapping("$API_PREFIX/chapters")
@@ -53,4 +45,7 @@ class ChapterController(
     fun postCollection(@RequestBody newCollection: List<Chapter>): ResponseEntity<List<Chapter>> = chapterService
         .save(newCollection)
         .run { created(location()).build() }
+
+    @GetMapping("stats")
+    fun getStatistics(): ResponseEntity<Map<String, Serializable>> = ok().body(chapterService.statistics())
 }

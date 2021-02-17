@@ -6,14 +6,10 @@ import app.choppa.utils.Color.Companion.GREY
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
-import java.util.UUID
+import java.util.*
 import java.util.UUID.fromString
 import java.util.UUID.randomUUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.OneToMany
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "chapter")
@@ -47,6 +43,6 @@ data class Chapter(
     }
 
     companion object {
-        val UNASSIGNED_ROLE = Chapter(fromString("00000000-0000-0000-0000-000000000000"), "Unassigned")
+        val UNASSIGNED_ROLE = Chapter(fromString("00000000-0000-0000-0000-000000000000"), "UNASSIGNED")
     }
 }

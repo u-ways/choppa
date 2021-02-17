@@ -3,9 +3,12 @@ package app.choppa.domain.chapter
 import app.choppa.domain.base.BaseService
 import app.choppa.domain.member.MemberService
 import app.choppa.exception.EntityNotFoundException
+import app.choppa.utils.Numbers.Companion.round
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.io.Serializable
 import java.util.*
+import kotlin.collections.HashMap
 
 @Service
 class ChapterService(
@@ -45,4 +48,16 @@ class ChapterService(
     fun findRelatedByTribe(tribeId: UUID): List<Chapter> = chapterRepository
         .findAllByTribeId(tribeId)
         .orElseThrow { throw EntityNotFoundException("No chapters in tribe [$tribeId] exist yet.") }
+
+    fun statistics(): Map<String, Serializable> = chapterRepository.findAll().run {
+        val members = memberService.runCatching { this.find() }.getOrElse { emptyList() }
+        mapOf(
+            "Total" to this.size,
+            "Distribution" to this.fold(HashMap<String, Double>(this.size)) { acc, chapter ->
+                acc.also {
+                    acc[chapter.name] = members.count { it.chapter.name == chapter.name }.toDouble().div(members.size).round()
+                }
+            }
+        )
+    }
 }

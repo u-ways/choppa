@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
 import java.io.Serializable
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Service
@@ -99,6 +101,16 @@ class SquadService(
             squadMemberHistoryService.generateRevisions(this, olderFormation)
         )
     }
+
+    fun calculateKspForLastNRevisionsFor(id: UUID, amount: Int): HashMap<String, Any> =
+        (1..amount).fold(HashMap<String, Any>(amount)) { acc, i ->
+            acc.also {
+                acc[i.toString()] = mapOf(
+                    "timestamp" to Instant.now().minus(i * 7L, ChronoUnit.DAYS).toEpochMilli(),
+                    "KSP" to (amount - (i..amount).random()),
+                )
+            }
+        }
 
     fun statistics(): HashMap<String, Serializable> = squadRepository.findAll().run {
         val revisions = squadMemberHistoryService.runCatching {

@@ -16,11 +16,6 @@ const routes = [
   },
   {
     name: "my-tribes",
-    path: "/mytribes",
-    component: () => import("@/pages/tribes/MyTribes"),
-  },
-  {
-    name: "my-tribes",
     path: "/my-tribes",
     component: () => import("@/pages/tribes/MyTribes"),
   },

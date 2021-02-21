@@ -9,7 +9,7 @@
     <template v-slot:fixed-width v-if="chapter">
       <div class="px-3 py-5">
         <section>
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Chapter Settings</template>
             <template v-slot:subheading>Let's get started by filling in the information about the Chapter.</template>
           </FormHeader>
@@ -41,7 +41,7 @@
           </div>
         </section>
         <section class="mt-5" v-if="members && members.length > 0">
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Related Members</template>
             <template v-slot:subheading>These members belong to Chapter {{chapterNameHeader}}.</template>
           </FormHeader>
@@ -51,7 +51,7 @@
         </section>
         <div class="px-3 py-5" v-if="!creatingChapter">
           <section>
-            <FormHeader>
+            <FormHeader variant="danger">
               <template v-slot:heading>DANGER</template>
               <template v-slot:subheading>These features permanently affect this Chapter.</template>
             </FormHeader>

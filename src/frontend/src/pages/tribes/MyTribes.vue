@@ -26,7 +26,7 @@
             <TribeSkeleton class="hidden md:block"/>
           </div>
         </div>
-        <div class="self-end" v-if="tribes.length > 0">
+        <div class="self-end px-3" v-if="tribes.length > 0">
           <StyledButton type="link"
                         :link="{ name: 'create-tribe'}"
                         variant="secondary"

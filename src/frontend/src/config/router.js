@@ -21,11 +21,13 @@ const routes = [
     name: "my-tribes",
     path: "/my-tribes",
     component: () => import("@/pages/tribes/MyTribes"),
+    meta: { requiresAuthentication: true, firstLoginOnly: false },
   },
   {
     name: "create-tribe",
     path: "/tribes/create",
     component: () => import("@/pages/tribes/EditTribePage"),
+    meta: { requiresAuthentication: true, firstLoginOnly: false },
   },
   {
     name: "edit-tribe",

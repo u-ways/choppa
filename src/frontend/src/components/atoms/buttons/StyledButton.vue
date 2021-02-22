@@ -17,7 +17,7 @@ focus:-translate-y-0.5 duration-100 motion-reduce:transition-none border-1 ring-
 const PRIMARY = "primary";
 const PRIMARY_CSS = "bg-choppa-two border-transparent";
 const DANGER = "danger";
-const DANGER_CSS = "bg-red-500 border-transparent";
+const DANGER_CSS = "bg-red-600 border-transparent";
 const SECONDARY_LIGHT = "secondary-light";
 const SECONDARY_LIGHT_CSS = `bg-gray-100 text-gray-600 border-grey-200`;
 const SECONDARY_DARK = "secondary-dark";

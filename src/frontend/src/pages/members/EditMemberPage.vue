@@ -9,7 +9,7 @@
     <template v-slot:fixed-width v-if="member && chapters">
       <div class="px-3 py-5">
         <section>
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Member Settings</template>
             <template v-slot:subheading>Let's get started by filling in the information about the Member.</template>
           </FormHeader>
@@ -47,7 +47,7 @@
           </div>
         </section>
         <section class="mt-5" v-if="!creatingMember && squads">
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Squads</template>
             <template v-slot:subheading>{{member.name}} belongs to the following Squads.</template>
           </FormHeader>
@@ -57,7 +57,7 @@
         </section>
         <div class="px-3 py-5" v-if="!creatingMember">
           <section>
-            <FormHeader>
+            <FormHeader variant="danger">
               <template v-slot:heading>DANGER</template>
               <template v-slot:subheading>These features permanently affect this Member.</template>
             </FormHeader>

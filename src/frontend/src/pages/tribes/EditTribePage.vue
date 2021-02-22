@@ -20,7 +20,7 @@
     <template v-slot:fixed-width v-if="tribe">
       <div class="px-3 py-5">
         <section>
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Tribe Settings</template>
             <template v-slot:subheading>Let's get started by filling in the information about the Tribe.</template>
           </FormHeader>
@@ -57,7 +57,7 @@
           </div>
         </section>
         <section class="mt-5" v-if="!creatingTribe && tribe">
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Squads</template>
             <template v-slot:subheading>Now lets add some Squads.</template>
           </FormHeader>
@@ -78,7 +78,7 @@
           </div>
         </section>
         <section class="mt-5" v-if="!creatingTribe">
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Chapters</template>
             <template v-slot:subheading>Now lets add some Chapters.</template>
           </FormHeader>
@@ -99,7 +99,7 @@
           </div>
         </section>
         <section class="mt-5" v-if="tribe.allDistinctMembers().length > 0 && chaptersInUse.length > 0">
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Rotation</template>
             <template v-slot:subheading>Is it time to rotate the tribe?</template>
           </FormHeader>
@@ -179,22 +179,22 @@
             </div>
           </div>
         </section>
-        <div class="px-3 py-5" v-if="!creatingTribe">
-          <section>
-            <FormHeader>
-              <template v-slot:heading>DANGER</template>
-              <template v-slot:subheading>These features permanently affect this Tribe.</template>
-            </FormHeader>
-            <div class="flex flex-col gap-2 mt-4 text-center">
-              <DoubleConfirmationButton
-                buttonMessageOne="Delete Tribe"
-                buttonMessageTwo="Confirm Deletion"
-                variant="danger"
-                css="px-2 pr-5 pl-4"
-                @click="deleteTribe" />
-            </div>
-          </section>
-        </div>
+      </div>
+      <div class="px-3 py-5" v-if="!creatingTribe">
+        <section>
+          <FormHeader variant="danger">
+            <template v-slot:heading>DANGER</template>
+            <template v-slot:subheading>These features permanently affect this Tribe.</template>
+          </FormHeader>
+          <div class="flex flex-col gap-2 mt-4 text-center">
+            <DoubleConfirmationButton
+              buttonMessageOne="Delete Tribe"
+              buttonMessageTwo="Confirm Deletion"
+              variant="danger"
+              css="px-2 pr-5 pl-4"
+              @click="deleteTribe" />
+          </div>
+        </section>
       </div>
     </template>
   </StandardPageTemplate>

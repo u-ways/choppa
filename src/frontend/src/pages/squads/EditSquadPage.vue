@@ -21,7 +21,7 @@
     <template v-slot:fixed-width v-if="squad">
       <div class="px-3 py-5">
         <section>
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Squad Settings</template>
             <template v-slot:subheading>Let's get started by filling in the information about the Squad.</template>
           </FormHeader>
@@ -58,7 +58,7 @@
           </div>
         </section>
         <section class="mt-5" v-if="!creatingSquad">
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Members</template>
             <template v-slot:subheading>Now lets add some Members.</template>
           </FormHeader>
@@ -79,7 +79,7 @@
           </div>
         </section>
         <section class="mt-5" v-if="!creatingSquad && tribe && allSquadsExceptOneBeingEdited.length > 0">
-          <FormHeader>
+          <FormHeader variant="primary">
             <template v-slot:heading>Related Squads</template>
             <template v-slot:subheading>Squads belonging to Tribe {{ tribe.name }}.</template>
           </FormHeader>
@@ -91,7 +91,7 @@
 
       <div class="px-3 py-5" v-if="!creatingSquad">
         <section>
-          <FormHeader>
+          <FormHeader variant="danger">
             <template v-slot:heading>DANGER</template>
             <template v-slot:subheading>These features permanently affect this Squad.</template>
           </FormHeader>

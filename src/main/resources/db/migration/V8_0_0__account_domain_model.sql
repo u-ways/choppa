@@ -7,3 +7,8 @@ CREATE TABLE accounts
 
     CONSTRAINT account_u1 UNIQUE (provider, provider_id)
 );
+
+ALTER TABLE tribe
+ADD COLUMN account_id UUID,
+ALTER COLUMN account_id SET NOT NULL,
+ADD CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES accounts (account_id);

@@ -67,10 +67,16 @@ $$
         revision_5              CONSTANT INTEGER       := 5;
         revision_6              CONSTANT INTEGER       := 6;
         revision_7              CONSTANT INTEGER       := 7;
+        demo_account_id         CONSTANT UUID          := '00000000000000000000000000000001';
     BEGIN
+        -- Demo Account
+        insert into accounts (account_id, provider, provider_id, organisation_name)
+        values (demo_account_id, 'choppa', 'choppa-demo-account', 'Choppa Demo Org')
+        ON CONFLICT (provider, provider_id) DO NOTHING;
+
         -- Tribes
-        insert into tribe (tribe_id, name, color)
-        values (tribe_bannock_id, 'The TFL', color_blue)
+        insert into tribe (tribe_id, name, color, account_id)
+        values (tribe_bannock_id, 'The TFL', color_blue, demo_account_id)
         ON CONFLICT (tribe_id) DO NOTHING;
 
         -- Squads

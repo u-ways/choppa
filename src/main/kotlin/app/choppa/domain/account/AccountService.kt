@@ -3,9 +3,12 @@ package app.choppa.domain.account
 import app.choppa.domain.account.provider.*
 import app.choppa.exception.NoOAuth2ProviderFoundException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Service
 
@@ -22,6 +25,14 @@ class AccountService(
             "google" to GoogleOAuth2Provider(),
             "okta" to OktaOAuth2Provider(),
         )
+    }
+
+    @Bean
+    fun demoAccount(): OAuth2AuthenticationToken {
+        val attributes = mapOf("name" to Account.DEMO_ACCOUNT.name)
+        val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
+        val user: OAuth2User = DefaultOAuth2User(authorities, attributes, "name")
+        return OAuth2AuthenticationToken(user, authorities, Account.DEMO_ACCOUNT.provider)
     }
 
     fun convert(authentication: Authentication): Account {

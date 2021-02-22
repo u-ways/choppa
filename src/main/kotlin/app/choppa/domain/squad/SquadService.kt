@@ -111,7 +111,7 @@ class SquadService(
             acc.also {
                 acc[i.toString()] = mapOf(
                     "timestamp" to Instant.now().minus(i * 7L, ChronoUnit.DAYS).toEpochMilli(),
-                    "KSP" to (amount - (i..amount).random()),
+                    "KSP" to (200 - (i..200).random()),
                 )
             }
         }
@@ -121,8 +121,8 @@ class SquadService(
             this.find(account, of(0, 20))
         }.getOrElse { emptyList() }
         hashMapOf(
-            "Total" to this.size,
-            "Latest Changes" to revisions.foldIndexed(HashMap<Int, SquadMemberHistory>(this.size)) { index, acc, revision ->
+            "total" to this.size,
+            "latestChanges" to revisions.foldIndexed(HashMap<Int, SquadMemberHistory>(this.size)) { index, acc, revision ->
                 acc.also {
                     acc[index + 1] = revision
                 }

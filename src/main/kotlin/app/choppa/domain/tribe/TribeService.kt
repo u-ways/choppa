@@ -53,23 +53,20 @@ class TribeService(
     override fun delete(entities: List<Tribe>, account: Account): List<Tribe> = entities
         .map { this.delete(it, account) }
 
-    fun statistics(account: Account): Map<String, Serializable> =
-        tribeRepository.findAll().ownedBy(account).run {
-            mapOf(
-                "Total" to this.size,
-                "Knowledge Sharing Points" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
-                    tribeMap.also {
-                        tribeMap[tribe.name] =
-                            tribe.squads.fold(HashMap<String, HashMap<String, Any>>(this.size)) { squadMap, squad ->
-                                squadMap.also {
-                                    squadMap[squad.name] =
-                                        squadService.calculateKspForLastNRevisionsFor(squad.id, amount = 7)
-                                }
-                            }
+    fun statistics(): Map<String, Serializable> = tribeRepository.findAll().run {
+        mapOf(
+            "total" to this.size,
+            "knowledgeSharingPoints" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
+                tribeMap.also {
+                    tribeMap[tribe.name] = tribe.squads.fold(HashMap<String, HashMap<String, Any>>(this.size)) { squadMap, squad ->
+                        squadMap.also {
+                            squadMap[squad.id.toString()] = squadService.calculateKspForLastNRevisionsFor(squad.id, amount = 7)
+                        }
                     }
                 }
-            )
-        }
+            }
+        )
+    }
 
     private fun Optional<Tribe>.verifyOriginalOwnership(entity: Tribe, account: Account): Tribe =
         if (this.isPresent) entity.copy(account = this.get().account).verifyOwnership(account)

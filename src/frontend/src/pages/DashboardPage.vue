@@ -11,8 +11,8 @@
           <DashboardCard title="Chapters" :is-loaded="chapterStatsLoaded">
             <ChapterPieChart :chapter-stats="chapterStats"/>
           </DashboardCard>
-          <DashboardCard title="KSP Balance">
-            test 2
+          <DashboardCard title="KSP Balance" :is-loaded="tribeKSPStatsLoaded">
+            <KSPLineChart :tribe-k-s-p-stats="tribeKSPStats[0]"/>
           </DashboardCard>
           <DashboardCard title="Latest Changes">
             test 3
@@ -30,14 +30,16 @@
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import ChapterPieChart from "@/components/dashboard/graphs/ChapterPieChart";
-import { chapterDistribution } from "@/config/api/stats.api";
+import { chapterDistribution, tribeKnowledgeSharingPoints } from "@/config/api/stats.api";
 import ToastData from "@/models/toastData";
 import { toastVariants } from "@/enums/toastVariants";
 import { mapActions } from "vuex";
+import KSPLineChart from "@/components/dashboard/graphs/KSPLineChart";
 
 export default {
   name: "Dashboard",
   components: {
+    KSPLineChart,
     ChapterPieChart,
     DashboardCard,
     StandardPageTemplate,
@@ -46,12 +48,21 @@ export default {
     return {
       chapterStatsLoaded: false,
       chapterStats: [],
+      tribeKSPStatsLoaded: false,
+      tribeKSPStats: [],
     };
   },
   async mounted() {
     chapterDistribution().then((result) => {
       this.chapterStats = result;
       this.chapterStatsLoaded = true;
+    }).catch((error) => {
+      this.handleError(error);
+    });
+
+    tribeKnowledgeSharingPoints().then((result) => {
+      this.tribeKSPStats = result;
+      this.tribeKSPStatsLoaded = true;
     }).catch((error) => {
       this.handleError(error);
     });

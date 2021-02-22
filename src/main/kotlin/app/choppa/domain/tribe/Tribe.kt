@@ -1,5 +1,6 @@
 package app.choppa.domain.tribe
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.squad.Squad
 import app.choppa.utils.Color.Companion.GREY
@@ -34,6 +35,10 @@ data class Tribe(
     @BatchSize(size = 10)
     @OneToMany(mappedBy = "tribe", fetch = EAGER)
     val squads: MutableList<Squad> = mutableListOf(),
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "account_id")
+    val account: Account = Account.DEMO_ACCOUNT,
 ) : BaseModel {
     override fun toString() = "Tribe(id=$id, name=$name)"
 

@@ -7,33 +7,19 @@
         </div>
       </template>
       <template v-slot:full-width>
-        <div class="mx-3 my-5">
-          <div class="grid grid-cols-1 gap-3" v-if="isLoaded">
-            <template v-if="tribes.length > 0">
-              <router-link :to="{ name: 'view-tribe', params: { id: tribe.path } }"
-                         v-for="tribe in tribes" :key="tribe.id"
-                         class="hover:ring-2 focus:ring-2 focus:outline-none ring-choppa-two rounded-sm">
-                <TribeCard :tribe="tribe" />
-              </router-link>
-            </template>
-            <template v-else>
-              <NoTribesToShowAlert/>
-            </template>
-          </div>
-          <div class="grid grid-cols-1 gap-3" v-else>
-            <TribeSkeleton/>
-            <TribeSkeleton/>
-            <TribeSkeleton class="hidden md:block"/>
-          </div>
-        </div>
-        <div class="self-end" v-if="tribes.length > 0">
-          <StyledButton type="link"
-                        :link="{ name: 'create-tribe'}"
-                        variant="secondary"
-                        css="px-2 pr-5 pl-4">
-            <font-awesome-icon icon="plus"/>
-            New Tribe
-          </StyledButton>
+        <div class="p-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+          <DashboardCard title="Chapters" :is-loaded="chapterStatsLoaded">
+            <ChapterPieChart :chapter-stats="chapterStats"/>
+          </DashboardCard>
+          <DashboardCard title="KSP Balance">
+            test 2
+          </DashboardCard>
+          <DashboardCard title="Latest Changes">
+            test 3
+          </DashboardCard>
+          <DashboardCard title="Members">
+            test 4
+          </DashboardCard>
         </div>
       </template>
     </StandardPageTemplate>
@@ -42,48 +28,44 @@
 
 <script>
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
-import { getAllTribes } from "@/config/api/tribe.api";
-import { mapActions } from "vuex";
+import DashboardCard from "@/components/dashboard/DashboardCard";
+import ChapterPieChart from "@/components/dashboard/graphs/ChapterPieChart";
+import { chapterDistribution } from "@/config/api/stats.api";
 import ToastData from "@/models/toastData";
 import { toastVariants } from "@/enums/toastVariants";
-import TribeCard from "@/components/tribes/TribeCard";
-import TribeSkeleton from "@/components/tribes/TribeSkeleton";
-import StyledButton from "@/components/atoms/buttons/StyledButton";
-import NoTribesToShowAlert from "@/components/tribes/NoTribesToShowAlert";
+import { mapActions } from "vuex";
 
 export default {
   name: "Dashboard",
   components: {
-    NoTribesToShowAlert,
-    TribeSkeleton,
-    TribeCard,
+    ChapterPieChart,
+    DashboardCard,
     StandardPageTemplate,
-    StyledButton,
   },
   data() {
     return {
-      isLoaded: false,
-      tribes: [],
+      chapterStatsLoaded: false,
+      chapterStats: [],
     };
   },
   async mounted() {
-    try {
-      this.tribes = await getAllTribes();
-      this.isLoaded = true;
-    } catch (error) {
-      if (error.response.status === 404) {
-        this.isLoaded = true;
-      } else {
-        this.newToast(new ToastData({
-          variant: toastVariants.ERROR,
-          message: `Failed to load Dashboard, please try again later.`,
-        }));
-        throw error;
-      }
-    }
+    chapterDistribution().then((result) => {
+      this.chapterStats = result;
+      this.chapterStatsLoaded = true;
+    }).catch((error) => {
+      this.handleError(error);
+    });
   },
   methods: {
     ...mapActions(["newToast"]),
+    handleError(error) {
+      this.newToast(new ToastData({
+        variant: toastVariants.ERROR,
+        message: "The Dashboard can not be loaded at this moment, please try again later.",
+      }));
+
+      throw error;
+    },
   },
 };
 </script>

@@ -64,8 +64,8 @@ class ChapterService(
     fun statistics(account: Account): Map<String, Serializable> = chapterRepository.findAll().ownedBy(account).run {
         val members = memberService.runCatching { this.find(account) }.getOrElse { emptyList() }
         mapOf(
-            "Total" to this.size,
-            "Distribution" to this.fold(HashMap<String, Double>(this.size)) { acc, chapter ->
+            "total" to this.size,
+            "distribution" to this.fold(HashMap<String, Double>(this.size)) { acc, chapter ->
                 acc.also {
                     acc[chapter.name] = members.count { it.chapter.name == chapter.name }.toDouble().div(members.size).round()
                 }

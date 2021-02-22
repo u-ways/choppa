@@ -1,5 +1,6 @@
 package app.choppa.domain.tribe
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseController
 import app.choppa.domain.base.BaseController.Companion.API_PREFIX
 import app.choppa.domain.rotation.RotationOptions
@@ -18,9 +19,10 @@ class TribeController(
     @Autowired private val tribeService: TribeService,
     @Autowired private val rotationService: RotationService
 ) : BaseController<Tribe>(tribeService) {
+
     @GetMapping
-    fun listTribes(): ResponseEntity<List<Tribe>> =
-        ok().body(tribeService.find())
+    fun listTribes(account : Account): ResponseEntity<List<Tribe>> =
+        ok().body(tribeService.find(account))
 
     @PutMapping
     fun putCollection(@RequestBody updatedCollection: List<Tribe>): ResponseEntity<List<Tribe>> = tribeService
@@ -35,8 +37,8 @@ class TribeController(
         .run { noContent().build() }
 
     @PostMapping
-    fun postCollection(@RequestBody newCollection: List<Tribe>): ResponseEntity<List<Tribe>> = tribeService
-        .save(newCollection)
+    fun postCollection(@RequestBody newCollection: List<Tribe>, account: Account): ResponseEntity<List<Tribe>> = tribeService
+        .save(newCollection.map { Tribe(it.id, it.name, it.color, it.squads, account) })
         .run { created(location()).build() }
 
     @PostMapping("$ID_PATH:rotate")

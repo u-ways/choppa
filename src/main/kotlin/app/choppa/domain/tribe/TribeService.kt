@@ -1,5 +1,6 @@
 package app.choppa.domain.tribe
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseService
 import app.choppa.domain.squad.SquadService
 import app.choppa.exception.EntityNotFoundException
@@ -18,6 +19,11 @@ class TribeService(
     override fun find(): List<Tribe> = tribeRepository
         .findAll()
         .orElseThrow { throw EntityNotFoundException("No tribes exist yet.") }
+
+    fun find(account: Account): List<Tribe> = tribeRepository
+        .findAll()
+        .filter { it.account == account }
+        .orElseThrow { throw EntityNotFoundException("No tribes exist for this account yet.") }
 
     override fun find(ids: List<UUID>): List<Tribe> = tribeRepository
         .findAllById(ids)

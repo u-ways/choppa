@@ -1,5 +1,6 @@
 package app.choppa.config
 
+import app.choppa.exception.AuthorizationException
 import app.choppa.exception.EmptyListException
 import app.choppa.exception.EntityNotFoundException
 import app.choppa.exception.UnprocessableEntityException
@@ -28,6 +29,10 @@ class ControllerAdvice {
     @ExceptionHandler(value = [EmptyListException::class])
     fun emptyList(e: Exception, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
         response(NO_CONTENT, "LIST failed - no entities exist for collection yet.", req, e)
+
+    @ExceptionHandler(value = [AuthorizationException::class])
+    fun unauthorized(e: Exception, req: ServletWebRequest): ResponseEntity<Map<String, Any>> =
+        response(UNAUTHORIZED, "Unauthorized - operation denied.", req, e)
 
     private fun response(
         status: HttpStatus,

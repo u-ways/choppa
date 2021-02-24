@@ -1,5 +1,6 @@
 package app.choppa.domain.iteration
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseModel
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
@@ -9,10 +10,7 @@ import java.time.Instant.now
 import java.time.temporal.ChronoUnit.DAYS
 import java.util.*
 import java.util.UUID.randomUUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 import kotlin.Int.Companion.MAX_VALUE
 
 @Entity
@@ -33,6 +31,10 @@ data class Iteration(
 
     @Column(name = "end_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
     val endDate: Instant = startDate.plus(14, DAYS),
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "account_id")
+    override val account: Account = Account.DEMO_ACCOUNT,
 ) : BaseModel {
     override fun toString() = "Iteration(id=$id, number=$number, startDate=$startDate, endDate=$endDate)"
 

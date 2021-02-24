@@ -1,5 +1,6 @@
 package app.choppa.domain.chapter
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseController
 import app.choppa.domain.base.BaseController.Companion.API_PREFIX
 import app.choppa.domain.squad.Squad
@@ -21,31 +22,43 @@ class ChapterController(
     fun listChapters(
         @QueryComponent(Squad::class) @RequestParam(name = "squad", required = false) squadId: UUID?,
         @QueryComponent(Tribe::class) @RequestParam(name = "tribe", required = false) tribeId: UUID?,
+        account: Account
     ): ResponseEntity<List<Chapter>> = ok().body(
         when {
-            squadId is UUID -> chapterService.findRelatedBySquad(squadId)
-            tribeId is UUID -> chapterService.findRelatedByTribe(tribeId)
-            else -> chapterService.find()
+            squadId is UUID -> chapterService.findRelatedBySquad(squadId, account)
+            tribeId is UUID -> chapterService.findRelatedByTribe(tribeId, account)
+            else -> chapterService.find(account)
         }
     )
 
     @PutMapping
-    fun putCollection(@RequestBody updatedCollection: List<Chapter>): ResponseEntity<List<Chapter>> = chapterService
-        .find(updatedCollection.map { it.id })
-        .also { chapterService.save(updatedCollection) }
+    fun putCollection(
+        @RequestBody updatedCollection: List<Chapter>,
+        account: Account
+    ): ResponseEntity<List<Chapter>> = chapterService
+        .find(updatedCollection.map { it.id }, account)
+        .also { chapterService.save(updatedCollection, account) }
         .run { created(location()).build() }
 
     @DeleteMapping
-    fun deleteCollection(@RequestBody toDeleteCollection: List<Chapter>): ResponseEntity<List<Chapter>> = chapterService
-        .find(toDeleteCollection.map { it.id })
-        .also { chapterService.delete(toDeleteCollection) }
+    fun deleteCollection(
+        @RequestBody toDeleteCollection: List<Chapter>,
+        account: Account
+    ): ResponseEntity<List<Chapter>> = chapterService
+        .find(toDeleteCollection.map { it.id }, account)
+        .also { chapterService.delete(toDeleteCollection, account) }
         .run { noContent().build() }
 
     @PostMapping
-    fun postCollection(@RequestBody newCollection: List<Chapter>): ResponseEntity<List<Chapter>> = chapterService
-        .save(newCollection)
+    fun postCollection(
+        @RequestBody newCollection: List<Chapter>,
+        account: Account
+    ): ResponseEntity<List<Chapter>> = chapterService
+        .save(newCollection, account)
         .run { created(location()).build() }
 
     @GetMapping("stats")
-    fun getStatistics(): ResponseEntity<Map<String, Serializable>> = ok().body(chapterService.statistics())
+    fun getStatistics(
+        account: Account
+    ): ResponseEntity<Map<String, Serializable>> = ok().body(chapterService.statistics(account))
 }

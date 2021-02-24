@@ -1,5 +1,6 @@
 package app.choppa.domain.squad
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.Member.Companion.NO_MEMBERS
@@ -42,6 +43,10 @@ data class Squad(
         inverseJoinColumns = [JoinColumn(name = "member_id", referencedColumnName = "member_id")]
     )
     val members: MutableList<Member> = NO_MEMBERS,
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "account_id")
+    override val account: Account = Account.DEMO_ACCOUNT,
 ) : BaseModel {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 

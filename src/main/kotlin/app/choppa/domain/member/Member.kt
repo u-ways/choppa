@@ -1,5 +1,6 @@
 package app.choppa.domain.member
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
@@ -33,6 +34,10 @@ data class Member(
 
     @ManyToMany(mappedBy = "members")
     val squads: MutableList<Squad> = mutableListOf(),
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "account_id")
+    override val account: Account = Account.DEMO_ACCOUNT,
 ) : BaseModel {
     override fun toString() = "Member(id=$id, name=$name, chapter=${chapter.name})"
 

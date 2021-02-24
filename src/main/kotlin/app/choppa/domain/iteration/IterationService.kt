@@ -1,5 +1,6 @@
 package app.choppa.domain.iteration
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,27 +11,38 @@ import java.util.*
 class IterationService(
     @Autowired private val iterationRepository: IterationRepository
 ) : BaseService<Iteration> {
-    override fun find(): List<Iteration> = iterationRepository
+    override fun find(account: Account): List<Iteration> = iterationRepository
         .findAll()
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No iterations exist yet.") }
 
-    override fun find(id: UUID): Iteration = iterationRepository
+    override fun find(id: UUID, account: Account): Iteration = iterationRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Iteration with id [$id] does not exist.") }
+        .verifyOwnership(account)
 
-    override fun find(ids: List<UUID>): List<Iteration> = iterationRepository
+    override fun find(ids: List<UUID>, account: Account): List<Iteration> = iterationRepository
         .findAllById(ids)
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No iterations found with given ids.") }
 
-    override fun save(entity: Iteration): Iteration = iterationRepository
-        .save(entity)
+    override fun save(entity: Iteration, account: Account): Iteration = iterationRepository.save(iterationRepository.findById(entity.id).let {
+        when {
+            it.isPresent -> entity.copy(account = it.get().account)
+            else -> entity.copy(account = account)
+        }.verifyOwnership(account)
+    })
 
-    override fun save(entities: List<Iteration>): List<Iteration> = iterationRepository
-        .saveAll(entities)
+    override fun save(entities: List<Iteration>, account: Account): List<Iteration> = entities
+        .map { this.save(it, account) }
 
-    override fun delete(entity: Iteration): Iteration = entity
-        .apply { iterationRepository.delete(entity) }
+    override fun delete(entity: Iteration, account: Account): Iteration = iterationRepository.findById(entity.id).run {
+        this.orElseGet { throw EntityNotFoundException("Iteration with id [${entity.id}] does not exist.") }
+            .verifyOwnership(account).also {
+                iterationRepository.delete(entity)
+            }
+    }
 
-    override fun delete(entities: List<Iteration>): List<Iteration> = entities
-        .apply { iterationRepository.deleteAll(entities) }
+    override fun delete(entities: List<Iteration>, account: Account): List<Iteration> = entities
+        .map { this.delete(it, account) }
 }

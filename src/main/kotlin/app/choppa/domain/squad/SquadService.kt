@@ -1,5 +1,6 @@
 package app.choppa.domain.squad
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
@@ -23,69 +24,85 @@ class SquadService(
     @Autowired private val memberService: MemberService,
     @Autowired private val squadMemberHistoryService: SquadMemberHistoryService,
 ) : BaseService<Squad> {
-    override fun find(): List<Squad> = squadRepository
+    override fun find(account: Account): List<Squad> = squadRepository
         .findAll()
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No squads exist yet.") }
 
-    override fun find(id: UUID): Squad = squadRepository
+    override fun find(id: UUID, account: Account): Squad = squadRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Squad with id [$id] does not exist.") }
+        .verifyOwnership(account)
 
-    override fun find(ids: List<UUID>): List<Squad> = squadRepository
+    override fun find(ids: List<UUID>, account: Account): List<Squad> = squadRepository
         .findAllById(ids)
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No squads found with given ids.") }
 
     // NOTE(u-ways) #149 Squad also allows the persistence of non-existent members on top of
     //                   persisting existing members from/to the squad's current members table.
     @Transactional(isolation = REPEATABLE_READ)
-    override fun save(entity: Squad): Squad = squadRepository
-        .findById(entity.id)
+    override fun save(entity: Squad, account: Account): Squad = squadRepository.findById(entity.id)
         .getMembersIfPresent()
         .run {
-            memberService.save(entity.members)
-            squadRepository
-                .save(entity)
-                .createSquadMembersRevision(this)
+            memberService.save(entity.members, account)
+            squadRepository.save(squadRepository.findById(entity.id).let {
+                when {
+                    it.isPresent -> entity.copy(account = it.get().account)
+                    else -> entity.copy(account = account)
+                }.verifyOwnership(account).createSquadMembersRevision(this)
+            })
         }
 
     @Transactional(isolation = REPEATABLE_READ)
-    override fun save(entities: List<Squad>): List<Squad> = entities.map(::save)
+    override fun save(entities: List<Squad>, account: Account): List<Squad> = entities
+        .map { this.save(it, account) }
 
     @Transactional
-    override fun delete(entity: Squad): Squad = entity.apply {
+    override fun delete(entity: Squad, account: Account): Squad = entity.apply {
         // Update members with 0 squad assignment to inactive.
         this.members.forEach {
-            if (findRelatedByMember(it.id).size == 1) {
-                memberService.save(it.copy(active = false))
+            if (findRelatedByMember(it.id, account).size == 1) {
+                memberService.save(it.copy(active = false), account)
             }
         }
-        squadMemberHistoryService.deleteAllFor(entity)
-        squadRepository.deleteAllSquadMemberRecordsFor(entity.id)
-        squadRepository.delete(this)
+
+        squadRepository.findById(entity.id).run {
+            this.orElseGet { throw EntityNotFoundException("Squad with id [${entity.id}] does not exist.") }
+                .verifyOwnership(account).also {
+                    squadMemberHistoryService.deleteAllFor(entity)
+                    squadRepository.deleteAllSquadMemberRecordsFor(entity.id)
+                    squadRepository.delete(entity)
+                }
+        }
     }
 
     @Transactional
-    override fun delete(entities: List<Squad>): List<Squad> = entities.map(::delete)
+    override fun delete(entities: List<Squad>, account: Account): List<Squad> = entities
+        .map { this.delete(it, account) }
 
-    fun deleteRelatedByTribe(tribeId: UUID): List<Squad> = squadRepository
+    fun deleteRelatedByTribe(tribeId: UUID, account: Account): List<Squad> = squadRepository
         .findAllByTribeId(tribeId)
-        .run { delete(this) }
+        .ownedBy(account)
+        .run { delete(this, account) }
 
-    fun findRelatedByMember(memberId: UUID): List<Squad> = squadRepository
+    fun findRelatedByMember(memberId: UUID, account: Account): List<Squad> = squadRepository
         .findAllByMemberId(memberId)
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No squads found joined by member [$memberId] yet.") }
 
-    fun findRelatedByTribe(tribeId: UUID): List<Squad> = squadRepository
+    fun findRelatedByTribe(tribeId: UUID, account: Account): List<Squad> = squadRepository
         .findAllByTribeId(tribeId)
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No squads found belonging to tribe [$tribeId] yet.") }
 
     @Transactional
-    fun findAllSquadMembersRevisions(id: UUID) = find(id).run {
+    fun findAllSquadMembersRevisions(id: UUID, account: Account) = find(id, account).run {
         this to squadMemberHistoryService.concentrateAllSquadRevisions(this)
     }
 
     @Transactional
-    fun findLastNSquadMembersRevisions(id: UUID, revisionAmount: Int) = find(id).run {
+    fun findLastNSquadMembersRevisions(id: UUID, revisionAmount: Int, account: Account) = find(id, account).run {
         this to (1..revisionAmount).map {
             squadMemberHistoryService.concentrateLastNSquadRevisions(this, it)
         }
@@ -112,7 +129,7 @@ class SquadService(
             }
         }
 
-    fun statistics(): HashMap<String, Serializable> = squadRepository.findAll().run {
+    fun statistics(account: Account): HashMap<String, Serializable> = squadRepository.findAll().ownedBy(account).run {
         val revisions = squadMemberHistoryService.runCatching {
             this.find(of(0, 20, by(SquadMemberHistory::createDate.name).descending()))
         }.getOrElse { emptyList() }

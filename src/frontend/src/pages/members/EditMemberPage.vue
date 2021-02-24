@@ -6,7 +6,22 @@
         <span class="font-bold truncate">{{ memberNameHeader }}</span>
       </div>
     </template>
-    <template v-slot:fixed-width v-if="member && chapters">
+    <template v-slot:fixed-width v-if="member && chapters && tribeOnlyWithId && chapters.length === 0">
+      <div class="px-3 py-5">
+        <section>
+          <FormHeader variant="primary">
+            <template v-slot:heading>Before Adding a new Member</template>
+            <template v-slot:subheading>
+              A Member needs a Chapter! So before, we can create our first member, we need to create our first Chapter.
+            </template>
+          </FormHeader>
+          <div class="flex flex-col gap-2 mt-4">
+            <NoChaptersToShowAlert :tribe="tribeOnlyWithId"/>
+          </div>
+        </section>
+      </div>
+    </template>
+    <template v-slot:fixed-width v-else-if="member && chapters && chapters.length > 0">
       <div class="px-3 py-5">
         <section>
           <FormHeader variant="primary">
@@ -94,10 +109,13 @@ import ChapterRadioButton from "@/components/chapters/ChapterRadioButton";
 import Member from "@/models/domain/member";
 import ErrorPrompt from "@/components/forms/ErrorPrompt";
 import DoubleConfirmationButton from "@/components/atoms/buttons/DoubleConfirmationButton";
+import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
+import Tribe from "@/models/domain/tribe";
 
 export default {
   name: "EditMemberPage",
   components: {
+    NoChaptersToShowAlert,
     ErrorPrompt,
     ChapterRadioButton,
     SquadsOverview,
@@ -124,6 +142,7 @@ export default {
       squads: undefined,
       selectedSquad: undefined,
       deleteConfirmation: false,
+      tribeOnlyWithId: undefined,
     };
   },
   validations: {
@@ -145,6 +164,9 @@ export default {
         this.member = new Member({});
         this.chapters = await getChapters();
         this.selectedSquad = await getSquad({ id: this.$route.query.squad });
+        this.tribeOnlyWithId = new Tribe({
+          id: this.selectedSquad.relations.tribe,
+        });
       } else if (this.$route.params.id) {
         this.creatingMember = false;
         this.member = await getMember({ id: this.$route.params.id });

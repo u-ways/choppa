@@ -49,7 +49,7 @@
             <MembersOverview :members="members"/>
           </div>
         </section>
-        <div class="px-3 py-5" v-if="!creatingChapter">
+        <div class="py-5" v-if="!creatingChapter">
           <section>
             <FormHeader variant="danger">
               <template v-slot:heading>DANGER</template>

@@ -55,7 +55,7 @@
             <SquadsOverview :squads="squads"/>
           </div>
         </section>
-        <div class="px-3 py-5" v-if="!creatingMember">
+        <div class="py-5" v-if="!creatingMember">
           <section>
             <FormHeader variant="danger">
               <template v-slot:heading>DANGER</template>

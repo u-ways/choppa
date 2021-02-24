@@ -1,7 +1,9 @@
 package app.choppa.domain.base
 
-import java.util.UUID
+import app.choppa.domain.account.Account
+import java.util.*
 
 interface BaseModel {
     val id: UUID
+    val account: Account
 }

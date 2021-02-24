@@ -7,19 +7,38 @@
         </div>
       </template>
       <template v-slot:full-width>
-        <div class="p-3 grid grid-cols-1 md:grid-cols-2 gap-2">
-          <DashboardCard title="Chapters" :is-loaded="chapterStatsLoaded">
-            <ChapterPieChart :chapter-stats="chapterStats"/>
-          </DashboardCard>
-          <DashboardCard title="KSP Balance" :is-loaded="tribeKSPStatsLoaded">
-            <KSPLineChart :tribe-k-s-p-stats="tribeKSPStats[0]"/>
-          </DashboardCard>
-          <DashboardCard title="Latest Changes">
-            test 3
-          </DashboardCard>
-          <DashboardCard title="Members">
-            test 4
-          </DashboardCard>
+        <div class="py-3">
+          <div class="px-3 grid grid-cols-2 md:grid-cols-4 gap-2">
+            <DashboardCard title="Total Tribes" :is-loaded="totalTribeCount.length > 0">
+              <div class="text-center w-full font-bold text-5xl md:text-7xl">{{totalTribeCount}}</div>
+            </DashboardCard>
+            <DashboardCard title="Total Squads" :is-loaded="totalSquadCount.length > 0">
+              <div class="text-center w-full font-bold text-5xl md:text-7xl">{{totalSquadCount}}</div>
+            </DashboardCard>
+            <DashboardCard title="Total Chapters" :is-loaded="totalChapterCount.length > 0">
+              <div class="text-center w-full font-bold text-5xl md:text-7xl">{{totalChapterCount}}</div>
+            </DashboardCard>
+            <DashboardCard title="Active Members"
+                           :is-loaded="totalMemberCount.length > 0 && activeMemberCount.length > 0">
+              <div class="text-center w-full font-bold text-5xl md:text-7xl">{{activeMemberCount}}</div>
+              <div class="text-center w-full font-normal text-sm">{{ totalMemberCount }} Total Members</div>
+            </DashboardCard>
+          </div>
+          <div class="pt-2 px-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+            <DashboardCard title="Chapter Distribution" :is-loaded="chapterStatsLoaded">
+              <ChapterPieChart :chapter-stats="chapterStats" class="max-h-72"/>
+            </DashboardCard>
+            <DashboardCard title="KSP Balance" :is-loaded="tribeKSPStatsLoaded">
+              <KSPLineChart :tribe-k-s-p-stats="tribeKSPStats[0]" class="max-h-72"/>
+            </DashboardCard>
+          </div>
+          <div class="pt-2 px-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+            <DashboardCard title="Latest Squad Changes" :is-loaded="squadLatestChangesLoaded">
+              <LatestChangesTable :latest-changes="squadLatestChanges" class="max-h-72"/>
+            </DashboardCard>
+            <DashboardCard title="Member Overview">
+            </DashboardCard>
+          </div>
         </div>
       </template>
     </StandardPageTemplate>
@@ -30,15 +49,25 @@
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import ChapterPieChart from "@/components/dashboard/graphs/ChapterPieChart";
-import { chapterDistribution, tribeKnowledgeSharingPoints } from "@/config/api/stats.api";
+import {
+  chapterDistribution,
+  memberStats,
+  squadLatestChanges,
+  tribeKnowledgeSharingPoints,
+} from "@/config/api/stats.api";
 import ToastData from "@/models/toastData";
 import { toastVariants } from "@/enums/toastVariants";
 import { mapActions } from "vuex";
 import KSPLineChart from "@/components/dashboard/graphs/KSPLineChart";
+import LatestChangesTable from "@/components/dashboard/graphs/LatestChangesTable";
+import { getAllTribes } from "@/config/api/tribe.api";
+import { getAllSquads } from "@/config/api/squad.api";
+import { getAllChapters } from "@/config/api/chapter.api";
 
 export default {
   name: "Dashboard",
   components: {
+    LatestChangesTable,
     KSPLineChart,
     ChapterPieChart,
     DashboardCard,
@@ -50,6 +79,13 @@ export default {
       chapterStats: [],
       tribeKSPStatsLoaded: false,
       tribeKSPStats: [],
+      squadLatestChangesLoaded: false,
+      squadLatestChanges: [],
+      totalTribeCount: "",
+      totalSquadCount: "",
+      totalChapterCount: "",
+      totalMemberCount: "",
+      activeMemberCount: "",
     };
   },
   async mounted() {
@@ -63,6 +99,38 @@ export default {
     tribeKnowledgeSharingPoints().then((result) => {
       this.tribeKSPStats = result;
       this.tribeKSPStatsLoaded = true;
+    }).catch((error) => {
+      this.handleError(error);
+    });
+
+    squadLatestChanges().then((result) => {
+      this.squadLatestChanges = result;
+      this.squadLatestChangesLoaded = true;
+    }).catch((error) => {
+      this.handleError(error);
+    });
+
+    getAllTribes().then((result) => {
+      this.totalTribeCount = `${result.length}`;
+    }).catch((error) => {
+      this.handleError(error);
+    });
+
+    getAllSquads().then((result) => {
+      this.totalSquadCount = `${result.length}`;
+    }).catch((error) => {
+      this.handleError(error);
+    });
+
+    getAllChapters().then((result) => {
+      this.totalChapterCount = `${result.length}`;
+    }).catch((error) => {
+      this.handleError(error);
+    });
+
+    memberStats().then((result) => {
+      this.totalMemberCount = `${result.total}`;
+      this.activeMemberCount = `${Math.round(result.total * result.distribution.active)}`;
     }).catch((error) => {
       this.handleError(error);
     });

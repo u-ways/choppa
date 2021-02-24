@@ -1,11 +1,13 @@
-import { getChapters } from "@/config/api/chapter.api";
+import { getAllChapters } from "@/config/api/chapter.api";
 import httpClient from "@/config/api/http-client";
 import { getAllTribes } from "@/config/api/tribe.api";
 import { getSquad } from "@/config/api/squad.api";
+import Member from "@/models/domain/member";
+import Squad from "@/models/domain/squad";
 
 export async function chapterDistribution() {
   const [chapters, chapterStats] = await Promise.all([
-    getChapters(),
+    getAllChapters(),
     httpClient.get("/chapters/stats"),
   ]);
 
@@ -37,4 +39,25 @@ export async function tribeKnowledgeSharingPoints() {
         ksp: tribesKSPStats.data.knowledgeSharingPoints[tribe.name][squadId],
       }))),
   })));
+}
+
+export async function squadLatestChanges() {
+  const squadChanges = (await httpClient.get("/squads/stats")).data;
+
+  return Object.values(squadChanges.latestChanges).map((value) => ({
+    date: value.createDate,
+    member: new Member({
+      id: value.member.id,
+      name: value.member.name,
+    }),
+    revisionType: value.revisionType,
+    squad: new Squad({
+      id: value.squad.id,
+      name: value.squad.name,
+    }),
+  }));
+}
+
+export async function memberStats() {
+  return (await httpClient.get("/members/stats")).data;
 }

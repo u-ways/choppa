@@ -5,6 +5,7 @@ export default class Member {
   constructor(config) {
     this._id = hasPropertyOrDefault(config, "id", `members/${uuidv4()}`);
     this._name = hasPropertyOrDefault(config, "name", "");
+    this._active = hasPropertyOrDefault(config, "active", true);
     this._chapter = hasPropertyOrDefault(config, "chapter", null);
     this._relations = hasPropertyOrDefault(config, "relations", {});
   }
@@ -19,6 +20,10 @@ export default class Member {
 
   set name(newName) {
     this._name = newName;
+  }
+
+  get active() {
+    return this._active;
   }
 
   set chapter(newChapter) {

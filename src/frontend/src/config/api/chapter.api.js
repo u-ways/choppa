@@ -27,17 +27,9 @@ export async function getChapter(config) {
   return deserializeChapter(response.data);
 }
 
-export async function getChapters() {
-  try {
-    const response = await httpClient.get("chapters");
-    return Promise.all(response.data.map((chapter) => deserializeChapter(chapter)));
-  } catch (error) {
-    if (error.response.status === 404) {
-      return [];
-    }
-
-    throw error;
-  }
+export async function getAllChapters() {
+  const response = await httpClient.get("chapters");
+  return Promise.all(response.data.map((chapter) => deserializeChapter(chapter)));
 }
 
 export async function getChaptersByQuery(config) {

@@ -9,7 +9,7 @@
       <template v-else>
         <div class="py-3 flex flex-row flex-grow items-center">
           <img :src="require('@/assets/svg/dashboard/loading.svg')" alt="Loading" width="100%"
-          height="100%" class="h-10 w-auto mx-auto animate-spin self-center justify-self-center -mt-6"/>
+          height="100%" class="h-10 w-auto mx-auto animate-spin self-center justify-self-center"/>
         </div>
       </template>
     </div>

@@ -103,7 +103,7 @@ import ToastData from "@/models/toastData";
 import { toastVariants } from "@/enums/toastVariants";
 import StandardLabel from "@/components/forms/inputs/StandardLabel";
 import SquadsOverview from "@/components/squads/SquadsOverview";
-import { getChapters } from "@/config/api/chapter.api";
+import { getAllChapters } from "@/config/api/chapter.api";
 import { getSquad, getSquadsByQuery, saveSquad } from "@/config/api/squad.api";
 import ChapterRadioButton from "@/components/chapters/ChapterRadioButton";
 import Member from "@/models/domain/member";
@@ -162,7 +162,7 @@ export default {
       if (this.$route.query.squad) {
         this.creatingMember = true;
         this.member = new Member({});
-        this.chapters = await getChapters();
+        this.chapters = await getAllChapters();
         this.selectedSquad = await getSquad({ id: this.$route.query.squad });
         this.tribeOnlyWithId = new Tribe({
           id: this.selectedSquad.relations.tribe,
@@ -170,7 +170,7 @@ export default {
       } else if (this.$route.params.id) {
         this.creatingMember = false;
         this.member = await getMember({ id: this.$route.params.id });
-        this.chapters = await getChapters();
+        this.chapters = await getAllChapters();
         this.squads = await getSquadsByQuery({ url: this.member.relations.squads });
       }
     } catch (error) {

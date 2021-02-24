@@ -26,6 +26,11 @@ async function deserializeSquad(json) {
   });
 }
 
+export async function getAllSquads() {
+  const response = await httpClient.get("squads");
+  return Promise.all(response.data.map((tribe) => deserializeSquad(tribe)));
+}
+
 export async function getSquad(config) {
   const url = Object.prototype.hasOwnProperty.call(config, "url") ? config.url : `squads/${config.id}`;
   const response = await httpClient.get(url);

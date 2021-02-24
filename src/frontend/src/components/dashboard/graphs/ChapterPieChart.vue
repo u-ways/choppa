@@ -42,6 +42,7 @@ export default {
             fontColor: this.legendFontColor,
           },
         },
+        maintainAspectRatio: false,
       },
     });
   },

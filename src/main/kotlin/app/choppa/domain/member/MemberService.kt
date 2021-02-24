@@ -1,5 +1,6 @@
 package app.choppa.domain.member
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
@@ -16,53 +17,72 @@ class MemberService(
     @Autowired private val memberRepository: MemberRepository,
     @Autowired private val squadMemberHistoryService: SquadMemberHistoryService,
 ) : BaseService<Member> {
-    override fun find(): List<Member> = memberRepository
+    override fun find(account: Account): List<Member> = memberRepository
         .findAll()
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No members exist yet.") }
 
-    override fun find(id: UUID): Member = memberRepository
+    override fun find(id: UUID, account: Account): Member = memberRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Member with id [$id] does not exist.") }
+        .verifyOwnership(account)
 
-    override fun find(ids: List<UUID>): List<Member> = memberRepository
+    override fun find(ids: List<UUID>, account: Account): List<Member> = memberRepository
         .findAllById(ids)
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No members found.") }
 
-    override fun save(entity: Member): Member = memberRepository.save(entity)
+    override fun save(entity: Member, account: Account): Member = memberRepository.save(memberRepository.findById(entity.id).let {
+        when {
+            it.isPresent -> entity.copy(account = it.get().account)
+            else -> entity.copy(account = account)
+        }.verifyOwnership(account)
+    })
 
-    override fun save(entities: List<Member>): List<Member> = memberRepository.saveAll(entities)
+    override fun save(entities: List<Member>, account: Account): List<Member> = entities
+        .map { this.save(it, account) }
 
     @Transactional
-    override fun delete(entity: Member): Member = entity.apply {
-        squadMemberHistoryService.deleteAllFor(entity)
-        memberRepository.deleteAllSquadMemberRecordsFor(entity.id)
-        memberRepository.delete(entity)
+    override fun delete(entity: Member, account: Account): Member = memberRepository.findById(entity.id).run {
+        this.orElseGet { throw EntityNotFoundException("Member with id [${entity.id}] does not exist.") }
+            .verifyOwnership(account).also {
+                squadMemberHistoryService.deleteAllFor(entity)
+                memberRepository.deleteAllSquadMemberRecordsFor(entity.id)
+                memberRepository.delete(entity)
+            }
     }
 
     @Transactional
-    override fun delete(entities: List<Member>): List<Member> = entities.map(::delete)
+    override fun delete(entities: List<Member>, account: Account): List<Member> = entities
+        .map { this.delete(it, account) }
 
-    fun findInactive(): List<Member> = memberRepository.findAllByActiveFalse()
+    fun findInactive(account: Account): List<Member> = memberRepository
+        .findAllByActiveFalse()
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No inactive members found.") }
 
-    fun findRelatedByChapter(chapterId: UUID): List<Member> = memberRepository
+    fun findRelatedByChapter(chapterId: UUID, account: Account): List<Member> = memberRepository
         .findAllByChapterId(chapterId)
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No members joined chapter [$chapterId] yet.") }
 
-    fun findRelatedBySquad(squadId: UUID): List<Member> = memberRepository
+    fun findRelatedBySquad(squadId: UUID, account: Account): List<Member> = memberRepository
         .findAllBySquadId(squadId)
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No members joined squad [$squadId] yet.") }
 
-    fun findRelatedByTribe(tribeId: UUID): List<Member> = memberRepository
+    fun findRelatedByTribe(tribeId: UUID, account: Account): List<Member> = memberRepository
         .findAllByTribeId(tribeId)
+        .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No members joined tribe [$tribeId] yet.") }
 
     @Transactional
-    fun unAssignMembersWithChapter(chapter: Chapter) = memberRepository
+    fun unAssignMembersWithChapter(chapter: Chapter, account: Account) = memberRepository
         .findAllByChapterId(chapter.id)
-        .forEach { save(it.copy(chapter = UNASSIGNED_ROLE)) }
+        .ownedBy(account)
+        .forEach { save(it.copy(chapter = UNASSIGNED_ROLE), account) }
 
-    fun statistics(): HashMap<String, Any> = memberRepository.findAll().run {
+    fun statistics(account: Account): HashMap<String, Any> = memberRepository.findAll().ownedBy(account).run {
         hashMapOf(
             "Total" to this.size,
             "Distribution" to mapOf(

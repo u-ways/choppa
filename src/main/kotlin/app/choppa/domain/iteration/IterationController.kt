@@ -1,5 +1,6 @@
 package app.choppa.domain.iteration
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseController
 import app.choppa.domain.base.BaseController.Companion.API_PREFIX
 import app.choppa.domain.member.Member
@@ -22,22 +23,32 @@ class IterationController(
         @QueryComponent(Member::class) @RequestParam(name = "member", required = false) memberId: UUID?,
         @QueryComponent(Squad::class) @RequestParam(name = "squad", required = false) squadId: UUID?,
         @QueryComponent(Tribe::class) @RequestParam(name = "tribe", required = false) tribeId: UUID?,
-    ): ResponseEntity<List<Iteration>> = ok().body(iterationService.find())
+        account: Account
+    ): ResponseEntity<List<Iteration>> = ok().body(iterationService.find(account))
 
     @PutMapping
-    fun putCollection(@RequestBody updatedCollection: List<Iteration>): ResponseEntity<List<Iteration>> = iterationService
-        .find(updatedCollection.map { it.id })
-        .also { iterationService.save(updatedCollection) }
+    fun putCollection(
+        @RequestBody updatedCollection: List<Iteration>,
+        account: Account
+    ): ResponseEntity<List<Iteration>> = iterationService
+        .find(updatedCollection.map { it.id }, account)
+        .also { iterationService.save(updatedCollection, account) }
         .run { created(location()).build() }
 
     @DeleteMapping
-    fun deleteCollection(@RequestBody toDeleteCollection: List<Iteration>): ResponseEntity<List<Iteration>> = iterationService
-        .find(toDeleteCollection.map { it.id })
-        .also { iterationService.delete(toDeleteCollection) }
+    fun deleteCollection(
+        @RequestBody toDeleteCollection: List<Iteration>,
+        account: Account
+    ): ResponseEntity<List<Iteration>> = iterationService
+        .find(toDeleteCollection.map { it.id }, account)
+        .also { iterationService.delete(toDeleteCollection, account) }
         .run { noContent().build() }
 
     @PostMapping
-    fun postCollection(@RequestBody newCollection: List<Iteration>): ResponseEntity<List<Iteration>> = iterationService
-        .save(newCollection)
+    fun postCollection(
+        @RequestBody newCollection: List<Iteration>,
+        account: Account
+    ): ResponseEntity<List<Iteration>> = iterationService
+        .save(newCollection, account)
         .run { created(location()).build() }
 }

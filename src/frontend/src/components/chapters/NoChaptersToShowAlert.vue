@@ -3,7 +3,7 @@
     <img :src="require('@/assets/svg/no-chapters.svg')" alt="This squad has no chapters" width="100%"
          height="100%" class="h-28 w-auto mx-auto"/>
     <p class="place-self-center font-semibold text-md dark:text-gray-300">
-      Add your first Chapter to this Squad.
+      Add your first Chapter.
     </p>
     <div class="inline-block mx-auto">
       <StyledButton type="link" :link="{ name: 'create-chapter', query: { tribe: tribe.path } }" variant="primary">

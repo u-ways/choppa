@@ -1,5 +1,6 @@
 package app.choppa.domain.base
 
+import app.choppa.domain.account.Account
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.created
 import org.springframework.http.ResponseEntity.noContent
@@ -39,28 +40,28 @@ abstract class BaseController<T : BaseModel>(
     }
 
     @GetMapping(ID_PATH)
-    fun get(@PathVariable id: UUID) = baseService
-        .find(id)
+    fun get(@PathVariable id: UUID, account: Account) = baseService
+        .find(id, account)
         .run { ok().body(this) }
 
     @PutMapping(ID_PATH)
-    fun put(@PathVariable id: UUID, @RequestBody updatedEntity: T): ResponseEntity<T> = baseService
+    fun put(@PathVariable id: UUID, @RequestBody updatedEntity: T, account: Account): ResponseEntity<T> = baseService
         .requireMatching(id, updatedEntity.id)
-        .find(id)
-        .also { baseService.save(updatedEntity) }
+        .find(id, account)
+        .also { baseService.save(updatedEntity, account) }
         .run { created(location(ID_PATH, id)).build() }
 
     @DeleteMapping(ID_PATH)
-    fun delete(@PathVariable id: UUID): ResponseEntity<T> = baseService
-        .find(id)
-        .also { baseService.delete(it) }
+    fun delete(@PathVariable id: UUID, account: Account): ResponseEntity<T> = baseService
+        .find(id, account)
+        .also { baseService.delete(it, account) }
         .run { noContent().build() }
 
     @PostMapping(ID_PATH)
-    fun post(@PathVariable id: UUID, @RequestBody newEntity: T): ResponseEntity<T> = baseService
+    fun post(@PathVariable id: UUID, @RequestBody newEntity: T, account: Account): ResponseEntity<T> = baseService
         .requireMatching(id, newEntity.id)
-        .save(newEntity)
-        .run { created(location(ID_PATH, this.id)).build() }
+        .save(newEntity, account)
+        .run { created(location(ID_PATH, this.id, account)).build() }
 
     private fun BaseService<T>.requireMatching(expected: UUID, actual: UUID): BaseService<T> = this.apply {
         require(expected == actual) { "URI endpoint with id [$expected] does not match response body entity id [$actual]" }

@@ -15,7 +15,7 @@ interface SquadRepository : JpaRepository<Squad, UUID> {
     @Query(
         value =
             """
-            SELECT DISTINCT squad.squad_id, name, color, tribe
+            SELECT DISTINCT squad.squad_id, name, color, tribe, account_id
             FROM squad
                     INNER JOIN squad_current_members ON squad_current_members.squad_id = squad.squad_id
             WHERE squad_current_members.member_id = cast(:memberId AS UUID)

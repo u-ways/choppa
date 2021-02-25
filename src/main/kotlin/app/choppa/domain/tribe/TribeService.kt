@@ -31,12 +31,14 @@ class TribeService(
         .orElseThrow { throw EntityNotFoundException("Tribe with id [$id] does not exist.") }
         .verifyOwnership(account)
 
-    override fun save(entity: Tribe, account: Account): Tribe = tribeRepository.save(tribeRepository.findById(entity.id).let {
-        when {
-            it.isPresent -> entity.copy(account = it.get().account)
-            else -> entity.copy(account = account)
-        }.verifyOwnership(account)
-    })
+    override fun save(entity: Tribe, account: Account): Tribe = tribeRepository.save(
+        tribeRepository.findById(entity.id).let {
+            when {
+                it.isPresent -> entity.copy(account = it.get().account)
+                else -> entity.copy(account = account)
+            }.verifyOwnership(account)
+        }
+    )
 
     override fun save(entities: List<Tribe>, account: Account): List<Tribe> = entities
         .map { this.save(it, account) }

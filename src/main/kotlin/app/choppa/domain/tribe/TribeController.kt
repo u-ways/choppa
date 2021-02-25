@@ -59,7 +59,9 @@ class TribeController(
         ok().body(
             rotationService.executeRotation(
                 tribeService.find(id, account),
-                options ?: DEFAULT_OPTIONS, account)
+                options ?: DEFAULT_OPTIONS,
+                account
+            )
         )
 
     @GetMapping("$ID_PATH:undoRotation")

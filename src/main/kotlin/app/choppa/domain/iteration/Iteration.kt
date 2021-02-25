@@ -1,6 +1,7 @@
 package app.choppa.domain.iteration
 
 import app.choppa.domain.account.Account
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.base.BaseModel
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
@@ -34,7 +35,7 @@ data class Iteration(
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id")
-    override val account: Account = Account.DEMO_ACCOUNT,
+    override val account: Account = UNASSIGNED_ACCOUNT,
 ) : BaseModel {
     override fun toString() = "Iteration(id=$id, number=$number, startDate=$startDate, endDate=$endDate)"
 

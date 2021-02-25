@@ -26,12 +26,14 @@ class IterationService(
         .ownedBy(account)
         .orElseThrow { throw EntityNotFoundException("No iterations found with given ids.") }
 
-    override fun save(entity: Iteration, account: Account): Iteration = iterationRepository.save(iterationRepository.findById(entity.id).let {
-        when {
-            it.isPresent -> entity.copy(account = it.get().account)
-            else -> entity.copy(account = account)
-        }.verifyOwnership(account)
-    })
+    override fun save(entity: Iteration, account: Account): Iteration = iterationRepository.save(
+        iterationRepository.findById(entity.id).let {
+            when {
+                it.isPresent -> entity.copy(account = it.get().account)
+                else -> entity.copy(account = account)
+            }.verifyOwnership(account)
+        }
+    )
 
     override fun save(entities: List<Iteration>, account: Account): List<Iteration> = entities
         .map { this.save(it, account) }

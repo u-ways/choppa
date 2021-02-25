@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.iteration
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.iteration.IterationService
 import app.choppa.exception.EntityNotFoundException
@@ -24,7 +25,7 @@ import javax.transaction.Transactional
 @Import(FlywayMigrationConfig::class)
 @ActiveProfiles("test")
 internal class IterationServiceIT @Autowired constructor(
-    private val iterationService: IterationService
+    private val iterationService: IterationService,
 ) {
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
@@ -33,13 +34,13 @@ internal class IterationServiceIT @Autowired constructor(
 
     @BeforeEach
     internal fun setUp() {
-        entity = iterationService.save(Iteration())
+        entity = iterationService.save(Iteration(), UNASSIGNED_ACCOUNT)
     }
 
     @Test
     @Transactional
     fun `Given new entity, when service saves new entity, then service should return same entity with generated id`() {
-        val result = iterationService.save(entity)
+        val result = iterationService.save(entity, UNASSIGNED_ACCOUNT)
 
         result.id shouldBe entity.id
         result.number shouldBeEqualTo entity.number
@@ -51,7 +52,7 @@ internal class IterationServiceIT @Autowired constructor(
     @Transactional
     fun `Given existing entity in db, when service finds entity by id, then service should return correct entity`() {
         val existingEntity = entity
-        val result = iterationService.find(existingEntity.id)
+        val result = iterationService.find(existingEntity.id, UNASSIGNED_ACCOUNT)
 
         result.id shouldBe existingEntity.id
         result.number shouldBeEqualTo existingEntity.number
@@ -62,14 +63,14 @@ internal class IterationServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
-        val existingEntity = entity
-        val removedEntity = iterationService.delete(existingEntity)
+        val existingEntity = iterationService.save(Iteration(), UNASSIGNED_ACCOUNT)
+        val removedEntity = iterationService.delete(existingEntity, UNASSIGNED_ACCOUNT)
 
-        assertThrows(EntityNotFoundException::class.java) { iterationService.find(removedEntity.id) }
+        assertThrows(EntityNotFoundException::class.java) { iterationService.find(removedEntity.id, UNASSIGNED_ACCOUNT) }
     }
 
     @AfterEach
     internal fun tearDown() {
-        iterationService.delete(entity)
+        iterationService.delete(entity, UNASSIGNED_ACCOUNT)
     }
 }

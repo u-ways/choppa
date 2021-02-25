@@ -1,5 +1,7 @@
 package app.choppa.integration.domain.chapter
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterController
 import app.choppa.domain.chapter.ChapterService
@@ -17,11 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 
 @WebMvcTest(controllers = [ChapterController::class])
 @ActiveProfiles("test")
@@ -29,9 +27,11 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
 ) {
-
     @MockkBean
     private lateinit var chapterService: ChapterService
+
+    @MockkBean(relaxed = true)
+    private lateinit var accountService: AccountService
 
     @Nested
     inner class HappyPath {
@@ -40,7 +40,7 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
         fun `LIST entities`() {
             val entities = ChapterFactory.create(amount = 2)
 
-            every { chapterService.find() } returns entities
+            every { chapterService.find(UNASSIGNED_ACCOUNT) } returns entities
 
             mvc.get("/api/chapters") {
                 contentType = APPLICATION_JSON
@@ -58,8 +58,8 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
             val greenColor = "#00FF00".toRGBAInt()
             val updatedCollection = existingCollection.map { Chapter(it.id, it.name, greenColor) }
 
-            every { chapterService.find(existingCollection.map { it.id }) } returns existingCollection
-            every { chapterService.save(updatedCollection) } returns updatedCollection
+            every { chapterService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
+            every { chapterService.save(updatedCollection, UNASSIGNED_ACCOUNT) } returns updatedCollection
 
             mvc.put("/api/chapters") {
                 contentType = APPLICATION_JSON
@@ -75,8 +75,8 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
         fun `DELETE collection`() {
             val existingCollection = ChapterFactory.create(amount = 3)
 
-            every { chapterService.find(existingCollection.map { it.id }) } returns existingCollection
-            every { chapterService.delete(existingCollection) } returns existingCollection
+            every { chapterService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
+            every { chapterService.delete(existingCollection, UNASSIGNED_ACCOUNT) } returns existingCollection
 
             mvc.delete("/api/chapters") {
                 contentType = APPLICATION_JSON
@@ -91,7 +91,7 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
         fun `POST collection`() {
             val newCollection = ChapterFactory.create(amount = 3)
 
-            every { chapterService.save(newCollection) } returns newCollection
+            every { chapterService.save(newCollection, UNASSIGNED_ACCOUNT) } returns newCollection
 
             mvc.post("/api/chapters") {
                 contentType = APPLICATION_JSON
@@ -109,7 +109,7 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
 
         @Test
         fun `LIST no content`() {
-            every { chapterService.find() } throws EmptyListException("No chapters exist yet")
+            every { chapterService.find(UNASSIGNED_ACCOUNT) } throws EmptyListException("No chapters exist yet")
 
             mvc.get("/api/chapters") {
                 contentType = APPLICATION_JSON

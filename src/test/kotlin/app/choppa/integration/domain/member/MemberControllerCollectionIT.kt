@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.member
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberController
@@ -25,7 +26,6 @@ internal class MemberControllerCollectionIT @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
 ) {
-
     @MockkBean
     private lateinit var memberService: MemberService
 
@@ -36,7 +36,7 @@ internal class MemberControllerCollectionIT @Autowired constructor(
         fun `LIST entities`() {
             val entities = MemberFactory.create(amount = 2)
 
-            every { memberService.find() } returns entities
+            every { memberService.find(UNASSIGNED_ACCOUNT) } returns entities
 
             mvc.get("/api/members") {
                 contentType = APPLICATION_JSON
@@ -52,7 +52,7 @@ internal class MemberControllerCollectionIT @Autowired constructor(
         fun `LIST inactive entities`() {
             val entities = listOf(Member(active = false))
 
-            every { memberService.findInactive() } returns entities
+            every { memberService.findInactive(UNASSIGNED_ACCOUNT) } returns entities
 
             mvc.get("/api/members?active=false") {
                 contentType = APPLICATION_JSON
@@ -69,8 +69,8 @@ internal class MemberControllerCollectionIT @Autowired constructor(
             val existingCollection = MemberFactory.create(amount = 3)
             val updatedCollection = existingCollection.map { Member(it.id, it.name, Chapter()) }
 
-            every { memberService.find(existingCollection.map { it.id }) } returns existingCollection
-            every { memberService.save(updatedCollection) } returns updatedCollection
+            every { memberService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
+            every { memberService.save(updatedCollection, UNASSIGNED_ACCOUNT) } returns updatedCollection
 
             mvc.put("/api/members") {
                 contentType = APPLICATION_JSON
@@ -86,8 +86,8 @@ internal class MemberControllerCollectionIT @Autowired constructor(
         fun `DELETE collection`() {
             val existingCollection = MemberFactory.create(amount = 3)
 
-            every { memberService.find(existingCollection.map { it.id }) } returns existingCollection
-            every { memberService.delete(existingCollection) } returns existingCollection
+            every { memberService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
+            every { memberService.delete(existingCollection, UNASSIGNED_ACCOUNT) } returns existingCollection
 
             mvc.delete("/api/members") {
                 contentType = APPLICATION_JSON
@@ -102,7 +102,7 @@ internal class MemberControllerCollectionIT @Autowired constructor(
         fun `POST collection`() {
             val newCollection = MemberFactory.create(amount = 3)
 
-            every { memberService.save(newCollection) } returns newCollection
+            every { memberService.save(newCollection, UNASSIGNED_ACCOUNT) } returns newCollection
 
             mvc.post("/api/members") {
                 contentType = APPLICATION_JSON
@@ -120,7 +120,7 @@ internal class MemberControllerCollectionIT @Autowired constructor(
 
         @Test
         fun `LIST no content`() {
-            every { memberService.find() } throws EmptyListException("No members exist yet")
+            every { memberService.find(UNASSIGNED_ACCOUNT) } throws EmptyListException("No members exist yet")
 
             mvc.get("/api/members") {
                 contentType = APPLICATION_JSON

@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.chapter
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterService
 import app.choppa.exception.EntityNotFoundException
@@ -28,13 +29,11 @@ internal class ChapterServiceCollectionIT @Autowired constructor(
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
-    private lateinit var entity: Chapter
-
     @Test
     @Transactional
     fun `Given a new list of chapters, when service saves said list of chapters, then service should persist the list of chapters`() {
         val newListOfChapters = ChapterFactory.create(amount = 3)
-        val result = chapterService.save(newListOfChapters)
+        val result = chapterService.save(newListOfChapters, UNASSIGNED_ACCOUNT)
 
         assertThat(result, List<Chapter>::containsInAnyOrder, newListOfChapters)
     }
@@ -42,14 +41,14 @@ internal class ChapterServiceCollectionIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given an existing list of chapters, when service updates said list of chapters, then service should persist the changed list of chapters`() {
-        val existingListOfChapters = chapterService.save(ChapterFactory.create(amount = 3))
+        val existingListOfChapters = chapterService.save(ChapterFactory.create(amount = 3), UNASSIGNED_ACCOUNT)
         val newName = "newName"
 
         val updatedListOfChapters = existingListOfChapters.map {
             Chapter(it.id, newName)
         }
 
-        val result = chapterService.save(updatedListOfChapters)
+        val result = chapterService.save(updatedListOfChapters, UNASSIGNED_ACCOUNT)
 
         assertThat(result, List<Chapter>::containsInAnyOrder, updatedListOfChapters)
     }
@@ -57,9 +56,9 @@ internal class ChapterServiceCollectionIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given an existing list of chapters, when service deletes said list of chapters, then service should remove the existing list of chapters`() {
-        val existingListOfChapters = chapterService.save(ChapterFactory.create(amount = 3))
-        val removedListOfChapters = chapterService.delete(existingListOfChapters)
+        val existingListOfChapters = chapterService.save(ChapterFactory.create(amount = 3), UNASSIGNED_ACCOUNT)
+        val removedListOfChapters = chapterService.delete(existingListOfChapters, UNASSIGNED_ACCOUNT)
 
-        assertThrows(EntityNotFoundException::class.java) { chapterService.find(removedListOfChapters.map { it.id }) }
+        assertThrows(EntityNotFoundException::class.java) { chapterService.find(removedListOfChapters.map { it.id }, UNASSIGNED_ACCOUNT) }
     }
 }

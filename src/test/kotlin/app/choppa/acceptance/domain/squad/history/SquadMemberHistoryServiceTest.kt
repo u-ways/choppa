@@ -1,5 +1,6 @@
 package app.choppa.acceptance.domain.squad.history
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.squad.history.SquadMemberHistoryRepository
 import app.choppa.domain.squad.history.SquadMemberHistoryService
@@ -42,8 +43,13 @@ internal class SquadMemberHistoryServiceTest {
 
     @Test
     fun `Given a no entity records, when service tries to find all records, then service should throw EntityNotFoundException`() {
-        every { repository.findAll(unpaged()) } returns Page.empty()
+        every {
+            repository.findAllByAccountIdOrderByCreateDateDesc(
+                UNASSIGNED_ACCOUNT.id,
+                unpaged()
+            )
+        } returns Page.empty()
 
-        assertThrows(EntityNotFoundException::class.java) { service.find() }
+        assertThrows(EntityNotFoundException::class.java) { service.find(UNASSIGNED_ACCOUNT) }
     }
 }

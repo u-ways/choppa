@@ -16,7 +16,7 @@ $$
         ON CONFLICT (squad_id) DO NOTHING;
 
         -- Unassigned Account
-        insert into accounts (account_id, provider, provider_id, organisation_name)
+        insert into account (account_id, provider, provider_id, organisation_name)
         values (unassigned_id, 'unassigned-provider-id', 'Unassigned Account', 'Unassigned Org')
         ON CONFLICT (provider, provider_id) DO NOTHING;
     END

@@ -8,7 +8,7 @@ import java.util.UUID.randomUUID
 import javax.persistence.*
 
 @Entity
-@Table(name = "accounts")
+@Table(name = "account", uniqueConstraints = [UniqueConstraint(columnNames = ["provider", "provider_id"])])
 @JsonSerialize(using = AccountSerializer::class)
 data class Account(
     @Id
@@ -22,11 +22,11 @@ data class Account(
     @Column(name = "provider_id", columnDefinition = "VARCHAR(4096)")
     val providerId: String = randomUUID().toString(),
 
+    @Column(name = "organisation_name", columnDefinition = "VARCHAR(100)")
+    val organisationName: String = "ORG-$id".substring(0, 15),
+
     @Transient
     var name: String = "ACC-$id".substring(0, 15),
-
-    @Column(name = "organisation_name", columnDefinition = "VARCHAR(4096)")
-    val organisationName: String = "ORG-$id".substring(0, 15),
 
     @Transient
     var profilePicture: String = "",
@@ -36,55 +36,35 @@ data class Account(
 ) {
     companion object {
         val UNASSIGNED_ACCOUNT = Account(
-            fromString("00000000-0000-0000-0000-000000000000"),
-            "Unassigned Provider",
-            "unassigned-provider-id",
-            "Unassigned Account",
-            "Unassigned Org",
-            "",
-            false
+            id = fromString("00000000-0000-0000-0000-000000000000"),
+            provider = "Unassigned Provider",
+            providerId = "unassigned-provider-id",
+            organisationName = "Unassigned Org",
+            name = "Unassigned Account",
+            profilePicture = "",
+            firstLogin = false
         )
 
         val DEMO_ACCOUNT = Account(
-            fromString("00000000-0000-0000-0000-000000000001"),
-            "choppa",
-            "choppa-demo-account",
-            "Choppa Demo",
-            "Choppa Demo Org",
-            "",
-            false
-        )
-
-        fun createFirstLogin(provider: String, providerId: String, name: String): Account = Account(
-            randomUUID(),
-            provider,
-            providerId,
-            name,
-            "",
-            "",
-            true
+            id = fromString("00000000-0000-0000-0000-000000000001"),
+            provider = "choppa",
+            providerId = "choppa-demo-account",
+            organisationName = "Choppa Demo Org",
+            name = "Choppa Demo",
+            profilePicture = "",
+            firstLogin = false
         )
     }
 
-    override fun toString() = "Account(provider=$provider, providerId=$providerId, name=$name)"
+    override fun toString() = "Account(provider=$provider, providerId=$providerId, organisationName=$organisationName)"
+
+    override fun hashCode(): Int = id.hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as Account
         if (id != other.id) return false
-        if (provider != other.provider) return false
-        if (providerId != other.providerId) return false
-        if (organisationName != other.organisationName) return false
-
         return true
-    }
-
-    override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + provider.hashCode()
-        result = 31 * result + providerId.hashCode()
-        result = 31 * result + organisationName.hashCode()
-        return result
     }
 }

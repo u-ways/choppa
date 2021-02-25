@@ -46,12 +46,14 @@ class SquadService(
         .getMembersIfPresent()
         .run {
             memberService.save(entity.members, account)
-            squadRepository.save(squadRepository.findById(entity.id).let {
-                when {
-                    it.isPresent -> entity.copy(account = it.get().account)
-                    else -> entity.copy(account = account)
-                }.verifyOwnership(account).createSquadMembersRevision(this)
-            })
+            squadRepository.save(
+                squadRepository.findById(entity.id).let {
+                    when {
+                        it.isPresent -> entity.copy(account = it.get().account)
+                        else -> entity.copy(account = account)
+                    }.verifyOwnership(account).createSquadMembersRevision(this)
+                }
+            )
         }
 
     @Transactional(isolation = REPEATABLE_READ)

@@ -1,6 +1,7 @@
 package app.choppa.domain.member
 
 import app.choppa.domain.account.Account
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
@@ -37,7 +38,7 @@ data class Member(
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id")
-    override val account: Account = Account.DEMO_ACCOUNT,
+    override val account: Account = UNASSIGNED_ACCOUNT,
 ) : BaseModel {
     override fun toString() = "Member(id=$id, name=$name, chapter=${chapter.name})"
 

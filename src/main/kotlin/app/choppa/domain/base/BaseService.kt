@@ -18,10 +18,10 @@ interface BaseService<T : BaseModel> {
         else -> this
     }
 
-    fun <E: BaseModel> List<E>.ownedBy(account: Account): List<E> = this
+    fun <E : BaseModel> List<E>.ownedBy(account: Account): List<E> = this
         .filter { it.account == account }
 
-    fun <E: BaseModel> E.verifyOwnership(account: Account): E =
+    fun <E : BaseModel> E.verifyOwnership(account: Account): E =
         if (this.account == account) this
         else throw AuthorizationException("Entity with id [${this.id}] does not belong to [${account.organisationName}].")
 }

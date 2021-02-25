@@ -3,6 +3,8 @@ package app.choppa.domain.account
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
 import java.util.*
+import java.util.UUID.fromString
+import java.util.UUID.randomUUID
 import javax.persistence.*
 
 @Entity
@@ -12,19 +14,19 @@ data class Account(
     @Id
     @Column(name = "account_id", columnDefinition = "uuid")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID = randomUUID(),
 
     @Column(name = "provider", columnDefinition = "VARCHAR(100)")
-    val provider: String,
+    val provider: String = "PRO-$id".substring(0, 5),
 
     @Column(name = "provider_id", columnDefinition = "VARCHAR(4096)")
-    val providerId: String,
+    val providerId: String = randomUUID().toString(),
 
     @Transient
-    var name: String = "",
+    var name: String = "ACC-$id".substring(0, 15),
 
     @Column(name = "organisation_name", columnDefinition = "VARCHAR(4096)")
-    val organisationName: String,
+    val organisationName: String = "ORG-$id".substring(0, 15),
 
     @Transient
     var profilePicture: String = "",
@@ -33,18 +35,28 @@ data class Account(
     var firstLogin: Boolean = false,
 ) {
     companion object {
+        val UNASSIGNED_ACCOUNT = Account(
+            fromString("00000000-0000-0000-0000-000000000000"),
+            "Unassigned Provider",
+            "unassigned-provider-id",
+            "Unassigned Account",
+            "Unassigned Org",
+            "",
+            false
+        )
+
         val DEMO_ACCOUNT = Account(
-            UUID.fromString("00000000-0000-0000-0000-000000000001"),
+            fromString("00000000-0000-0000-0000-000000000001"),
             "choppa",
             "choppa-demo-account",
             "Choppa Demo",
             "Choppa Demo Org",
             "",
             false
-        );
+        )
 
         fun createFirstLogin(provider: String, providerId: String, name: String): Account = Account(
-            UUID.randomUUID(),
+            randomUUID(),
             provider,
             providerId,
             name,

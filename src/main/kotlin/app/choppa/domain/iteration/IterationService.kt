@@ -27,12 +27,9 @@ class IterationService(
         .orElseThrow { throw EntityNotFoundException("No iterations found with given ids.") }
 
     override fun save(entity: Iteration, account: Account): Iteration = iterationRepository.save(
-        iterationRepository.findById(entity.id).let {
-            when {
-                it.isPresent -> entity.copy(account = it.get().account)
-                else -> entity.copy(account = account)
-            }.verifyOwnership(account)
-        }
+        iterationRepository
+            .findById(entity.id)
+            .verifyOriginalOwnership(entity, account)
     )
 
     override fun save(entities: List<Iteration>, account: Account): List<Iteration> = entities
@@ -47,4 +44,8 @@ class IterationService(
 
     override fun delete(entities: List<Iteration>, account: Account): List<Iteration> = entities
         .map { this.delete(it, account) }
+
+    private fun Optional<Iteration>.verifyOriginalOwnership(entity: Iteration, account: Account): Iteration =
+        if (this.isPresent) entity.copy(account = this.get().account).verifyOwnership(account)
+        else entity.copy(account = account)
 }

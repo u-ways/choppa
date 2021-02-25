@@ -32,12 +32,9 @@ class ChapterService(
         .orElseThrow { throw EntityNotFoundException("No chapters found with given ids.") }
 
     override fun save(entity: Chapter, account: Account): Chapter = chapterRepository.save(
-        chapterRepository.findById(entity.id).let {
-            when {
-                it.isPresent -> entity.copy(account = it.get().account)
-                else -> entity.copy(account = account)
-            }.verifyOwnership(account)
-        }
+        chapterRepository
+            .findById(entity.id)
+            .verifyOriginalOwnership(entity, account)
     )
 
     override fun save(entities: List<Chapter>, account: Account): List<Chapter> = entities
@@ -75,4 +72,8 @@ class ChapterService(
             }
         )
     }
+
+    private fun Optional<Chapter>.verifyOriginalOwnership(entity: Chapter, account: Account): Chapter =
+        if (this.isPresent) entity.copy(account = this.get().account).verifyOwnership(account)
+        else entity.copy(account = account)
 }

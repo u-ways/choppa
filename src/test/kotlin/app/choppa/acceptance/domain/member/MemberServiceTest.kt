@@ -1,5 +1,6 @@
 package app.choppa.acceptance.domain.member
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberRepository
@@ -35,8 +36,9 @@ internal class MemberServiceTest {
         val entity = Member(chapter = relatedEntityChapter)
 
         every { repository.save(entity) } returns entity
+        every { repository.findById(entity.id) } returns empty()
 
-        val savedEntity = service.save(entity)
+        val savedEntity = service.save(entity, UNASSIGNED_ACCOUNT)
 
         savedEntity shouldBe entity
 
@@ -51,7 +53,7 @@ internal class MemberServiceTest {
 
         every { repository.findById(id) } returns of(existingEntity)
 
-        val foundEntity = service.find(id)
+        val foundEntity = service.find(id, UNASSIGNED_ACCOUNT)
 
         foundEntity shouldBe existingEntity
 
@@ -63,11 +65,11 @@ internal class MemberServiceTest {
         val existingEntity = Member()
 
         every { repository.delete(existingEntity) } returns Unit
-        every { repository.findById(existingEntity.id) } returns empty()
+        every { repository.findById(existingEntity.id) } returns of(existingEntity)
         every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
         every { squadMemberHistoryService.deleteAllFor(existingEntity) } returns existingEntity
 
-        val removedEntity = service.delete(existingEntity)
+        val removedEntity = service.delete(existingEntity, UNASSIGNED_ACCOUNT)
 
         removedEntity shouldBe existingEntity
 
@@ -80,6 +82,6 @@ internal class MemberServiceTest {
 
         every { repository.findById(id) } returns empty()
 
-        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
+        assertThrows(EntityNotFoundException::class.java) { service.find(id, UNASSIGNED_ACCOUNT) }
     }
 }

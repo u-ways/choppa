@@ -1,5 +1,6 @@
 package app.choppa.acceptance.domain.squad
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
 import app.choppa.domain.squad.Squad
@@ -41,13 +42,13 @@ internal class SquadServiceTest {
         val tribe = entity.tribe
         val members = entity.members
 
-        every { memberService.save(entity.members) } returns members
+        every { memberService.save(entity.members, UNASSIGNED_ACCOUNT) } returns members
 
         every { repository.findById(entity.id) } returns empty()
 
         every { repository.save(Squad(entity.id, entity.name, entity.color, tribe, members)) } returns entity
 
-        val savedEntity = service.save(entity)
+        val savedEntity = service.save(entity, UNASSIGNED_ACCOUNT)
 
         savedEntity shouldBe entity
 
@@ -61,7 +62,7 @@ internal class SquadServiceTest {
 
         every { repository.findById(id) } returns of(existingEntity)
 
-        val foundEntity = service.find(id)
+        val foundEntity = service.find(id, UNASSIGNED_ACCOUNT)
 
         foundEntity shouldBe existingEntity
 
@@ -72,11 +73,11 @@ internal class SquadServiceTest {
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
         val existingEntity = Squad()
 
+        every { repository.findById(existingEntity.id) } returns of(existingEntity)
         every { repository.delete(existingEntity) } returns Unit
-        every { repository.findById(existingEntity.id) } returns empty()
         every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
 
-        val removedEntity = service.delete(existingEntity)
+        val removedEntity = service.delete(existingEntity, UNASSIGNED_ACCOUNT)
 
         removedEntity shouldBe existingEntity
 
@@ -89,7 +90,7 @@ internal class SquadServiceTest {
 
         every { repository.findById(id) } returns empty()
 
-        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
+        assertThrows(EntityNotFoundException::class.java) { service.find(id, UNASSIGNED_ACCOUNT) }
     }
 
     @Test
@@ -100,7 +101,7 @@ internal class SquadServiceTest {
         every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
         every { squadMemberHistoryService.concentrateAllSquadRevisions(existingEntity) } returns listOf(existingEntity.members)
 
-        val squadMembersRevisions = service.findAllSquadMembersRevisions(existingEntity.id)
+        val squadMembersRevisions = service.findAllSquadMembersRevisions(existingEntity.id, UNASSIGNED_ACCOUNT)
 
         squadMembersRevisions.first shouldBe existingEntity
         squadMembersRevisions.second.first() shouldBe existingEntity.members
@@ -120,7 +121,7 @@ internal class SquadServiceTest {
             squadMemberHistoryService.concentrateLastNSquadRevisions(existingEntity, 2)
         } returns existingEntity.members.subList(0, 3)
 
-        val squadMembersRevisions = service.findLastNSquadMembersRevisions(existingEntity.id, 2)
+        val squadMembersRevisions = service.findLastNSquadMembersRevisions(existingEntity.id, 2, UNASSIGNED_ACCOUNT)
 
         squadMembersRevisions.first shouldBe existingEntity
 

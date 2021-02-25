@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.member
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterService
 import app.choppa.domain.member.Member
@@ -34,6 +35,7 @@ internal class MemberServiceIT @Autowired constructor(
     private val squadService: SquadService,
     private val squadMemberHistoryService: SquadMemberHistoryService,
 ) {
+
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
@@ -42,14 +44,14 @@ internal class MemberServiceIT @Autowired constructor(
 
     @BeforeEach
     internal fun setUp() {
-        relatedEntityChapter = chapterService.save(Chapter())
-        entity = memberService.save(Member(chapter = relatedEntityChapter))
+        relatedEntityChapter = chapterService.save(Chapter(), UNASSIGNED_ACCOUNT)
+        entity = memberService.save(Member(chapter = relatedEntityChapter), UNASSIGNED_ACCOUNT)
     }
 
     @Test
     @Transactional
     fun `Given new entity, when service saves new entity, then service should return same entity with generated id`() {
-        val result = memberService.save(entity)
+        val result = memberService.save(entity, UNASSIGNED_ACCOUNT)
 
         result.id shouldBe entity.id
         result.name shouldBe entity.name
@@ -61,7 +63,7 @@ internal class MemberServiceIT @Autowired constructor(
     @Transactional
     fun `Given existing entity in db, when service finds entity by id, then service should return correct entity`() {
         val existingEntity = entity
-        val result = memberService.find(existingEntity.id)
+        val result = memberService.find(existingEntity.id, UNASSIGNED_ACCOUNT)
 
         result.id shouldBe existingEntity.id
         result.name shouldBe existingEntity.name
@@ -72,30 +74,30 @@ internal class MemberServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
-        val existingEntity = entity
-        val removedEntity = memberService.delete(existingEntity)
+        val existingEntity = memberService.save(Member(), UNASSIGNED_ACCOUNT)
+        val removedEntity = memberService.delete(existingEntity, UNASSIGNED_ACCOUNT)
 
-        assertThrows(EntityNotFoundException::class.java) { memberService.find(removedEntity.id) }
+        assertThrows(EntityNotFoundException::class.java) { memberService.find(removedEntity.id, UNASSIGNED_ACCOUNT) }
     }
 
     @Test
     @Transactional
     fun `Given existing entity in db with related records, when service deletes entity, then service should removes entity and related records from db`() {
-        val existingEntity = memberService.save(Member())
-        val relatedSquad = squadService.save(Squad(members = mutableListOf(existingEntity)))
+        val existingEntity = memberService.save(Member(), UNASSIGNED_ACCOUNT)
+        val relatedSquad = squadService.save(Squad(members = mutableListOf(existingEntity)), UNASSIGNED_ACCOUNT)
 
-        squadService.findRelatedByMember(existingEntity.id).first() shouldBeEqualTo relatedSquad
+        squadService.findRelatedByMember(existingEntity.id, UNASSIGNED_ACCOUNT).first() shouldBeEqualTo relatedSquad
         assert(squadMemberHistoryService.findByMember(existingEntity).isNotEmpty())
 
-        val removedEntity = memberService.delete(existingEntity)
+        val removedEntity = memberService.delete(existingEntity, UNASSIGNED_ACCOUNT)
 
-        assertThrows(EntityNotFoundException::class.java) { squadService.findRelatedByMember(removedEntity.id) }
+        assertThrows(EntityNotFoundException::class.java) { squadService.findRelatedByMember(removedEntity.id, UNASSIGNED_ACCOUNT) }
         assert(squadMemberHistoryService.findByMember(removedEntity).isEmpty())
     }
 
     @AfterEach
     internal fun tearDown() {
-        memberService.delete(entity)
-        chapterService.delete(relatedEntityChapter)
+        memberService.delete(entity, UNASSIGNED_ACCOUNT)
+        chapterService.delete(relatedEntityChapter, UNASSIGNED_ACCOUNT)
     }
 }

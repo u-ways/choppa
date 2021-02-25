@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.iteration
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.iteration.IterationService
 import app.choppa.exception.EntityNotFoundException
@@ -28,13 +29,11 @@ internal class IterationServiceCollectionIT @Autowired constructor(
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
-    private lateinit var entity: Iteration
-
     @Test
     @Transactional
     fun `Given a new list of iterations, when service saves said list of iterations, then service should persist the list of iterations`() {
         val newListOfIterations = IterationFactory.create(amount = 3)
-        val result = iterationService.save(newListOfIterations)
+        val result = iterationService.save(newListOfIterations, UNASSIGNED_ACCOUNT)
 
         assertThat(result, List<Iteration>::containsInAnyOrder, newListOfIterations)
     }
@@ -42,14 +41,14 @@ internal class IterationServiceCollectionIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given an existing list of iterations, when service updates said list of iterations, then service should persist the changed list of iterations`() {
-        val existingListOfIterations = iterationService.save(IterationFactory.create(amount = 3))
+        val existingListOfIterations = iterationService.save(IterationFactory.create(amount = 3), UNASSIGNED_ACCOUNT)
         val newNumber = (1..10).random()
 
         val updatedListOfIterations = existingListOfIterations.map {
             Iteration(it.id, newNumber)
         }
 
-        val result = iterationService.save(updatedListOfIterations)
+        val result = iterationService.save(updatedListOfIterations, UNASSIGNED_ACCOUNT)
 
         assertThat(result, List<Iteration>::containsInAnyOrder, updatedListOfIterations)
     }
@@ -57,9 +56,9 @@ internal class IterationServiceCollectionIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given an existing list of iterations, when service deletes said list of iterations, then service should remove the existing list of iterations`() {
-        val existingListOfIterations = iterationService.save(IterationFactory.create(amount = 3))
-        val removedListOfIterations = iterationService.delete(existingListOfIterations)
+        val existingListOfIterations = iterationService.save(IterationFactory.create(amount = 3), UNASSIGNED_ACCOUNT)
+        val removedListOfIterations = iterationService.delete(existingListOfIterations, UNASSIGNED_ACCOUNT)
 
-        assertThrows(EntityNotFoundException::class.java) { iterationService.find(removedListOfIterations.map { it.id }) }
+        assertThrows(EntityNotFoundException::class.java) { iterationService.find(removedListOfIterations.map { it.id }, UNASSIGNED_ACCOUNT) }
     }
 }

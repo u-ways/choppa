@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.squad
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.Member.Companion.NO_MEMBERS
 import app.choppa.domain.squad.Squad
@@ -22,12 +23,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
-import java.util.UUID
+import org.springframework.test.web.servlet.*
+import java.util.*
 
 @WebMvcTest(controllers = [SquadController::class])
 @ActiveProfiles("test")
@@ -35,7 +32,6 @@ internal class SquadControllerIT @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
 ) {
-
     @MockkBean
     private lateinit var squadService: SquadService
 
@@ -54,7 +50,7 @@ internal class SquadControllerIT @Autowired constructor(
             val anotherSquad = Squad()
             val entities = listOf(squad, anotherSquad)
 
-            every { squadService.find() } returns entities
+            every { squadService.find(UNASSIGNED_ACCOUNT) } returns entities
 
             mvc.get("/api/squads") {
                 contentType = APPLICATION_JSON
@@ -73,7 +69,7 @@ internal class SquadControllerIT @Autowired constructor(
                 this.members.add(Member())
             }
 
-            every { squadService.find(entity.id) } returns entity
+            every { squadService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
 
             mvc.get("/api/squads/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -90,7 +86,7 @@ internal class SquadControllerIT @Autowired constructor(
             val entity = squad
             val updatedEntity = Squad(squad.id, squad.name, GREY, UNASSIGNED_TRIBE, NO_MEMBERS)
 
-            every { squadService.find(entity.id) } returns entity
+            every { squadService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
             every {
                 squadService.save(
                     Squad(
@@ -99,7 +95,8 @@ internal class SquadControllerIT @Autowired constructor(
                         squad.color,
                         Tribe(squad.tribe.id),
                         squad.members
-                    )
+                    ),
+                    UNASSIGNED_ACCOUNT
                 )
             } returns updatedEntity
 
@@ -117,8 +114,8 @@ internal class SquadControllerIT @Autowired constructor(
         fun `DELETE entity by ID`() {
             val entity = squad
 
-            every { squadService.find(entity.id) } returns entity
-            every { squadService.delete(entity) } returns entity
+            every { squadService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
+            every { squadService.delete(entity, UNASSIGNED_ACCOUNT) } returns entity
 
             mvc.delete("/api/squads/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -139,7 +136,8 @@ internal class SquadControllerIT @Autowired constructor(
                         squad.name,
                         squad.color,
                         Tribe(squad.tribe.id)
-                    )
+                    ),
+                    UNASSIGNED_ACCOUNT
                 )
             } returns newEntity
 
@@ -159,7 +157,7 @@ internal class SquadControllerIT @Autowired constructor(
 
         @Test
         fun `LIST no content`() {
-            every { squadService.find() } throws EmptyListException("No squads exist yet")
+            every { squadService.find(UNASSIGNED_ACCOUNT) } throws EmptyListException("No squads exist yet")
 
             mvc.get("/api/squads") {
                 contentType = APPLICATION_JSON
@@ -173,7 +171,7 @@ internal class SquadControllerIT @Autowired constructor(
         fun `GET UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { squadService.find(randomUUID) } throws EntityNotFoundException("Squad with id [$randomUUID] does not exist.")
+            every { squadService.find(randomUUID, UNASSIGNED_ACCOUNT) } throws EntityNotFoundException("Squad with id [$randomUUID] does not exist.")
 
             mvc.get("/api/squads/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
@@ -200,7 +198,7 @@ internal class SquadControllerIT @Autowired constructor(
         fun `DELETE UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { squadService.find(randomUUID) } throws EntityNotFoundException("Squad with id [$randomUUID] does not exist.")
+            every { squadService.find(randomUUID, UNASSIGNED_ACCOUNT) } throws EntityNotFoundException("Squad with id [$randomUUID] does not exist.")
 
             mvc.delete("/api/squads/{id}", randomUUID) {
                 contentType = APPLICATION_JSON

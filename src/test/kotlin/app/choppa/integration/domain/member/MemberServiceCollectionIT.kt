@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.member
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
 import app.choppa.exception.EntityNotFoundException
@@ -32,7 +33,7 @@ internal class MemberServiceCollectionIT @Autowired constructor(
     @Transactional
     fun `Given a new list of members, when service saves said list of members, then service should persist the list of members`() {
         val newListOfMembers = MemberFactory.create(amount = 3)
-        val result = memberService.save(newListOfMembers)
+        val result = memberService.save(newListOfMembers, UNASSIGNED_ACCOUNT)
 
         assertThat(result, List<Member>::containsInAnyOrder, newListOfMembers)
     }
@@ -40,14 +41,14 @@ internal class MemberServiceCollectionIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given an existing list of members, when service updates said list of members, then service should persist the changed list of members`() {
-        val existingListOfMembers = memberService.save(MemberFactory.create(amount = 3))
+        val existingListOfMembers = memberService.save(MemberFactory.create(amount = 3), UNASSIGNED_ACCOUNT)
         val newName = "newName"
 
         val updatedListOfMembers = existingListOfMembers.map {
             Member(it.id, newName)
         }
 
-        val result = memberService.save(updatedListOfMembers)
+        val result = memberService.save(updatedListOfMembers, UNASSIGNED_ACCOUNT)
 
         assertThat(result, List<Member>::containsInAnyOrder, updatedListOfMembers)
     }
@@ -55,18 +56,18 @@ internal class MemberServiceCollectionIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given an existing list of members, when service deletes said list of members, then service should remove the existing list of members`() {
-        val existingListOfMembers = memberService.save(MemberFactory.create(amount = 3))
-        val removedListOfMembers = memberService.delete(existingListOfMembers)
+        val existingListOfMembers = memberService.save(MemberFactory.create(amount = 3), UNASSIGNED_ACCOUNT)
+        val removedListOfMembers = memberService.delete(existingListOfMembers, UNASSIGNED_ACCOUNT)
 
-        assertThrows(EntityNotFoundException::class.java) { memberService.find(removedListOfMembers.map { it.id }) }
+        assertThrows(EntityNotFoundException::class.java) { memberService.find(removedListOfMembers.map { it.id }, UNASSIGNED_ACCOUNT) }
     }
 
     @Test
     @Transactional
     fun `Given an existing list of inactive members, when service finds said list of active members, then service should remove the existing list of members`() {
-        memberService.save(MemberFactory.create(amount = 3)) // existingListOfActiveMembers
-        val existingListOfInactiveMembers = memberService.save(listOf(Member(active = false), Member(active = false), Member(active = false)))
-        val result = memberService.findInactive()
+        memberService.save(MemberFactory.create(amount = 3), UNASSIGNED_ACCOUNT) // existingListOfActiveMembers
+        val existingListOfInactiveMembers = memberService.save(listOf(Member(active = false), Member(active = false), Member(active = false)), UNASSIGNED_ACCOUNT)
+        val result = memberService.findInactive(UNASSIGNED_ACCOUNT)
 
         assertThat(result, List<Member>::containsInAnyOrder, existingListOfInactiveMembers)
     }

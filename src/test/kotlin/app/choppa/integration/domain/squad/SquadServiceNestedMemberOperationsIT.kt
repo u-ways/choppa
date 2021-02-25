@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.squad
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
 import app.choppa.domain.squad.Squad
@@ -35,7 +36,7 @@ internal class SquadServiceNestedMemberOperationsIT @Autowired constructor(
     fun `Given new squad with non-existent members, when squad service saves new squad, then squad service should also handle saving the non-existing members`() {
         // Create a new squad with "SquadCurrentMembers" members that do not exist in the members repository.
         val newSquad = Squad(members = MemberFactory.create(2))
-        val result = squadService.save(newSquad)
+        val result = squadService.save(newSquad, UNASSIGNED_ACCOUNT)
 
         assertThat(result.members, List<Member>::containsInAnyOrder, newSquad.members)
     }
@@ -43,16 +44,17 @@ internal class SquadServiceNestedMemberOperationsIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given new squad with existing members, when squad service saves new squad with one new member, then squad service should save the new member and add it to the list of squad current members`() {
-        val newSquad = Squad(members = memberService.save(MemberFactory.create(2)).toMutableList())
+        val newSquad = Squad(members = memberService.save(MemberFactory.create(2), UNASSIGNED_ACCOUNT).toMutableList())
         val nonExistentMember = Member()
 
         squadService.save(
             newSquad.apply {
                 this.members.add(nonExistentMember)
-            }
+            },
+            UNASSIGNED_ACCOUNT
         )
 
-        val result = memberService.find(nonExistentMember.id)
+        val result = memberService.find(nonExistentMember.id, UNASSIGNED_ACCOUNT)
 
         result shouldBeEqualTo nonExistentMember
     }

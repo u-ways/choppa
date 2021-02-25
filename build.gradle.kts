@@ -41,6 +41,7 @@ dependencies {
 
     testImplementation("org.springframework:spring-core:5.2.9.RELEASE")
     testImplementation("org.springframework:spring-test:5.2.9.RELEASE")
+    testImplementation("org.springframework.security:spring-security-test:5.2.9.RELEASE")
     testImplementation("org.springframework.boot:spring-boot-test:2.3.4.RELEASE")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure:2.3.4.RELEASE")
 

@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.tribe
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadService
 import app.choppa.domain.tribe.Tribe
@@ -36,13 +37,13 @@ internal class TribeServiceIT @Autowired constructor(
 
     @BeforeEach
     internal fun setUp() {
-        entity = tribeService.save(Tribe())
+        entity = tribeService.save(Tribe(), UNASSIGNED_ACCOUNT)
     }
 
     @Test
     @Transactional
     fun `Given new entity, when service saves new entity, then service should return same entity with generated id`() {
-        val result = tribeService.save(entity)
+        val result = tribeService.save(entity, UNASSIGNED_ACCOUNT)
 
         result.id shouldBe entity.id
         result.name shouldBe entity.name
@@ -52,7 +53,7 @@ internal class TribeServiceIT @Autowired constructor(
     @Transactional
     fun `Given existing entity in db, when service finds entity by id, then service should return correct entity`() {
         val existingEntity = entity
-        val result = tribeService.find(existingEntity.id)
+        val result = tribeService.find(existingEntity.id, UNASSIGNED_ACCOUNT)
 
         result.id shouldBe existingEntity.id
         result.name shouldBe existingEntity.name
@@ -61,27 +62,27 @@ internal class TribeServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
-        val existingEntity = entity
-        val removedEntity = tribeService.delete(existingEntity)
+        val existingEntity = tribeService.save(Tribe(), UNASSIGNED_ACCOUNT)
+        val removedEntity = tribeService.delete(existingEntity, UNASSIGNED_ACCOUNT)
 
-        assertThrows(EntityNotFoundException::class.java) { tribeService.find(removedEntity.id) }
+        assertThrows(EntityNotFoundException::class.java) { tribeService.find(removedEntity.id, UNASSIGNED_ACCOUNT) }
     }
 
     @Test
     @Transactional
     fun `Given existing entity in db with related records, when service deletes entity, then service should removes entity and related records from db`() {
-        val existingEntity = tribeService.save(Tribe())
-        val relatedSquad = squadService.save(Squad(tribe = existingEntity))
+        val existingEntity = tribeService.save(Tribe(), UNASSIGNED_ACCOUNT)
+        val relatedSquad = squadService.save(Squad(tribe = existingEntity), UNASSIGNED_ACCOUNT)
 
-        squadService.findRelatedByTribe(existingEntity.id).first() shouldBeEqualTo relatedSquad
+        squadService.findRelatedByTribe(existingEntity.id, UNASSIGNED_ACCOUNT).first() shouldBeEqualTo relatedSquad
 
-        val removedEntity = tribeService.delete(existingEntity)
+        val removedEntity = tribeService.delete(existingEntity, UNASSIGNED_ACCOUNT)
 
-        assertThrows(EntityNotFoundException::class.java) { squadService.findRelatedByTribe(removedEntity.id) }
+        assertThrows(EntityNotFoundException::class.java) { squadService.findRelatedByTribe(removedEntity.id, UNASSIGNED_ACCOUNT) }
     }
 
     @AfterEach
     internal fun tearDown() {
-        tribeService.delete(entity)
+        tribeService.delete(entity, UNASSIGNED_ACCOUNT)
     }
 }

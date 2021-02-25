@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.chapter
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterController
 import app.choppa.domain.chapter.ChapterService
@@ -16,11 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 import java.util.UUID.randomUUID
 
 @WebMvcTest(controllers = [ChapterController::class])
@@ -29,10 +26,8 @@ internal class ChapterControllerIT @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
 ) {
-
     @MockkBean
     private lateinit var chapterService: ChapterService
-
     private lateinit var chapter: Chapter
 
     @BeforeEach
@@ -46,7 +41,7 @@ internal class ChapterControllerIT @Autowired constructor(
         fun `GET entity by ID`() {
             val entity = chapter
 
-            every { chapterService.find(entity.id) } returns entity
+            every { chapterService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
 
             mvc.get("/api/chapters/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -63,8 +58,8 @@ internal class ChapterControllerIT @Autowired constructor(
             val entity = chapter
             val updatedEntity = Chapter(chapter.id)
 
-            every { chapterService.find(entity.id) } returns entity
-            every { chapterService.save(updatedEntity) } returns updatedEntity
+            every { chapterService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
+            every { chapterService.save(updatedEntity, UNASSIGNED_ACCOUNT) } returns updatedEntity
 
             mvc.put("/api/chapters/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -80,8 +75,8 @@ internal class ChapterControllerIT @Autowired constructor(
         fun `DELETE entity by ID`() {
             val entity = chapter
 
-            every { chapterService.find(entity.id) } returns entity
-            every { chapterService.delete(entity) } returns entity
+            every { chapterService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
+            every { chapterService.delete(entity, UNASSIGNED_ACCOUNT) } returns entity
 
             mvc.delete("/api/chapters/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -95,7 +90,7 @@ internal class ChapterControllerIT @Autowired constructor(
         fun `POST new entity`() {
             val newEntity = chapter
 
-            every { chapterService.save(newEntity) } returns newEntity
+            every { chapterService.save(newEntity, UNASSIGNED_ACCOUNT) } returns newEntity
 
             mvc.post("/api/chapters/${newEntity.id}") {
                 contentType = APPLICATION_JSON
@@ -114,7 +109,7 @@ internal class ChapterControllerIT @Autowired constructor(
         fun `GET UUID doesn't exist`() {
             val randomUUID = randomUUID()
 
-            every { chapterService.find(randomUUID) } throws EntityNotFoundException("Chapter with id [$randomUUID] does not exist.")
+            every { chapterService.find(randomUUID, UNASSIGNED_ACCOUNT) } throws EntityNotFoundException("Chapter with id [$randomUUID] does not exist.")
 
             mvc.get("/api/chapters/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
@@ -141,7 +136,7 @@ internal class ChapterControllerIT @Autowired constructor(
         fun `DELETE UUID doesn't exist`() {
             val randomUUID = randomUUID()
 
-            every { chapterService.find(randomUUID) } throws EntityNotFoundException("Chapter with id [$randomUUID] does not exist.")
+            every { chapterService.find(randomUUID, UNASSIGNED_ACCOUNT) } throws EntityNotFoundException("Chapter with id [$randomUUID] does not exist.")
 
             mvc.delete("/api/chapters/{id}", randomUUID) {
                 contentType = APPLICATION_JSON

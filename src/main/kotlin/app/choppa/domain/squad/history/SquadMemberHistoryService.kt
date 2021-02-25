@@ -1,5 +1,6 @@
 package app.choppa.domain.squad.history
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.squad.Squad
@@ -24,8 +25,8 @@ class SquadMemberHistoryService(
     @Autowired private val squadHistoryRepository: SquadMemberHistoryRepository,
     @Autowired private val memberRepository: MemberRepository,
 ) {
-    fun find(pageable: Pageable = unpaged()): Page<SquadMemberHistory> = squadHistoryRepository
-        .findAll(pageable)
+    fun find(account: Account, pageable: Pageable = unpaged()): Page<SquadMemberHistory> = squadHistoryRepository
+        .findAllByAccountIdOrderByCreateDateDesc(account.id, pageable)
         .orElseThrow { throw EntityNotFoundException("No Squad Member History records exist yet.") }
 
     fun findBySquad(

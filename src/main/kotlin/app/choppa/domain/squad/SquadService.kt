@@ -9,7 +9,6 @@ import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest.of
-import org.springframework.data.domain.Sort.by
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
@@ -119,7 +118,7 @@ class SquadService(
 
     fun statistics(account: Account): HashMap<String, Serializable> = squadRepository.findAll().ownedBy(account).run {
         val revisions = squadMemberHistoryService.runCatching {
-            this.find(of(0, 20, by(SquadMemberHistory::createDate.name).descending()))
+            this.find(account, of(0, 20))
         }.getOrElse { emptyList() }
         hashMapOf(
             "Total" to this.size,

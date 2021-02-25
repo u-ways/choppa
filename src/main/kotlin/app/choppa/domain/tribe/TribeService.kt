@@ -53,19 +53,23 @@ class TribeService(
     override fun delete(entities: List<Tribe>, account: Account): List<Tribe> = entities
         .map { this.delete(it, account) }
 
-    fun statistics(): Map<String, Serializable> = tribeRepository.findAll().run {
-        mapOf(
-            "total" to this.size,
-            "knowledgeSharingPoints" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
-                tribeMap.also {
-                    tribeMap[tribe.name] = tribe.squads.fold(HashMap<String, HashMap<String, Any>>(this.size)) { squadMap, squad ->
-                        squadMap.also {
-                            squadMap[squad.id.toString()] = squadService.calculateKspForLastNRevisionsFor(squad.id, amount = 7)
-                        }
+    fun statistics(account: Account): Map<String, Serializable> =
+        tribeRepository.findAll().ownedBy(account).run {
+            mapOf(
+                "total" to this.size,
+                "knowledgeSharingPoints" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
+                    tribeMap.also {
+                        tribeMap[tribe.name] =
+                            tribe.squads.fold(HashMap<String, HashMap<String, Any>>(this.size)) { squadMap, squad ->
+                                squadMap.also {
+                                    squadMap[squad.id.toString()] =
+                                        squadService.calculateKspForLastNRevisionsFor(squad.id, amount = 7)
+                                }
+                            }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 
     private fun Optional<Tribe>.verifyOriginalOwnership(entity: Tribe, account: Account): Tribe =

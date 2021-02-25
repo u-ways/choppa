@@ -33,12 +33,9 @@ class MemberService(
         .orElseThrow { throw EntityNotFoundException("No members found.") }
 
     override fun save(entity: Member, account: Account): Member = memberRepository.save(
-        memberRepository.findById(entity.id).let {
-            when {
-                it.isPresent -> entity.copy(account = it.get().account)
-                else -> entity.copy(account = account)
-            }.verifyOwnership(account)
-        }
+        memberRepository
+            .findById(entity.id)
+            .verifyOriginalOwnership(entity, account)
     )
 
     override fun save(entities: List<Member>, account: Account): List<Member> = entities
@@ -93,4 +90,8 @@ class MemberService(
             )
         )
     }
+
+    private fun Optional<Member>.verifyOriginalOwnership(entity: Member, account: Account): Member =
+        if (this.isPresent) entity.copy(account = this.get().account).verifyOwnership(account)
+        else entity.copy(account = account)
 }

@@ -85,8 +85,8 @@ class MemberService(
         hashMapOf(
             "total" to this.size,
             "distribution" to mapOf(
-                "active" to this.count { it.active }.toDouble().div(this.size).round(),
-                "inactive" to this.count { !it.active }.toDouble().div(this.size).round(),
+                "active" to this.count { it.active }.toDouble().div(if (this.isNotEmpty()) this.size else 1).round(),
+                "inactive" to this.count { !it.active }.toDouble().div(if (this.isNotEmpty()) this.size else 1).round(),
             )
         )
     }

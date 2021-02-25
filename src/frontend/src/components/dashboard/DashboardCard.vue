@@ -4,7 +4,14 @@
     <div class="flex flex-col h-full">
       <div class="text-md font-semibold">{{ title }}</div>
       <template v-if="isLoaded">
-        <slot></slot>
+        <template v-if="noData === true">
+          <div class="py-3 flex flex-col flex-grow items-center justify-items-center justify-center">
+            <span class="font-semibold text-1xl md:text-2xl">No data</span>
+          </div>
+        </template>
+        <template v-else>
+          <slot></slot>
+        </template>
       </template>
       <template v-else>
         <div class="py-3 flex flex-row flex-grow items-center">
@@ -24,6 +31,7 @@ export default {
   props: {
     title: String,
     isLoaded: Boolean,
+    noData: Boolean,
   },
 };
 </script>

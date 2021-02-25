@@ -24,19 +24,25 @@
               <div class="text-center w-full font-normal text-sm">{{ totalMemberCount }} Total Members</div>
             </DashboardCard>
           </div>
-          <div class="pt-2 px-3 grid grid-cols-1 md:grid-cols-2 gap-2">
-            <DashboardCard title="Chapter Distribution" :is-loaded="chapterStatsLoaded">
-              <ChapterPieChart :chapter-stats="chapterStats" class="max-h-72"/>
-            </DashboardCard>
-            <DashboardCard title="KSP Balance" :is-loaded="tribeKSPStatsLoaded">
-              <KSPLineChart :tribe-k-s-p-stats="tribeKSPStats[0]" class="max-h-72"/>
+          <div class="pt-2 px-3 grid grid-cols-1 gap-2">
+            <DashboardCard title="KSP Balance - Not Real KSP values"
+                         :is-loaded="tribeKSPStatsLoaded"
+                         :no-data="tribeKSPStats.length === 0">
+            <KSPLineChart :tribeKspStats="tribeKSPStats[0]" class="max-h-72"/>
             </DashboardCard>
           </div>
           <div class="pt-2 px-3 grid grid-cols-1 md:grid-cols-2 gap-2">
-            <DashboardCard title="Latest Squad Changes" :is-loaded="squadLatestChangesLoaded">
+            <DashboardCard title="Chapter Distribution"
+                           :is-loaded="chapterStatsLoaded"
+                           :no-data="chapterStats.length === 0">
+              <ChapterPieChart :chapter-stats="chapterStats" class="max-h-72"/>
+            </DashboardCard>
+            <DashboardCard title="Latest Squad Changes"
+                           :is-loaded="squadLatestChangesLoaded"
+                           :no-data="squadLatestChanges.length === 0">
               <LatestChangesTable :latest-changes="squadLatestChanges" class="max-h-72"/>
             </DashboardCard>
-            <DashboardCard title="Member Overview">
+            <DashboardCard title="Member Overview" :no-data="true" :is-loaded="true">
             </DashboardCard>
           </div>
         </div>
@@ -112,20 +118,20 @@ export default {
 
     getAllTribes().then((result) => {
       this.totalTribeCount = `${result.length}`;
-    }).catch((error) => {
-      this.handleError(error);
+    }).catch(() => {
+      this.totalTribeCount = "0";
     });
 
     getAllSquads().then((result) => {
       this.totalSquadCount = `${result.length}`;
-    }).catch((error) => {
-      this.handleError(error);
+    }).catch(() => {
+      this.totalSquadCount = "0";
     });
 
     getAllChapters().then((result) => {
       this.totalChapterCount = `${result.length}`;
-    }).catch((error) => {
-      this.handleError(error);
+    }).catch(() => {
+      this.totalChapterCount = "0";
     });
 
     memberStats().then((result) => {

@@ -1,6 +1,6 @@
 import { getAllChapters } from "@/config/api/chapter.api";
 import httpClient from "@/config/api/http-client";
-import { getAllTribes } from "@/config/api/tribe.api";
+import { getTribe } from "@/config/api/tribe.api";
 import { getSquad } from "@/config/api/squad.api";
 import Member from "@/models/domain/member";
 import Squad from "@/models/domain/squad";
@@ -22,22 +22,14 @@ export async function chapterDistribution() {
 }
 
 export async function tribeKnowledgeSharingPoints() {
-  const [tribes, tribesKSPStats] = await Promise.all([
-    getAllTribes(),
-    httpClient.get("/tribes/stats"),
-  ]);
+  const tribesKSPStats = (await httpClient.get("/tribes/stats")).data;
 
-  if (tribes.length !== tribesKSPStats.data.total) {
-    throw new Error("Expected tribes and tribesKSPStats to be the same length");
-  }
-
-  return Promise.all(tribes.map(async (tribe) => ({
-    tribe,
-    knowledgeSharingPoints: await Promise.all(Object.keys(tribesKSPStats.data.knowledgeSharingPoints[tribe.name])
-      .map(async (squadId) => ({
-        squad: await getSquad({ id: squadId }),
-        ksp: tribesKSPStats.data.knowledgeSharingPoints[tribe.name][squadId],
-      }))),
+  return Promise.all(Object.keys(tribesKSPStats.knowledgeSharingPoints).map(async (tribeId) => ({
+    tribe: await getTribe({ id: tribeId }),
+    squads: await Promise.all(Object.keys(tribesKSPStats.knowledgeSharingPoints[tribeId]).map(async (squadId) => ({
+      squad: await getSquad({ id: squadId }),
+      ksp: tribesKSPStats.knowledgeSharingPoints[tribeId][squadId],
+    }))),
   })));
 }
 

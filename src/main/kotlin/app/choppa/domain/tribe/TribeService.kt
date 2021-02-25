@@ -59,7 +59,7 @@ class TribeService(
                 "total" to this.size,
                 "knowledgeSharingPoints" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
                     tribeMap.also {
-                        tribeMap[tribe.name] =
+                        tribeMap[tribe.id.toString()] =
                             tribe.squads.fold(HashMap<String, HashMap<String, Any>>(this.size)) { squadMap, squad ->
                                 squadMap.also {
                                     squadMap[squad.id.toString()] =
@@ -70,7 +70,6 @@ class TribeService(
                 }
             )
         }
-    }
 
     private fun Optional<Tribe>.verifyOriginalOwnership(entity: Tribe, account: Account): Tribe =
         if (this.isPresent) entity.copy(account = this.get().account).verifyOwnership(account)

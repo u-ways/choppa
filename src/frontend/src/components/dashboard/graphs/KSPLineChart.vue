@@ -11,7 +11,7 @@ import { stripAlphaFromHex } from "@/utils/stripAlphaFromHex";
 export default {
   name: "KSPLineChart",
   props: {
-    tribeKSPStats: {},
+    tribeKspStats: {},
   },
   data() {
     return {
@@ -23,7 +23,7 @@ export default {
     legendFontColor() {
       return this.currentTheme === themeSetting.DARK_THEME ? "#E5E7EB" : "#374151";
     },
-    gridlineColor() {
+    gridLineColor() {
       return this.currentTheme === themeSetting.DARK_THEME ? "rgba(229,231,235, 0.2)" : "rgba(55,65,81, 0.2)";
     },
   },
@@ -32,10 +32,11 @@ export default {
       type: "line",
       data: {
         labels: ["T1", "T2", "T3", "T4", "T5", "T6", "T7"],
-        datasets: this.tribeKSPStats.knowledgeSharingPoints.map((squadKspPair) => ({
-          data: Object.values(squadKspPair.ksp).map((ksp) => ksp.KSP),
+        datasets: this.tribeKspStats.squads.map((squadKspPair) => ({
+          data: Object.values(squadKspPair.ksp).map((ksp) => ksp.ksp),
           label: squadKspPair.squad.name,
           borderColor: stripAlphaFromHex(squadKspPair.squad.color),
+          backgroundColor: stripAlphaFromHex(squadKspPair.squad.color),
           fill: false,
         })),
       },
@@ -58,7 +59,7 @@ export default {
           yAxes: [{
             gridLines: {
               display: true,
-              color: this.gridlineColor,
+              color: this.gridLineColor,
               drawBorder: false,
             },
             ticks: {
@@ -74,7 +75,7 @@ export default {
       this.chart.options.legend.labels.fontColor = this.legendFontColor;
       this.chart.options.scales.xAxes[0].ticks.fontColor = this.legendFontColor;
       this.chart.options.scales.yAxes[0].ticks.fontColor = this.legendFontColor;
-      this.chart.options.scales.yAxes[0].gridLines.color = this.gridlineColor;
+      this.chart.options.scales.yAxes[0].gridLines.color = this.gridLineColor;
       this.chart.update();
     },
   },

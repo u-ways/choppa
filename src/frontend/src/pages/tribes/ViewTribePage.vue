@@ -38,7 +38,7 @@
     <template v-slot:full-width>
       <div class="mx-3 my-5">
         <div v-if="isLoaded">
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-3" v-if="tribe.squads.length > 0">
+          <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3" v-if="tribe.squads.length > 0">
             <SquadCard v-for="squad in tribe.squads" :squad="squad" :key="squad.id"/>
           </div>
           <div v-else class="container mx-auto mt-10">

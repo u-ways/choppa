@@ -111,7 +111,7 @@ class SquadService(
             acc.also {
                 acc[i.toString()] = mapOf(
                     "timestamp" to Instant.now().minus(i * 7L, ChronoUnit.DAYS).toEpochMilli(),
-                    "KSP" to (200 - (i..200).random()),
+                    "ksp" to (200 - (i..200).random()),
                 )
             }
         }

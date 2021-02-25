@@ -11,12 +11,14 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Service
+import java.util.UUID.randomUUID
 
 @Service
 class AccountService(
     @Autowired private val accountRepository: AccountRepository,
 ) {
 
+    // IDEA(u-ways) convert to `AccountProviderResolver` enum?
     companion object {
         val CONVERTERS = mapOf(
             "choppa" to ChoppaOAuth2Provider(),
@@ -53,7 +55,15 @@ class AccountService(
             savedAccount.profilePicture = converter.profilePicture(oauth2User)
             savedAccount
         } else {
-            Account.createFirstLogin(provider, providerId, name)
+            Account(
+                id = randomUUID(),
+                provider = provider,
+                providerId = providerId,
+                organisationName = "",
+                name = name,
+                profilePicture = "",
+                firstLogin = true
+            )
         }
     }
 

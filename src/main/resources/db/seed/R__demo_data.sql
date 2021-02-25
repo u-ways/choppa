@@ -70,7 +70,7 @@ $$
         demo_account_id         CONSTANT UUID          := '00000000000000000000000000000001';
     BEGIN
         -- Demo Account
-        insert into accounts (account_id, provider, provider_id, organisation_name)
+        insert into account (account_id, provider, provider_id, organisation_name)
         values (demo_account_id, 'choppa', 'choppa-demo-account', 'Choppa Demo Org')
         ON CONFLICT (provider, provider_id) DO NOTHING;
 

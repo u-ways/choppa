@@ -1,5 +1,6 @@
 package app.choppa.acceptance.domain.iteration
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.iteration.IterationRepository
 import app.choppa.domain.iteration.IterationService
@@ -22,7 +23,6 @@ internal class IterationServiceTest {
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(IterationRepository::class)
-
         service = IterationService(repository)
     }
 
@@ -30,9 +30,10 @@ internal class IterationServiceTest {
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
         val entity = Iteration()
 
+        every { repository.findById(entity.id) } returns empty()
         every { repository.save(entity) } returns entity
 
-        val savedEntity = service.save(entity)
+        val savedEntity = service.save(entity, UNASSIGNED_ACCOUNT)
 
         savedEntity shouldBe entity
 
@@ -46,7 +47,7 @@ internal class IterationServiceTest {
 
         every { repository.findById(id) } returns of(existingEntity)
 
-        val foundEntity = service.find(id)
+        val foundEntity = service.find(id, UNASSIGNED_ACCOUNT)
 
         foundEntity shouldBe existingEntity
 
@@ -57,10 +58,10 @@ internal class IterationServiceTest {
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
         val existingEntity = Iteration()
 
+        every { repository.findById(existingEntity.id) } returns of(existingEntity)
         every { repository.delete(existingEntity) } returns Unit
-        every { repository.findById(existingEntity.id) } returns empty()
 
-        val removedEntity = service.delete(existingEntity)
+        val removedEntity = service.delete(existingEntity, UNASSIGNED_ACCOUNT)
 
         removedEntity shouldBe existingEntity
 
@@ -73,6 +74,6 @@ internal class IterationServiceTest {
 
         every { repository.findById(id) } returns empty()
 
-        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
+        assertThrows(EntityNotFoundException::class.java) { service.find(id, UNASSIGNED_ACCOUNT) }
     }
 }

@@ -32,12 +32,9 @@ class TribeService(
         .verifyOwnership(account)
 
     override fun save(entity: Tribe, account: Account): Tribe = tribeRepository.save(
-        tribeRepository.findById(entity.id).let {
-            when {
-                it.isPresent -> entity.copy(account = it.get().account)
-                else -> entity.copy(account = account)
-            }.verifyOwnership(account)
-        }
+        tribeRepository
+            .findById(entity.id)
+            .verifyOriginalOwnership(entity, account)
     )
 
     override fun save(entities: List<Tribe>, account: Account): List<Tribe> = entities
@@ -73,4 +70,8 @@ class TribeService(
                 }
             )
         }
+
+    private fun Optional<Tribe>.verifyOriginalOwnership(entity: Tribe, account: Account): Tribe =
+        if (this.isPresent) entity.copy(account = this.get().account).verifyOwnership(account)
+        else entity.copy(account = account)
 }

@@ -47,13 +47,10 @@ class SquadService(
         .run {
             memberService.save(entity.members, account)
             squadRepository.save(
-                squadRepository.findById(entity.id).let {
-                    when {
-                        it.isPresent -> entity.copy(account = it.get().account)
-                        else -> entity.copy(account = account)
-                    }.verifyOwnership(account).createSquadMembersRevision(this)
-                }
-            )
+                squadRepository
+                    .findById(entity.id)
+                    .verifyOriginalOwnership(entity, account)
+            ).createSquadMembersRevision(this)
         }
 
     @Transactional(isolation = REPEATABLE_READ)
@@ -110,17 +107,6 @@ class SquadService(
         }
     }
 
-    private fun Optional<Squad>.getMembersIfPresent() = when {
-        this.isPresent -> this.get().members.toMutableList()
-        else -> emptyList()
-    }
-
-    private fun Squad.createSquadMembersRevision(olderFormation: List<Member>) = this.apply {
-        squadMemberHistoryService.save(
-            squadMemberHistoryService.generateRevisions(this, olderFormation)
-        )
-    }
-
     fun calculateKspForLastNRevisionsFor(id: UUID, amount: Int): HashMap<String, Any> =
         (1..amount).fold(HashMap<String, Any>(amount)) { acc, i ->
             acc.also {
@@ -142,6 +128,21 @@ class SquadService(
                     acc[index + 1] = revision
                 }
             }
+        )
+    }
+
+    private fun Optional<Squad>.verifyOriginalOwnership(entity: Squad, account: Account): Squad =
+        if (this.isPresent) entity.copy(account = this.get().account).verifyOwnership(account)
+        else entity.copy(account = account)
+
+    private fun Optional<Squad>.getMembersIfPresent() = when {
+        this.isPresent -> this.get().members.toMutableList()
+        else -> emptyList()
+    }
+
+    private fun Squad.createSquadMembersRevision(olderFormation: List<Member>) = this.apply {
+        squadMemberHistoryService.save(
+            squadMemberHistoryService.generateRevisions(this, olderFormation)
         )
     }
 }

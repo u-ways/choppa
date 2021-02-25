@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.tribe
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeService
 import app.choppa.exception.EntityNotFoundException
@@ -29,13 +30,11 @@ internal class TribeServiceCollectionIT @Autowired constructor(
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
-    private lateinit var entity: Tribe
-
     @Test
     @Transactional
     fun `Given a new list of tribes, when service saves said list of tribes, then service should persist the list of tribes`() {
         val newListOfTribes = TribeFactory.create(amount = 3)
-        val result = tribeService.save(newListOfTribes)
+        val result = tribeService.save(newListOfTribes, UNASSIGNED_ACCOUNT)
 
         assertThat(result, List<Tribe>::containsInAnyOrder, newListOfTribes)
     }
@@ -43,14 +42,14 @@ internal class TribeServiceCollectionIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given an existing list of tribes, when service updates said list of tribes, then service should persist the changed list of tribes`() {
-        val existingListOfTribes = tribeService.save(TribeFactory.create(amount = 3))
+        val existingListOfTribes = tribeService.save(TribeFactory.create(amount = 3), UNASSIGNED_ACCOUNT)
         val redColor = "#FF0000".toRGBAInt()
 
         val updatedListOfTribes = existingListOfTribes.map {
             Tribe(it.id, it.name, redColor)
         }
 
-        val result = tribeService.save(updatedListOfTribes)
+        val result = tribeService.save(updatedListOfTribes, UNASSIGNED_ACCOUNT)
 
         assertThat(result, List<Tribe>::containsInAnyOrder, updatedListOfTribes)
     }
@@ -58,9 +57,9 @@ internal class TribeServiceCollectionIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given an existing list of tribes, when service deletes said list of tribes, then service should remove the existing list of tribes`() {
-        val existingListOfTribes = tribeService.save(TribeFactory.create(amount = 3))
-        val removedListOfTribes = tribeService.delete(existingListOfTribes)
+        val existingListOfTribes = tribeService.save(TribeFactory.create(amount = 3), UNASSIGNED_ACCOUNT)
+        val removedListOfTribes = tribeService.delete(existingListOfTribes, UNASSIGNED_ACCOUNT)
 
-        assertThrows(EntityNotFoundException::class.java) { tribeService.find(removedListOfTribes.map { it.id }) }
+        assertThrows(EntityNotFoundException::class.java) { tribeService.find(removedListOfTribes.map { it.id }, UNASSIGNED_ACCOUNT) }
     }
 }

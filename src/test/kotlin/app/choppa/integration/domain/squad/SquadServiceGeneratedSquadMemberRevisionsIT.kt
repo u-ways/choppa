@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.squad
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadService
@@ -33,10 +34,11 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
     @Test
     @Transactional
     fun `Given existing squad no member formation, when service saves existing squad with revised formation, then a new squad member revision should be generated`() {
-        val existingSquad = squadService.save(Squad())
+        val existingSquad = squadService.save(Squad(), UNASSIGNED_ACCOUNT)
 
         val existingSquadWithRevisedFormation = squadService.save(
-            existingSquad.copy(members = mutableListOf(Member()))
+            existingSquad.copy(members = mutableListOf(Member())),
+            UNASSIGNED_ACCOUNT
         )
 
         assertDoesNotThrow {
@@ -55,11 +57,13 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
     @Transactional
     fun `Given existing squad with existing member formation, when service saves existing squad with revised formation, then correct squad member revision should be generated`() {
         val existingSquad = squadService.save(
-            Squad(members = mutableListOf(Member()))
+            Squad(members = mutableListOf(Member())),
+            UNASSIGNED_ACCOUNT
         )
 
         val existingSquadWithRevisedFormation = squadService.save(
-            existingSquad.copy(members = existingSquad.members.plus(Member()).toMutableList())
+            existingSquad.copy(members = existingSquad.members.plus(Member()).toMutableList()),
+            UNASSIGNED_ACCOUNT
         )
 
         val result = squadMemberHistoryService.findBySquad(existingSquadWithRevisedFormation)
@@ -76,11 +80,13 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
         val relatedMember = Member()
 
         val existingSquad = squadService.save(
-            Squad(members = mutableListOf(relatedMember))
+            Squad(members = mutableListOf(relatedMember)),
+            UNASSIGNED_ACCOUNT
         )
 
         val existingSquadWithRevisedFormation = squadService.save(
-            existingSquad.copy(members = mutableListOf())
+            existingSquad.copy(members = mutableListOf()),
+            UNASSIGNED_ACCOUNT
         )
 
         val result = squadMemberHistoryService.findBySquad(existingSquadWithRevisedFormation)

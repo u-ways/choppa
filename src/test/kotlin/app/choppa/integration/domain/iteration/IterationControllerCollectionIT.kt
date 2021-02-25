@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.iteration
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.iteration.IterationController
 import app.choppa.domain.iteration.IterationService
@@ -16,11 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 import java.time.Instant.now
 
 @WebMvcTest(controllers = [IterationController::class])
@@ -29,7 +26,6 @@ internal class IterationControllerCollectionIT @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
 ) {
-
     @MockkBean
     private lateinit var iterationService: IterationService
 
@@ -40,7 +36,7 @@ internal class IterationControllerCollectionIT @Autowired constructor(
         fun `LIST entities`() {
             val entities = IterationFactory.create(amount = 3)
 
-            every { iterationService.find() } returns entities
+            every { iterationService.find(UNASSIGNED_ACCOUNT) } returns entities
 
             mvc.get("/api/iterations") {
                 contentType = APPLICATION_JSON
@@ -57,8 +53,8 @@ internal class IterationControllerCollectionIT @Autowired constructor(
             val existingCollection = IterationFactory.create(amount = 3)
             val updatedCollection = existingCollection.map { Iteration(it.id, it.number, now()) }
 
-            every { iterationService.find(existingCollection.map { it.id }) } returns existingCollection
-            every { iterationService.save(updatedCollection) } returns updatedCollection
+            every { iterationService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
+            every { iterationService.save(updatedCollection, UNASSIGNED_ACCOUNT) } returns updatedCollection
 
             mvc.put("/api/iterations") {
                 contentType = APPLICATION_JSON
@@ -74,8 +70,8 @@ internal class IterationControllerCollectionIT @Autowired constructor(
         fun `DELETE entity by ID`() {
             val existingCollection = IterationFactory.create(amount = 3)
 
-            every { iterationService.find(existingCollection.map { it.id }) } returns existingCollection
-            every { iterationService.delete(existingCollection) } returns existingCollection
+            every { iterationService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
+            every { iterationService.delete(existingCollection, UNASSIGNED_ACCOUNT) } returns existingCollection
 
             mvc.delete("/api/iterations") {
                 contentType = APPLICATION_JSON
@@ -90,7 +86,7 @@ internal class IterationControllerCollectionIT @Autowired constructor(
         fun `POST new entity`() {
             val newCollection = IterationFactory.create(amount = 3)
 
-            every { iterationService.save(newCollection) } returns newCollection
+            every { iterationService.save(newCollection, UNASSIGNED_ACCOUNT) } returns newCollection
 
             mvc.post("/api/iterations") {
                 contentType = APPLICATION_JSON
@@ -108,7 +104,7 @@ internal class IterationControllerCollectionIT @Autowired constructor(
 
         @Test
         fun `LIST no content`() {
-            every { iterationService.find() } throws EmptyListException("No iterations exist yet")
+            every { iterationService.find(UNASSIGNED_ACCOUNT) } throws EmptyListException("No iterations exist yet")
 
             mvc.get("/api/iterations") {
                 contentType = APPLICATION_JSON

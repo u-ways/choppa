@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.iteration
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.iteration.Iteration
 import app.choppa.domain.iteration.IterationController
 import app.choppa.domain.iteration.IterationService
@@ -16,13 +17,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.put
+import org.springframework.test.web.servlet.*
 import java.time.Instant.ofEpochMilli
-import java.util.UUID
+import java.util.*
 
 @WebMvcTest(controllers = [IterationController::class])
 @ActiveProfiles("test")
@@ -30,10 +27,8 @@ internal class IterationControllerIT @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
 ) {
-
     @MockkBean
     private lateinit var iterationService: IterationService
-
     private lateinit var iteration: Iteration
 
     @BeforeEach
@@ -47,7 +42,7 @@ internal class IterationControllerIT @Autowired constructor(
         fun `GET entity by ID`() {
             val entity = iteration
 
-            every { iterationService.find(entity.id) } returns entity
+            every { iterationService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
 
             mvc.get("/api/iterations/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -64,7 +59,7 @@ internal class IterationControllerIT @Autowired constructor(
             val entity = iteration
             val updatedEntity = Iteration(iteration.id)
 
-            every { iterationService.find(entity.id) } returns entity
+            every { iterationService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
             every {
                 iterationService.save(
                     Iteration(
@@ -72,7 +67,8 @@ internal class IterationControllerIT @Autowired constructor(
                         updatedEntity.number,
                         ofEpochMilli(updatedEntity.startDate.toEpochMilli()),
                         ofEpochMilli(updatedEntity.endDate.toEpochMilli())
-                    )
+                    ),
+                    UNASSIGNED_ACCOUNT
                 )
             } returns updatedEntity
 
@@ -90,8 +86,8 @@ internal class IterationControllerIT @Autowired constructor(
         fun `DELETE entity by ID`() {
             val entity = iteration
 
-            every { iterationService.find(entity.id) } returns entity
-            every { iterationService.delete(entity) } returns entity
+            every { iterationService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
+            every { iterationService.delete(entity, UNASSIGNED_ACCOUNT) } returns entity
 
             mvc.delete("/api/iterations/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -112,7 +108,8 @@ internal class IterationControllerIT @Autowired constructor(
                         newEntity.number,
                         ofEpochMilli(newEntity.startDate.toEpochMilli()),
                         ofEpochMilli(newEntity.endDate.toEpochMilli())
-                    )
+                    ),
+                    UNASSIGNED_ACCOUNT
                 )
             } returns newEntity
 
@@ -133,7 +130,12 @@ internal class IterationControllerIT @Autowired constructor(
         fun `GET UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { iterationService.find(randomUUID) } throws EntityNotFoundException("Iteration with id [$randomUUID] does not exist.")
+            every {
+                iterationService.find(
+                    randomUUID,
+                    UNASSIGNED_ACCOUNT
+                )
+            } throws EntityNotFoundException("Iteration with id [$randomUUID] does not exist.")
 
             mvc.get("/api/iterations/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
@@ -160,7 +162,12 @@ internal class IterationControllerIT @Autowired constructor(
         fun `DELETE UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { iterationService.find(randomUUID) } throws EntityNotFoundException("Iteration with id [$randomUUID] does not exist.")
+            every {
+                iterationService.find(
+                    randomUUID,
+                    UNASSIGNED_ACCOUNT
+                )
+            } throws EntityNotFoundException("Iteration with id [$randomUUID] does not exist.")
 
             mvc.delete("/api/iterations/{id}", randomUUID) {
                 contentType = APPLICATION_JSON

@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.member
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberController
 import app.choppa.domain.member.MemberService
@@ -16,7 +17,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
-import java.util.UUID
+import java.util.*
 import java.util.UUID.randomUUID
 
 @WebMvcTest(controllers = [MemberController::class])
@@ -50,9 +51,9 @@ internal class MemberControllerRelatedEntitiesIT @Autowired constructor(
 
     private fun findMembersRelatedBy(relatedEntity: String, id: UUID): List<Member> {
         return when (relatedEntity) {
-            "chapter" -> memberService.findRelatedByChapter(id)
-            "squad" -> memberService.findRelatedBySquad(id)
-            "tribe" -> memberService.findRelatedByTribe(id)
+            "chapter" -> memberService.findRelatedByChapter(id, UNASSIGNED_ACCOUNT)
+            "squad" -> memberService.findRelatedBySquad(id, UNASSIGNED_ACCOUNT)
+            "tribe" -> memberService.findRelatedByTribe(id, UNASSIGNED_ACCOUNT)
             else -> throw IllegalArgumentException("invalid related entity [$relatedEntity] for member")
         }
     }

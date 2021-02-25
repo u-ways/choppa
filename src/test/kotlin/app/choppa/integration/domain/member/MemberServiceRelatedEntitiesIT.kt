@@ -1,5 +1,6 @@
 package app.choppa.integration.domain.member
 
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterService
 import app.choppa.domain.member.Member
@@ -32,29 +33,29 @@ internal class MemberServiceRelatedEntitiesIT @Autowired constructor(
     private val squadService: SquadService,
     private val tribeService: TribeService,
 ) {
-
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
     @Test
     @Transactional
     fun `Given tribe with members, when service find members by related tribe, then service should return related members`() {
-        memberService.save(MemberFactory.create(2)) // random members
+        memberService.save(MemberFactory.create(2), UNASSIGNED_ACCOUNT) // random members
 
-        val tribeMembersOfSquadA = memberService.save(MemberFactory.create(3))
-        val tribeMembersOfSquadB = memberService.save(MemberFactory.create(3))
+        val tribeMembersOfSquadA = memberService.save(MemberFactory.create(3), UNASSIGNED_ACCOUNT)
+        val tribeMembersOfSquadB = memberService.save(MemberFactory.create(3), UNASSIGNED_ACCOUNT)
 
-        val relatedTribe = tribeService.save(Tribe())
+        val relatedTribe = tribeService.save(Tribe(), UNASSIGNED_ACCOUNT)
         val expectedRelatedTribeMembers = tribeMembersOfSquadA.plus(tribeMembersOfSquadB)
 
         squadService.save(
             listOf(
                 Squad(tribe = relatedTribe, members = tribeMembersOfSquadA.toMutableList()),
                 Squad(tribe = relatedTribe, members = tribeMembersOfSquadB.toMutableList())
-            )
+            ),
+            UNASSIGNED_ACCOUNT
         )
 
-        val actualRelatedTribeMembers = memberService.findRelatedByTribe(relatedTribe.id)
+        val actualRelatedTribeMembers = memberService.findRelatedByTribe(relatedTribe.id, UNASSIGNED_ACCOUNT)
 
         assertThat(actualRelatedTribeMembers, List<Member>::containsInAnyOrder, expectedRelatedTribeMembers)
     }
@@ -62,13 +63,11 @@ internal class MemberServiceRelatedEntitiesIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given squad with members, when service find members by related squad, then service should return related members`() {
-        memberService.save(MemberFactory.create(2)) // random members
+        memberService.save(MemberFactory.create(2), UNASSIGNED_ACCOUNT) // random members
 
-        val expectedRelatedSquadMembers = memberService.save(MemberFactory.create(3))
-
-        val relatedSquad = squadService.save(Squad(members = expectedRelatedSquadMembers.toMutableList()))
-
-        val actualRelatedSquadMembers = memberService.findRelatedBySquad(relatedSquad.id)
+        val expectedRelatedSquadMembers = memberService.save(MemberFactory.create(3), UNASSIGNED_ACCOUNT)
+        val relatedSquad = squadService.save(Squad(members = expectedRelatedSquadMembers.toMutableList()), UNASSIGNED_ACCOUNT)
+        val actualRelatedSquadMembers = memberService.findRelatedBySquad(relatedSquad.id, UNASSIGNED_ACCOUNT)
 
         assertThat(actualRelatedSquadMembers, List<Member>::containsInAnyOrder, expectedRelatedSquadMembers)
     }
@@ -76,12 +75,12 @@ internal class MemberServiceRelatedEntitiesIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given member with members, when service find members by related chapter, then service should return related members`() {
-        memberService.save(MemberFactory.create(2)) // random members
+        memberService.save(MemberFactory.create(2), UNASSIGNED_ACCOUNT) // random members
 
-        val relatedChapter = chapterService.save(Chapter())
-        val expectedRelatedChapterMembers = memberService.save(MemberFactory.create(5, relatedChapter))
+        val relatedChapter = chapterService.save(Chapter(), UNASSIGNED_ACCOUNT)
+        val expectedRelatedChapterMembers = memberService.save(MemberFactory.create(5, relatedChapter), UNASSIGNED_ACCOUNT)
 
-        val actualRelatedChapterMembers = memberService.findRelatedByChapter(relatedChapter.id)
+        val actualRelatedChapterMembers = memberService.findRelatedByChapter(relatedChapter.id, UNASSIGNED_ACCOUNT)
 
         assertThat(actualRelatedChapterMembers, List<Member>::containsInAnyOrder, expectedRelatedChapterMembers)
     }

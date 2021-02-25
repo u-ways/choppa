@@ -24,13 +24,26 @@ export async function chapterDistribution() {
 export async function tribeKnowledgeSharingPoints() {
   const tribesKSPStats = (await httpClient.get("/tribes/stats")).data;
 
-  return Promise.all(Object.keys(tribesKSPStats.knowledgeSharingPoints).map(async (tribeId) => ({
+  const tribeAndSquads = await Promise.all(Object.keys(tribesKSPStats.knowledgeSharingPoints).map(async (tribeId) => ({
     tribe: await getTribe({ id: tribeId }),
     squads: await Promise.all(Object.keys(tribesKSPStats.knowledgeSharingPoints[tribeId]).map(async (squadId) => ({
       squad: await getSquad({ id: squadId }),
       ksp: tribesKSPStats.knowledgeSharingPoints[tribeId][squadId],
     }))),
   })));
+
+  return tribeAndSquads.map((t) => ({
+    ...t,
+    tribeAverage: sumArrays(
+      ...t.squads.map((s) => Object.values(s.ksp).map((k) => k.ksp).map((v) => Number.parseInt(v, 10))),
+    ).map((avg) => avg / t.squads.length),
+  }));
+}
+
+function sumArrays(...arrays) {
+  const n = arrays.reduce((max, xs) => Math.max(max, xs.length), 0);
+  const result = Array.from({ length: n });
+  return result.map((_, i) => arrays.map((xs) => xs[i] || 0).reduce((sum, x) => sum + x, 0));
 }
 
 export async function squadLatestChanges() {

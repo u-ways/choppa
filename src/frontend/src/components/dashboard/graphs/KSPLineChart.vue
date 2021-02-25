@@ -28,17 +28,26 @@ export default {
     },
   },
   mounted() {
+    console.log(this.tribeKspStats);
     this.chart = new Chart(this.$refs.canvas.getContext("2d"), {
       type: "line",
       data: {
         labels: ["T1", "T2", "T3", "T4", "T5", "T6", "T7"],
-        datasets: this.tribeKspStats.squads.map((squadKspPair) => ({
-          data: Object.values(squadKspPair.ksp).map((ksp) => ksp.ksp),
-          label: squadKspPair.squad.name,
-          borderColor: stripAlphaFromHex(squadKspPair.squad.color),
-          backgroundColor: stripAlphaFromHex(squadKspPair.squad.color),
-          fill: false,
-        })),
+        datasets: [
+          {
+            data: this.tribeKspStats.tribeAverage,
+            label: "Tribe Average",
+            borderColor: "#6762D950",
+            backgroundColor: "#6762D950",
+          },
+          ...this.tribeKspStats.squads.map((squadKspPair) => ({
+            data: Object.values(squadKspPair.ksp).map((ksp) => ksp.ksp),
+            label: squadKspPair.squad.name,
+            borderColor: stripAlphaFromHex(squadKspPair.squad.color),
+            backgroundColor: stripAlphaFromHex(squadKspPair.squad.color),
+            fill: false,
+          })),
+        ],
       },
       options: {
         legend: {

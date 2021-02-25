@@ -1,5 +1,6 @@
 package app.choppa.acceptance.utils
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseModel
 import app.choppa.utils.QueryComponent
 import app.choppa.utils.ReverseRouteCacheElement
@@ -13,13 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import java.util.UUID
+import org.springframework.web.bind.annotation.*
+import java.util.*
 import java.util.UUID.randomUUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.stream.Stream
@@ -283,9 +279,9 @@ internal class ReverseRouterTest {
         }
     }
 
-    internal class EntityOne(override val id: UUID = randomUUID()) : BaseModel
-    internal class EntityTwo(override val id: UUID = randomUUID()) : BaseModel
-    internal class EntityThree(override val id: UUID = randomUUID()) : BaseModel
+    internal class EntityOne(override val id: UUID = randomUUID(), override val account: Account = Account()) : BaseModel
+    internal class EntityTwo(override val id: UUID = randomUUID(), override val account: Account = Account()) : BaseModel
+    internal class EntityThree(override val id: UUID = randomUUID(), override val account: Account = Account()) : BaseModel
 
     @RequestMapping
     internal class UnderTestIndexMapping

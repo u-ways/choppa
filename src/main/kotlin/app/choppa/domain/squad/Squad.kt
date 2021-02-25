@@ -1,6 +1,7 @@
 package app.choppa.domain.squad
 
 import app.choppa.domain.account.Account
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.Member.Companion.NO_MEMBERS
@@ -46,7 +47,7 @@ data class Squad(
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id")
-    override val account: Account = Account.DEMO_ACCOUNT,
+    override val account: Account = UNASSIGNED_ACCOUNT,
 ) : BaseModel {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 

@@ -1,7 +1,7 @@
 package app.choppa.domain.tribe
 
 import app.choppa.domain.account.Account
-import app.choppa.domain.account.Account.Companion.DEMO_ACCOUNT
+import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.squad.Squad
 import app.choppa.utils.Color.Companion.GREY
@@ -39,7 +39,7 @@ data class Tribe(
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id")
-    override val account: Account = DEMO_ACCOUNT,
+    override val account: Account = UNASSIGNED_ACCOUNT,
 ) : BaseModel {
     override fun toString() = "Tribe(id=$id, name=$name)"
 

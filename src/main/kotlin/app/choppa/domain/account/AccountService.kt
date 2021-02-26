@@ -1,12 +1,13 @@
 package app.choppa.domain.account
 
+import app.choppa.domain.account.Account.Companion.DEMO_ACCOUNT
 import app.choppa.domain.account.provider.*
 import app.choppa.exception.NoOAuth2ProviderFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.context.SecurityContextHolder.getContext
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -17,7 +18,6 @@ import java.util.UUID.randomUUID
 class AccountService(
     @Autowired private val accountRepository: AccountRepository,
 ) {
-
     // IDEA(u-ways) convert to `AccountProviderResolver` enum?
     companion object {
         val CONVERTERS = mapOf(
@@ -31,40 +31,35 @@ class AccountService(
 
     @Bean
     fun demoAccount(): OAuth2AuthenticationToken {
-        val attributes = mapOf("name" to Account.DEMO_ACCOUNT.name)
+        val attributes = mapOf("name" to DEMO_ACCOUNT.name)
         val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
         val user: OAuth2User = DefaultOAuth2User(authorities, attributes, "name")
-        return OAuth2AuthenticationToken(user, authorities, Account.DEMO_ACCOUNT.provider)
+        return OAuth2AuthenticationToken(user, authorities, DEMO_ACCOUNT.provider)
     }
 
     fun convert(authentication: Authentication): Account {
-        return convert(
-            (SecurityContextHolder.getContext().authentication as OAuth2AuthenticationToken).authorizedClientRegistrationId,
-            SecurityContextHolder.getContext().authentication.principal as OAuth2User
-        )
-    }
+        val provider = (getContext().authentication as OAuth2AuthenticationToken).authorizedClientRegistrationId
+        val oauth2User = getContext().authentication.principal as OAuth2User
+        return CONVERTERS[provider]?.let {
+            val providerId = it.uniqueIdentifier(oauth2User)
+            val name = it.name(oauth2User)
 
-    fun convert(provider: String, oauth2User: OAuth2User): Account {
-        val converter = CONVERTERS[provider] ?: throw NoOAuth2ProviderFoundException(provider)
-        val providerId = converter.uniqueIdentifier(oauth2User)
-        val name = converter.name(oauth2User)
-
-        return if (accountRepository.existsAccountByProviderAndProviderId(provider, providerId)) {
-            val savedAccount = accountRepository.findAccountByProviderAndProviderId(provider, providerId)
-            savedAccount.name = name
-            savedAccount.profilePicture = converter.profilePicture(oauth2User)
-            savedAccount
-        } else {
-            Account(
-                id = randomUUID(),
-                provider = provider,
-                providerId = providerId,
-                organisationName = "",
-                name = name,
-                profilePicture = "",
-                firstLogin = true
-            )
-        }
+            if (accountRepository.existsAccountByProviderAndProviderId(provider, providerId)) {
+                accountRepository.findAccountByProviderAndProviderId(provider, providerId).apply {
+                    this.name = name
+                    this.profilePicture = it.profilePicture(oauth2User)
+                }
+            } else {
+                Account(
+                    id = randomUUID(),
+                    provider = provider,
+                    providerId = providerId,
+                    organisationName = "",
+                    name = name,
+                    firstLogin = true
+                )
+            }
+        } ?: throw NoOAuth2ProviderFoundException(provider)
     }
 
     fun isFirstTimeLogin(account: Account): Boolean = !accountRepository
@@ -74,7 +69,6 @@ class AccountService(
         if (!isFirstTimeLogin(account)) {
             throw Exception("An account already exists for this provider and providerId.")
         }
-
         return accountRepository.save(account)
     }
 }

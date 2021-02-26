@@ -57,9 +57,9 @@ class TribeService(
         tribeRepository.findAll().ownedBy(account).run {
             mapOf(
                 "total" to this.size,
-                "knowledgeSharingPoints" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
+                "knowledge Sharing Points" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
                     tribeMap.also {
-                        tribeMap[tribe.id.toString()] =
+                        tribeMap[tribe.name] =
                             tribe.squads.fold(HashMap<String, HashMap<String, Any>>(this.size)) { squadMap, squad ->
                                 squadMap.also {
                                     squadMap[squad.id.toString()] =

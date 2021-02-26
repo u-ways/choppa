@@ -7,6 +7,9 @@
         <NavbarLink :url="{ name: 'dashboard' }" :is-on-home-page="isOnHomePage" v-if="isAuthenticated">
           Dashboard
         </NavbarLink>
+        <NavbarLink :url="{ name: 'my-tribes' }" :is-on-home-page="isOnHomePage" v-if="isAuthenticated">
+          My Tribes
+        </NavbarLink>
       </div>
       <div class="flex-grow flex flex-row gap-3 justify-end items-center">
         <template v-if="isAuthenticated">

@@ -28,7 +28,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.tribeKspStats);
     this.chart = new Chart(this.$refs.canvas.getContext("2d"), {
       type: "line",
       data: {

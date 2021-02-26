@@ -28,7 +28,7 @@
             <DashboardCard title="KSP Balance - Not Real KSP values"
                          :is-loaded="tribeKSPStatsLoaded"
                          :no-data="tribeKSPStats.length === 0">
-            <KSPLineChart :tribeKspStats="tribeKSPStats[0]" class="max-h-72"/>
+              <KSPLineChart :tribeKspStats="tribeKSPStats[0]" class="max-h-72"/>
             </DashboardCard>
           </div>
           <div class="pt-2 px-3 grid grid-cols-1 md:grid-cols-2 gap-2">

@@ -90,6 +90,12 @@ const routes = [
     meta: { requiresAuthentication: true, firstLoginOnly: true },
   },
   {
+    name: "privacy-policy",
+    path: "/privacy",
+    component: () => import("@/pages/Privacy"),
+    meta: { requiresAuthentication: false, firstLoginOnly: false },
+  },
+  {
     name: "404",
     path: "/404",
     component: () => import("@/pages/NotFoundPage"),

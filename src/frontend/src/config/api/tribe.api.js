@@ -25,8 +25,16 @@ async function deserializeTribe(json) {
 }
 
 export async function getAllTribes() {
-  const response = await httpClient.get("tribes");
-  return Promise.all(response.data.map((tribe) => deserializeTribe(tribe)));
+  try {
+    const response = await httpClient.get("tribes");
+    return Promise.all(response.data.map((tribe) => deserializeTribe(tribe)));
+  } catch (error) {
+    if (error.response.status === 404) {
+      return [];
+    }
+
+    throw error;
+  }
 }
 
 export async function getTribe(config) {

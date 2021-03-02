@@ -212,7 +212,7 @@ import { mapActions } from "vuex";
 import { toastVariants } from "@/enums/toastVariants";
 import ToastData from "@/models/toastData";
 import SquadsOverview from "@/components/squads/SquadsOverview";
-import { getChapters, getChaptersByQuery } from "@/config/api/chapter.api";
+import { getAllChapters, getChaptersByQuery } from "@/config/api/chapter.api";
 import ChapterRadioButton from "@/components/chapters/ChapterRadioButton";
 import StandardLabel from "@/components/forms/inputs/StandardLabel";
 import StandardRadio from "@/components/forms/inputs/StandardRadio";
@@ -297,12 +297,12 @@ export default {
       if (this.$route.params.id) {
         this.creatingTribe = false;
         this.tribe = await getTribe({ id: this.$route.params.id });
-        this.allChapters = await getChapters();
+        this.allChapters = await getAllChapters();
         this.chaptersInUse = await getChaptersByQuery({ url: this.tribe.relations.chapters });
       } else {
         this.creatingTribe = true;
         this.tribe = new Tribe({ });
-        this.allChapters = await getChapters();
+        this.allChapters = await getAllChapters();
       }
     } catch (error) {
       await this.$router.replace("/not-found");

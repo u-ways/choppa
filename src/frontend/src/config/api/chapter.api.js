@@ -27,7 +27,7 @@ export async function getChapter(config) {
   return deserializeChapter(response.data);
 }
 
-export async function getChapters() {
+export async function getAllChapters() {
   try {
     const response = await httpClient.get("chapters");
     return Promise.all(response.data.map((chapter) => deserializeChapter(chapter)));

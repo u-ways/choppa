@@ -83,10 +83,10 @@ class MemberService(
 
     fun statistics(account: Account): HashMap<String, Any> = memberRepository.findAll().ownedBy(account).run {
         hashMapOf(
-            "Total" to this.size,
-            "Distribution" to mapOf(
-                "Active" to this.count { it.active }.toDouble().div(this.size).round(),
-                "Inactive" to this.count { !it.active }.toDouble().div(this.size).round(),
+            "total" to this.size,
+            "distribution" to mapOf(
+                "active" to this.count { it.active }.toDouble().div(if (this.isNotEmpty()) this.size else 1).round(),
+                "inactive" to this.count { !it.active }.toDouble().div(if (this.isNotEmpty()) this.size else 1).round(),
             )
         )
     }

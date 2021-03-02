@@ -56,13 +56,13 @@ class TribeService(
     fun statistics(account: Account): Map<String, Serializable> =
         tribeRepository.findAll().ownedBy(account).run {
             mapOf(
-                "Total" to this.size,
-                "Knowledge Sharing Points" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
+                "total" to this.size,
+                "knowledgeSharingPoints" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
                     tribeMap.also {
-                        tribeMap[tribe.name] =
+                        tribeMap[tribe.id.toString()] =
                             tribe.squads.fold(HashMap<String, HashMap<String, Any>>(this.size)) { squadMap, squad ->
                                 squadMap.also {
-                                    squadMap[squad.name] =
+                                    squadMap[squad.id.toString()] =
                                         squadService.calculateKspForLastNRevisionsFor(squad.id, amount = 7)
                                 }
                             }

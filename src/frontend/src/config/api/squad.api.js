@@ -27,8 +27,16 @@ async function deserializeSquad(json) {
 }
 
 export async function getAllSquads() {
-  const response = await httpClient.get("squads");
-  return Promise.all(response.data.map((tribe) => deserializeSquad(tribe)));
+  try {
+    const response = await httpClient.get("squads");
+    return Promise.all(response.data.map((tribe) => deserializeSquad(tribe)));
+  } catch (error) {
+    if (error.response.status === 404) {
+      return [];
+    }
+
+    throw error;
+  }
 }
 
 export async function getSquad(config) {

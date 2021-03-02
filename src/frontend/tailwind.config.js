@@ -47,6 +47,9 @@ module.exports = {
           "100%": { transform: "translateX(-100%)" },
         },
       },
+      minHeight: {
+        72: "18rem",
+      },
       spacing: {
         192: "48rem",
         120: "30rem",

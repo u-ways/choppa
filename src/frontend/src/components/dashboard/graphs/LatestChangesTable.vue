@@ -11,7 +11,7 @@
         <div class="grid grid-cols-4 py-3">
           <div class="text-left flex flex-row gap-2 items-center">
             <Avatar :seed="change.member.avatarSeed" class="w-6 h-6"/>
-            <div>{{ change.member.name }}</div>
+            <div class="font-semibold">{{ change.member.name }}</div>
           </div>
           <div class="text-center">
             {{ change.revisionType }}

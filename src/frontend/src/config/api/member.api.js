@@ -15,10 +15,24 @@ export async function deserializeMember(json) {
     id: json.id,
     name: json.name,
     chapter: await deserializeChapter(json.chapter),
+    active: json.active,
     relations: {
       squads: json.squads,
     },
   });
+}
+
+export async function getAllMembers() {
+  try {
+    const response = await httpClient.get("members");
+    return Promise.all(response.data.map((chapter) => deserializeMember(chapter)));
+  } catch (error) {
+    if (error.response.status === 404) {
+      return [];
+    }
+
+    throw error;
+  }
 }
 
 export async function getMember(config) {

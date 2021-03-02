@@ -21,9 +21,6 @@ configurations {
     }
 }
 
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions.useIR = true
-
 repositories {
     mavenCentral()
     jcenter()

@@ -1,11 +1,8 @@
 package app.choppa.domain.account
 
 import app.choppa.domain.account.Account.Companion.DEMO_ACCOUNT
-import app.choppa.domain.account.provider.*
-import app.choppa.exception.NoOAuth2ProviderFoundException
+import app.choppa.exception.UnsupportedProviderException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
-import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder.getContext
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
@@ -18,57 +15,32 @@ import java.util.UUID.randomUUID
 class AccountService(
     @Autowired private val accountRepository: AccountRepository,
 ) {
-    // IDEA(u-ways) convert to `AccountProviderResolver` enum?
-    companion object {
-        val CONVERTERS = mapOf(
-            "choppa" to ChoppaOAuth2Provider(),
-            "github" to GithubOAuth2Provider(),
-            "microsoft" to MicrosoftOAuth2Provider(),
-            "google" to GoogleOAuth2Provider(),
-            "okta" to OktaOAuth2Provider(),
-        )
-    }
+    fun save(account: Account): Account = accountRepository.save(account)
 
-    @Bean
-    fun demoAccount(): OAuth2AuthenticationToken {
-        val attributes = mapOf("name" to DEMO_ACCOUNT.name)
+    fun createDemoAuthorisation() {
+        val attributes = mapOf("name" to DEMO_ACCOUNT.name, "sub" to DEMO_ACCOUNT.providerId)
         val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
         val user: OAuth2User = DefaultOAuth2User(authorities, attributes, "name")
-        return OAuth2AuthenticationToken(user, authorities, DEMO_ACCOUNT.provider)
+
+        getContext().authentication = OAuth2AuthenticationToken(user, authorities, DEMO_ACCOUNT.provider)
     }
 
-    fun convert(authentication: Authentication): Account {
-        val provider = (getContext().authentication as OAuth2AuthenticationToken).authorizedClientRegistrationId
-        val oauth2User = getContext().authentication.principal as OAuth2User
-        return CONVERTERS[provider]?.let {
-            val providerId = it.uniqueIdentifier(oauth2User)
-            val name = it.name(oauth2User)
-
-            if (accountRepository.existsAccountByProviderAndProviderId(provider, providerId)) {
-                accountRepository.findAccountByProviderAndProviderId(provider, providerId).apply {
-                    this.name = name
-                    this.profilePicture = it.profilePicture(oauth2User)
-                }
-            } else {
-                Account(
-                    id = randomUUID(),
-                    provider = provider,
-                    providerId = providerId,
-                    organisationName = "",
-                    name = name,
-                    firstLogin = true
-                )
-            }
-        } ?: throw NoOAuth2ProviderFoundException(provider)
+    fun createNewAccount(account: Account) = resolveFromAuth().run {
+        check(firstLogin) { "An account already exists for the logged in user." }
+        save(copy(organisationName = account.organisationName))
+            .copy(name = name, profilePicture = profilePicture, firstLogin = false)
     }
 
-    fun isFirstTimeLogin(account: Account): Boolean = !accountRepository
-        .existsAccountByProviderAndProviderId(account.provider, account.providerId)
+    fun resolveFromAuth(): Account = with(getContext().authentication as OAuth2AuthenticationToken) {
+        principal.run {
+            val provider = authorizedClientRegistrationId
+            val providerId = "${attributes["sub"] ?: attributes["id"] ?: throw UnsupportedProviderException(provider)}"
+            val profilePicture = "${attributes["avatar_url"] ?: attributes["picture"] ?: attributes["profile"] ?: ""}"
+            val name = "${attributes["name"] ?: ""}"
 
-    fun createAccount(account: Account): Account {
-        if (!isFirstTimeLogin(account)) {
-            throw Exception("An account already exists for this provider and providerId.")
+            accountRepository.findByProviderAndProviderId(provider, providerId)
+                ?.copy(name = name, profilePicture = profilePicture)
+                ?: Account(randomUUID(), provider, providerId, "", name, profilePicture, true)
         }
-        return accountRepository.save(account)
     }
 }

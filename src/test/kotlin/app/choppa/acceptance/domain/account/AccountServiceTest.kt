@@ -1,15 +1,21 @@
 package app.choppa.acceptance.domain.account
 
 import app.choppa.domain.account.Account
-import app.choppa.domain.account.Account.Companion.DEMO_ACCOUNT
 import app.choppa.domain.account.AccountRepository
 import app.choppa.domain.account.AccountService
+import app.choppa.support.builder.OAuth2TokenBuilder
 import io.mockk.every
 import io.mockk.mockkClass
+import io.mockk.verify
 import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
+import java.util.*
 
 internal class AccountServiceTest {
     private lateinit var repository: AccountRepository
@@ -22,36 +28,77 @@ internal class AccountServiceTest {
     }
 
     @Test
-    fun `Given a DEMO account, when service creates a demo AuthenticationToken, then user should be granted simple authority under the CHOPPA provider`() {
-        val entity = DEMO_ACCOUNT
-        val result = service.demoAccount()
+    fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
+        val entity = Account()
 
-        result.name shouldBe entity.name
-        result.authorizedClientRegistrationId shouldBe entity.provider
-        result.principal.attributes["name"] shouldBe entity.name
-        result.principal.authorities.first().authority shouldBe "ROLE_USER"
-        result.isAuthenticated shouldBe true
+        every { repository.findById(entity.id) } returns Optional.empty()
+        every { repository.save(entity) } returns entity
+
+        val savedEntity = service.save(entity)
+
+        savedEntity shouldBe entity
+
+        verify(exactly = 1) { repository.save(entity) }
     }
 
     @Test
-    fun `Given a first login account, when service checks isFirstTimeLogin, then service should return true`() {
-        val entity = Account(firstLogin = true)
+    fun `Given an existing account, when service tries to createNewAccount, then service should throw IllegalStateException`() {
+        val securityContext = mockkClass(SecurityContext::class)
+        val entity = Account(
+            firstLogin = false,
+            provider = "provider",
+            providerId = UUID.randomUUID().toString()
+        )
 
         every {
-            repository.existsAccountByProviderAndProviderId(entity.provider, entity.providerId)
-        } returns false
+            repository.findByProviderAndProviderId(entity.provider, entity.providerId)
+        } returns entity
 
-        service.isFirstTimeLogin(entity) shouldBe true
+        every { securityContext.authentication } returns OAuth2TokenBuilder()
+            .withName("name")
+            .withRegistrationId(entity.provider)
+            .withAttribute("id", entity.providerId)
+            .withAuthority(SimpleGrantedAuthority("ROLE_USER"))
+            .build()
+
+        SecurityContextHolder.setContext(securityContext)
+
+        assertThrows(IllegalStateException::class.java) {
+            service.createNewAccount(entity.copy(firstLogin = true))
+        }
     }
 
     @Test
-    fun `Given an already existing account, when service tries to recreate the account, then service should throw an exception`() {
-        val entity = Account(firstLogin = false)
+    fun `Given new account, when service creates a new account, then service should create the new account and set its first login to false`() {
+        val securityContext = mockkClass(SecurityContext::class)
+        val entity = Account(
+            firstLogin = true,
+            provider = "provider",
+            providerId = UUID.randomUUID().toString()
+        )
 
         every {
-            repository.existsAccountByProviderAndProviderId(entity.provider, entity.providerId)
-        } returns true
+            repository.findByProviderAndProviderId(entity.provider, entity.providerId)
+        } returns null
 
-        assertThrows(Exception::class.java) { service.createAccount(entity) }
+        every {
+            repository.save(any())
+        } returns entity.copy(organisationName = entity.organisationName, firstLogin = false)
+
+        every { securityContext.authentication } returns OAuth2TokenBuilder()
+            .withName("name")
+            .withRegistrationId(entity.provider)
+            .withAttribute("id", entity.providerId)
+            .withAuthority(SimpleGrantedAuthority("ROLE_USER"))
+            .build()
+
+        SecurityContextHolder.setContext(securityContext)
+
+        val newAccount = service.createNewAccount(entity)
+
+        newAccount.firstLogin shouldBeEqualTo false
+        newAccount.organisationName shouldBeEqualTo entity.organisationName
+
+        verify(exactly = 1) { repository.save(any()) }
     }
 }

@@ -6,6 +6,5 @@ import java.util.*
 
 @Repository
 interface AccountRepository : JpaRepository<Account, UUID> {
-    fun findAccountByProviderAndProviderId(provider: String, providerId: String): Account
-    fun existsAccountByProviderAndProviderId(provider: String, providerId: String): Boolean
+    fun findByProviderAndProviderId(provider: String, providerId: String): Account?
 }

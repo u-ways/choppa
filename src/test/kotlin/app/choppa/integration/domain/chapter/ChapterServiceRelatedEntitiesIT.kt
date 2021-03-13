@@ -1,6 +1,7 @@
 package app.choppa.integration.domain.chapter
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.Account
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterService
 import app.choppa.domain.member.Member
@@ -14,6 +15,9 @@ import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.matchers.containsInAnyOrder
 import app.choppa.support.testcontainers.TestDBContainer
 import com.natpryce.hamkrest.assertion.assertThat
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -36,25 +40,32 @@ internal class ChapterServiceRelatedEntitiesIT @Autowired constructor(
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
+    @MockkBean(relaxed = true)
+    private lateinit var accountService: AccountService
+
+    @BeforeEach
+    internal fun setUp() {
+        every { accountService.resolveFromAuth() } returns Account.UNASSIGNED_ACCOUNT
+    }
+
     @Test
     @Transactional
     fun `Given tribe with chapters, when service find chapters by related tribe, then service should return related chapters`() {
-        val relatedTribe = tribeService.save(Tribe(), UNASSIGNED_ACCOUNT)
+        val relatedTribe = tribeService.save(Tribe())
 
-        val chapters = chapterService.save(ChapterFactory.create(3), UNASSIGNED_ACCOUNT)
+        val chapters = chapterService.save(ChapterFactory.create(3))
         val expectedRelatedTribeChapters = chapters.minus(chapters.first())
 
         val tribeSquadMembers = memberService.save(
             listOf(
                 Member(chapter = expectedRelatedTribeChapters[0]),
                 Member(chapter = expectedRelatedTribeChapters[1])
-            ),
-            UNASSIGNED_ACCOUNT
+            )
         ).toMutableList()
 
-        squadService.save(Squad(tribe = relatedTribe, members = tribeSquadMembers), UNASSIGNED_ACCOUNT)
+        squadService.save(Squad(tribe = relatedTribe, members = tribeSquadMembers))
 
-        val actualRelatedTribeChapters = chapterService.findRelatedByTribe(relatedTribe.id, UNASSIGNED_ACCOUNT)
+        val actualRelatedTribeChapters = chapterService.findRelatedByTribe(relatedTribe.id)
 
         assertThat(actualRelatedTribeChapters, List<Chapter>::containsInAnyOrder, expectedRelatedTribeChapters)
     }
@@ -62,7 +73,7 @@ internal class ChapterServiceRelatedEntitiesIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given squad with chapters, when service find chapters by related squad, then service should return related chapters`() {
-        val chapters = chapterService.save(ChapterFactory.create(4), UNASSIGNED_ACCOUNT)
+        val chapters = chapterService.save(ChapterFactory.create(4))
         val expectedRelatedSquadChapters = chapters.minus(chapters.first())
 
         val tribeSquadMembers = memberService.save(
@@ -70,12 +81,11 @@ internal class ChapterServiceRelatedEntitiesIT @Autowired constructor(
                 Member(chapter = expectedRelatedSquadChapters[0]),
                 Member(chapter = expectedRelatedSquadChapters[1]),
                 Member(chapter = expectedRelatedSquadChapters[2])
-            ),
-            UNASSIGNED_ACCOUNT
+            )
         ).toMutableList()
 
-        val relatedSquad = squadService.save(Squad(members = tribeSquadMembers), UNASSIGNED_ACCOUNT)
-        val actualRelatedSquadChapters = chapterService.findRelatedBySquad(relatedSquad.id, UNASSIGNED_ACCOUNT)
+        val relatedSquad = squadService.save(Squad(members = tribeSquadMembers))
+        val actualRelatedSquadChapters = chapterService.findRelatedBySquad(relatedSquad.id)
 
         assertThat(actualRelatedSquadChapters, List<Chapter>::containsInAnyOrder, expectedRelatedSquadChapters)
     }

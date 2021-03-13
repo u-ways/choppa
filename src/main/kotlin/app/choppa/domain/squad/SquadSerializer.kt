@@ -2,7 +2,6 @@ package app.choppa.domain.squad
 
 import app.choppa.domain.base.BaseSerializer
 import app.choppa.domain.base.BaseSerializer.QueryType.CHAPTERS
-import app.choppa.domain.base.BaseSerializer.QueryType.ITERATIONS
 import app.choppa.domain.tribe.TribeController
 import app.choppa.utils.Color.Companion.toRGBAHex
 import com.fasterxml.jackson.core.JsonGenerator
@@ -19,7 +18,6 @@ class SquadSerializer(
         gen.writeStringField(squad::tribe.name, reverseRouter.route(TribeController::class, squad.tribe.id))
         gen.writeObjectField(squad::members.name, squad.members)
         gen.writeQueryField(CHAPTERS, squad)
-        gen.writeQueryField(ITERATIONS, squad)
         gen.writeEndObject()
     }
 }

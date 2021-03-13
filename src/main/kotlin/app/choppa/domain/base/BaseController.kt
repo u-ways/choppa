@@ -1,20 +1,11 @@
 package app.choppa.domain.base
 
-import app.choppa.domain.account.Account
 import org.springframework.http.ResponseEntity
-import org.springframework.http.ResponseEntity.created
-import org.springframework.http.ResponseEntity.noContent
-import org.springframework.http.ResponseEntity.ok
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.http.ResponseEntity.*
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest
 import java.net.URI
-import java.util.UUID
+import java.util.*
 
 @RequestMapping
 abstract class BaseController<T : BaseModel>(
@@ -40,28 +31,28 @@ abstract class BaseController<T : BaseModel>(
     }
 
     @GetMapping(ID_PATH)
-    fun get(@PathVariable id: UUID, account: Account) = baseService
-        .find(id, account)
+    fun get(@PathVariable id: UUID) = baseService
+        .find(id)
         .run { ok().body(this) }
 
     @PutMapping(ID_PATH)
-    fun put(@PathVariable id: UUID, @RequestBody updatedEntity: T, account: Account): ResponseEntity<T> = baseService
+    fun put(@PathVariable id: UUID, @RequestBody updatedEntity: T): ResponseEntity<T> = baseService
         .requireMatching(id, updatedEntity.id)
-        .find(id, account)
-        .also { baseService.save(updatedEntity, account) }
+        .find(id)
+        .also { baseService.save(updatedEntity) }
         .run { created(location(ID_PATH, id)).build() }
 
     @DeleteMapping(ID_PATH)
-    fun delete(@PathVariable id: UUID, account: Account): ResponseEntity<T> = baseService
-        .find(id, account)
-        .also { baseService.delete(it, account) }
+    fun delete(@PathVariable id: UUID): ResponseEntity<T> = baseService
+        .find(id)
+        .also { baseService.delete(it) }
         .run { noContent().build() }
 
     @PostMapping(ID_PATH)
-    fun post(@PathVariable id: UUID, @RequestBody newEntity: T, account: Account): ResponseEntity<T> = baseService
+    fun post(@PathVariable id: UUID, @RequestBody newEntity: T): ResponseEntity<T> = baseService
         .requireMatching(id, newEntity.id)
-        .save(newEntity, account)
-        .run { created(location(ID_PATH, this.id, account)).build() }
+        .save(newEntity)
+        .run { created(location(ID_PATH, this.id)).build() }
 
     private fun BaseService<T>.requireMatching(expected: UUID, actual: UUID): BaseService<T> = this.apply {
         require(expected == actual) { "URI endpoint with id [$expected] does not match response body entity id [$actual]" }

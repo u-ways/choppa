@@ -1,7 +1,6 @@
 package app.choppa.domain.member
 
 import app.choppa.domain.base.BaseSerializer
-import app.choppa.domain.base.BaseSerializer.QueryType.ITERATIONS
 import app.choppa.domain.base.BaseSerializer.QueryType.SQUADS
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
@@ -16,7 +15,6 @@ class MemberSerializer(
         gen.writeObjectField(member::chapter.name, member.chapter)
         gen.writeBooleanField(member::active.name, member.active)
         gen.writeQueryField(SQUADS, member)
-        gen.writeQueryField(ITERATIONS, member)
         gen.writeEndObject()
     }
 }

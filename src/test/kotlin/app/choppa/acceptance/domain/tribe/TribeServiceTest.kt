@@ -1,6 +1,6 @@
 package app.choppa.acceptance.domain.tribe
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.squad.SquadService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeRepository
@@ -20,13 +20,15 @@ import java.util.UUID.randomUUID
 internal class TribeServiceTest {
     private lateinit var repository: TribeRepository
     private lateinit var squadService: SquadService
+    private lateinit var accountService: AccountService
     private lateinit var service: TribeService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(TribeRepository::class)
         squadService = mockkClass(SquadService::class)
-        service = TribeService(repository, squadService)
+        accountService = mockkClass(AccountService::class, relaxed = true)
+        service = TribeService(repository, squadService, accountService)
     }
 
     @Test
@@ -36,7 +38,7 @@ internal class TribeServiceTest {
         every { repository.findById(entity.id) } returns empty()
         every { repository.save(entity) } returns entity
 
-        val savedEntity = service.save(entity, UNASSIGNED_ACCOUNT)
+        val savedEntity = service.save(entity)
 
         savedEntity shouldBe entity
 
@@ -50,7 +52,7 @@ internal class TribeServiceTest {
 
         every { repository.findById(id) } returns of(existingEntity)
 
-        val foundEntity = service.find(id, UNASSIGNED_ACCOUNT)
+        val foundEntity = service.find(id)
 
         foundEntity shouldBe existingEntity
 
@@ -63,9 +65,9 @@ internal class TribeServiceTest {
 
         every { repository.findById(existingEntity.id) } returns of(existingEntity)
         every { repository.delete(existingEntity) } returns Unit
-        every { squadService.deleteRelatedByTribe(existingEntity.id, UNASSIGNED_ACCOUNT) } returns existingEntity.squads
+        every { squadService.deleteRelatedByTribe(existingEntity.id) } returns existingEntity.squads
 
-        val removedEntity = service.delete(existingEntity, UNASSIGNED_ACCOUNT)
+        val removedEntity = service.delete(existingEntity)
 
         removedEntity shouldBe existingEntity
 
@@ -78,6 +80,6 @@ internal class TribeServiceTest {
 
         every { repository.findById(id) } returns empty()
 
-        assertThrows(EntityNotFoundException::class.java) { service.find(id, UNASSIGNED_ACCOUNT) }
+        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
     }
 }

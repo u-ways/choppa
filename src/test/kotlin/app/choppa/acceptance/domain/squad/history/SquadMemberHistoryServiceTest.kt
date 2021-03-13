@@ -1,6 +1,6 @@
 package app.choppa.acceptance.domain.squad.history
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.squad.history.SquadMemberHistoryRepository
 import app.choppa.domain.squad.history.SquadMemberHistoryService
@@ -19,13 +19,15 @@ import org.springframework.data.domain.Pageable.unpaged
 internal class SquadMemberHistoryServiceTest {
     private lateinit var repository: SquadMemberHistoryRepository
     private lateinit var memberRepository: MemberRepository
+    private lateinit var accountService: AccountService
     private lateinit var service: SquadMemberHistoryService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(SquadMemberHistoryRepository::class)
         memberRepository = mockkClass(MemberRepository::class)
-        service = SquadMemberHistoryService(repository, memberRepository)
+        accountService = mockkClass(AccountService::class, relaxed = true)
+        service = SquadMemberHistoryService(repository, memberRepository, accountService)
     }
 
     @Test
@@ -45,11 +47,11 @@ internal class SquadMemberHistoryServiceTest {
     fun `Given a no entity records, when service tries to find all records, then service should throw EntityNotFoundException`() {
         every {
             repository.findAllByAccountIdOrderByCreateDateDesc(
-                UNASSIGNED_ACCOUNT.id,
+                any(),
                 unpaged()
             )
         } returns Page.empty()
 
-        assertThrows(EntityNotFoundException::class.java) { service.find(UNASSIGNED_ACCOUNT) }
+        assertThrows(EntityNotFoundException::class.java) { service.find() }
     }
 }

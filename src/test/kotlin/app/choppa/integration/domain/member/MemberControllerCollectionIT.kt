@@ -1,6 +1,6 @@
 package app.choppa.integration.domain.member
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberController
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.*
 
@@ -28,15 +29,18 @@ internal class MemberControllerCollectionIT @Autowired constructor(
 ) {
     @MockkBean
     private lateinit var memberService: MemberService
+    @MockkBean(relaxed = true)
+    private lateinit var accountService: AccountService
 
     @Nested
+    @WithMockUser
     inner class HappyPath {
 
         @Test
         fun `LIST entities`() {
             val entities = MemberFactory.create(amount = 2)
 
-            every { memberService.find(UNASSIGNED_ACCOUNT) } returns entities
+            every { memberService.find() } returns entities
 
             mvc.get("/api/members") {
                 contentType = APPLICATION_JSON
@@ -52,7 +56,7 @@ internal class MemberControllerCollectionIT @Autowired constructor(
         fun `LIST inactive entities`() {
             val entities = listOf(Member(active = false))
 
-            every { memberService.findInactive(UNASSIGNED_ACCOUNT) } returns entities
+            every { memberService.findInactive() } returns entities
 
             mvc.get("/api/members?active=false") {
                 contentType = APPLICATION_JSON
@@ -69,8 +73,8 @@ internal class MemberControllerCollectionIT @Autowired constructor(
             val existingCollection = MemberFactory.create(amount = 3)
             val updatedCollection = existingCollection.map { Member(it.id, it.name, Chapter()) }
 
-            every { memberService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
-            every { memberService.save(updatedCollection, UNASSIGNED_ACCOUNT) } returns updatedCollection
+            every { memberService.find(existingCollection.map { it.id }) } returns existingCollection
+            every { memberService.save(updatedCollection) } returns updatedCollection
 
             mvc.put("/api/members") {
                 contentType = APPLICATION_JSON
@@ -86,8 +90,8 @@ internal class MemberControllerCollectionIT @Autowired constructor(
         fun `DELETE collection`() {
             val existingCollection = MemberFactory.create(amount = 3)
 
-            every { memberService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
-            every { memberService.delete(existingCollection, UNASSIGNED_ACCOUNT) } returns existingCollection
+            every { memberService.find(existingCollection.map { it.id }) } returns existingCollection
+            every { memberService.delete(existingCollection) } returns existingCollection
 
             mvc.delete("/api/members") {
                 contentType = APPLICATION_JSON
@@ -102,7 +106,7 @@ internal class MemberControllerCollectionIT @Autowired constructor(
         fun `POST collection`() {
             val newCollection = MemberFactory.create(amount = 3)
 
-            every { memberService.save(newCollection, UNASSIGNED_ACCOUNT) } returns newCollection
+            every { memberService.save(newCollection) } returns newCollection
 
             mvc.post("/api/members") {
                 contentType = APPLICATION_JSON
@@ -116,11 +120,12 @@ internal class MemberControllerCollectionIT @Autowired constructor(
     }
 
     @Nested
+    @WithMockUser
     inner class SadPath {
 
         @Test
         fun `LIST no content`() {
-            every { memberService.find(UNASSIGNED_ACCOUNT) } throws EmptyListException("No members exist yet")
+            every { memberService.find() } throws EmptyListException("No members exist yet")
 
             mvc.get("/api/members") {
                 contentType = APPLICATION_JSON

@@ -1,6 +1,5 @@
 package app.choppa.domain.rotation
 
-import app.choppa.domain.account.Account
 import app.choppa.domain.rotation.RotationContext.Companion.rotate
 import app.choppa.domain.squad.SquadService
 import app.choppa.domain.tribe.Tribe
@@ -14,24 +13,23 @@ class RotationService(
     @Autowired private val squadService: SquadService,
 ) {
     @Transactional(isolation = REPEATABLE_READ)
-    fun executeRotation(tribe: Tribe, options: RotationOptions, account: Account): Tribe = rotate(
+    fun executeRotation(tribe: Tribe, options: RotationOptions): Tribe = rotate(
         tribe,
         options,
-        tribe.squads.map { squadService.findAllSquadMembersRevisions(it.id, account) }
-    ).apply { squadService.save(this.squads, account) }
+        tribe.squads.map { squadService.findAllSquadMembersRevisions(it.id) }
+    ).apply { squadService.save(this.squads) }
 
     @Transactional(isolation = REPEATABLE_READ)
-    fun undoRotation(tribe: Tribe, account: Account): Tribe = tribe.copy(
+    fun undoRotation(tribe: Tribe): Tribe = tribe.copy(
         squads = squadService.save(
-            squadService.findRelatedByTribe(tribe.id, account).map {
+            squadService.findRelatedByTribe(tribe.id).map {
                 it.copy(
-                    members = squadService.findLastNSquadMembersRevisions(it.id, 1, account)
+                    members = squadService.findLastNSquadMembersRevisions(it.id, 1)
                         .second
                         .first()
                         .toMutableList()
                 )
             }.toMutableList(),
-            account
         ).toMutableList()
     )
 }

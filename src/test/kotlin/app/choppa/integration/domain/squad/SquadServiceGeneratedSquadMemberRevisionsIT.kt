@@ -1,6 +1,7 @@
 package app.choppa.integration.domain.squad
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.Account
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadService
@@ -9,7 +10,10 @@ import app.choppa.domain.squad.history.RevisionType.REMOVE
 import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.testcontainers.TestDBContainer
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import org.amshove.kluent.shouldBeEqualTo
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,14 +35,21 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
+    @MockkBean(relaxed = true)
+    private lateinit var accountService: AccountService
+
+    @BeforeEach
+    internal fun setUp() {
+        every { accountService.resolveFromAuth() } returns Account.UNASSIGNED_ACCOUNT
+    }
+
     @Test
     @Transactional
     fun `Given existing squad no member formation, when service saves existing squad with revised formation, then a new squad member revision should be generated`() {
-        val existingSquad = squadService.save(Squad(), UNASSIGNED_ACCOUNT)
+        val existingSquad = squadService.save(Squad())
 
         val existingSquadWithRevisedFormation = squadService.save(
-            existingSquad.copy(members = mutableListOf(Member())),
-            UNASSIGNED_ACCOUNT
+            existingSquad.copy(members = mutableListOf(Member()))
         )
 
         assertDoesNotThrow {
@@ -57,13 +68,11 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
     @Transactional
     fun `Given existing squad with existing member formation, when service saves existing squad with revised formation, then correct squad member revision should be generated`() {
         val existingSquad = squadService.save(
-            Squad(members = mutableListOf(Member())),
-            UNASSIGNED_ACCOUNT
+            Squad(members = mutableListOf(Member()))
         )
 
         val existingSquadWithRevisedFormation = squadService.save(
-            existingSquad.copy(members = existingSquad.members.plus(Member()).toMutableList()),
-            UNASSIGNED_ACCOUNT
+            existingSquad.copy(members = existingSquad.members.plus(Member()).toMutableList())
         )
 
         val result = squadMemberHistoryService.findBySquad(existingSquadWithRevisedFormation)
@@ -80,13 +89,11 @@ internal class SquadServiceGeneratedSquadMemberRevisionsIT @Autowired constructo
         val relatedMember = Member()
 
         val existingSquad = squadService.save(
-            Squad(members = mutableListOf(relatedMember)),
-            UNASSIGNED_ACCOUNT
+            Squad(members = mutableListOf(relatedMember))
         )
 
         val existingSquadWithRevisedFormation = squadService.save(
-            existingSquad.copy(members = mutableListOf()),
-            UNASSIGNED_ACCOUNT
+            existingSquad.copy(members = mutableListOf())
         )
 
         val result = squadMemberHistoryService.findBySquad(existingSquadWithRevisedFormation)

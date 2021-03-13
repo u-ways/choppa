@@ -1,6 +1,6 @@
 package app.choppa.integration.domain.member
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberController
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.*
 import java.util.*
@@ -27,6 +28,9 @@ internal class MemberControllerIT @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
 ) {
+    @MockkBean(relaxed = true)
+    private lateinit var accountService: AccountService
+
     @MockkBean
     private lateinit var memberService: MemberService
 
@@ -38,12 +42,13 @@ internal class MemberControllerIT @Autowired constructor(
     }
 
     @Nested
+    @WithMockUser
     inner class HappyPath {
         @Test
         fun `GET entity by ID`() {
             val entity = member
 
-            every { memberService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
+            every { memberService.find(entity.id) } returns entity
 
             mvc.get("/api/members/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -60,15 +65,14 @@ internal class MemberControllerIT @Autowired constructor(
             val entity = member
             val updatedEntity = Member(member.id)
 
-            every { memberService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
+            every { memberService.find(entity.id) } returns entity
             every {
                 memberService.save(
                     Member(
                         member.id,
                         member.name,
                         Chapter(member.chapter.id)
-                    ),
-                    UNASSIGNED_ACCOUNT
+                    )
                 )
             } returns updatedEntity
 
@@ -86,8 +90,8 @@ internal class MemberControllerIT @Autowired constructor(
         fun `DELETE entity by ID`() {
             val entity = member
 
-            every { memberService.find(entity.id, UNASSIGNED_ACCOUNT) } returns entity
-            every { memberService.delete(entity, UNASSIGNED_ACCOUNT) } returns entity
+            every { memberService.find(entity.id) } returns entity
+            every { memberService.delete(entity) } returns entity
 
             mvc.delete("/api/members/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -101,7 +105,7 @@ internal class MemberControllerIT @Autowired constructor(
         fun `POST new entity`() {
             val newEntity = member
 
-            every { memberService.save(Member(member.id, member.name, Chapter(member.chapter.id)), UNASSIGNED_ACCOUNT) } returns newEntity
+            every { memberService.save(Member(member.id, member.name, Chapter(member.chapter.id))) } returns newEntity
 
             mvc.post("/api/members/${newEntity.id}") {
                 contentType = APPLICATION_JSON
@@ -115,12 +119,13 @@ internal class MemberControllerIT @Autowired constructor(
     }
 
     @Nested
+    @WithMockUser
     inner class SadPath {
         @Test
         fun `GET UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { memberService.find(randomUUID, UNASSIGNED_ACCOUNT) } throws EntityNotFoundException("Member with id [$randomUUID] does not exist.")
+            every { memberService.find(randomUUID) } throws EntityNotFoundException("Member with id [$randomUUID] does not exist.")
 
             mvc.get("/api/members/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
@@ -147,7 +152,7 @@ internal class MemberControllerIT @Autowired constructor(
         fun `DELETE UUID doesn't exist`() {
             val randomUUID = UUID.randomUUID()
 
-            every { memberService.find(randomUUID, UNASSIGNED_ACCOUNT) } throws EntityNotFoundException("Member with id [$randomUUID] does not exist.")
+            every { memberService.find(randomUUID) } throws EntityNotFoundException("Member with id [$randomUUID] does not exist.")
 
             mvc.delete("/api/members/{id}", randomUUID) {
                 contentType = APPLICATION_JSON

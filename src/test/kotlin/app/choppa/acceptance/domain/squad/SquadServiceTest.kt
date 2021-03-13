@@ -1,6 +1,6 @@
 package app.choppa.acceptance.domain.squad
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
 import app.choppa.domain.squad.Squad
@@ -26,14 +26,16 @@ internal class SquadServiceTest {
     private lateinit var repository: SquadRepository
     private lateinit var memberService: MemberService
     private lateinit var squadMemberHistoryService: SquadMemberHistoryService
+    private lateinit var accountService: AccountService
     private lateinit var service: SquadService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(SquadRepository::class)
         memberService = mockkClass(MemberService::class)
+        accountService = mockkClass(AccountService::class, relaxed = true)
         squadMemberHistoryService = mockkClass(SquadMemberHistoryService::class, relaxed = true)
-        service = SquadService(repository, memberService, squadMemberHistoryService)
+        service = SquadService(repository, memberService, squadMemberHistoryService, accountService)
     }
 
     @Test
@@ -42,13 +44,13 @@ internal class SquadServiceTest {
         val tribe = entity.tribe
         val members = entity.members
 
-        every { memberService.save(entity.members, UNASSIGNED_ACCOUNT) } returns members
+        every { memberService.save(entity.members) } returns members
 
         every { repository.findById(entity.id) } returns empty()
 
         every { repository.save(Squad(entity.id, entity.name, entity.color, tribe, members)) } returns entity
 
-        val savedEntity = service.save(entity, UNASSIGNED_ACCOUNT)
+        val savedEntity = service.save(entity)
 
         savedEntity shouldBe entity
 
@@ -62,7 +64,7 @@ internal class SquadServiceTest {
 
         every { repository.findById(id) } returns of(existingEntity)
 
-        val foundEntity = service.find(id, UNASSIGNED_ACCOUNT)
+        val foundEntity = service.find(id)
 
         foundEntity shouldBe existingEntity
 
@@ -77,7 +79,7 @@ internal class SquadServiceTest {
         every { repository.delete(existingEntity) } returns Unit
         every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
 
-        val removedEntity = service.delete(existingEntity, UNASSIGNED_ACCOUNT)
+        val removedEntity = service.delete(existingEntity)
 
         removedEntity shouldBe existingEntity
 
@@ -90,7 +92,7 @@ internal class SquadServiceTest {
 
         every { repository.findById(id) } returns empty()
 
-        assertThrows(EntityNotFoundException::class.java) { service.find(id, UNASSIGNED_ACCOUNT) }
+        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
     }
 
     @Test
@@ -101,7 +103,7 @@ internal class SquadServiceTest {
         every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
         every { squadMemberHistoryService.concentrateAllSquadRevisions(existingEntity) } returns listOf(existingEntity.members)
 
-        val squadMembersRevisions = service.findAllSquadMembersRevisions(existingEntity.id, UNASSIGNED_ACCOUNT)
+        val squadMembersRevisions = service.findAllSquadMembersRevisions(existingEntity.id)
 
         squadMembersRevisions.first shouldBe existingEntity
         squadMembersRevisions.second.first() shouldBe existingEntity.members
@@ -121,7 +123,7 @@ internal class SquadServiceTest {
             squadMemberHistoryService.concentrateLastNSquadRevisions(existingEntity, 2)
         } returns existingEntity.members.subList(0, 3)
 
-        val squadMembersRevisions = service.findLastNSquadMembersRevisions(existingEntity.id, 2, UNASSIGNED_ACCOUNT)
+        val squadMembersRevisions = service.findLastNSquadMembersRevisions(existingEntity.id, 2)
 
         squadMembersRevisions.first shouldBe existingEntity
 

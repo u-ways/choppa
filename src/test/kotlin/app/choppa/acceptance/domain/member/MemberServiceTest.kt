@@ -1,6 +1,6 @@
 package app.choppa.acceptance.domain.member
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberRepository
@@ -21,13 +21,15 @@ import java.util.UUID.randomUUID
 internal class MemberServiceTest {
     private lateinit var repository: MemberRepository
     private lateinit var squadMemberHistoryService: SquadMemberHistoryService
+    private lateinit var accountService: AccountService
     private lateinit var service: MemberService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(MemberRepository::class)
         squadMemberHistoryService = mockkClass(SquadMemberHistoryService::class)
-        service = MemberService(repository, squadMemberHistoryService)
+        accountService = mockkClass(AccountService::class, relaxed = true)
+        service = MemberService(repository, squadMemberHistoryService, accountService)
     }
 
     @Test
@@ -38,7 +40,7 @@ internal class MemberServiceTest {
         every { repository.save(entity) } returns entity
         every { repository.findById(entity.id) } returns empty()
 
-        val savedEntity = service.save(entity, UNASSIGNED_ACCOUNT)
+        val savedEntity = service.save(entity)
 
         savedEntity shouldBe entity
 
@@ -53,7 +55,7 @@ internal class MemberServiceTest {
 
         every { repository.findById(id) } returns of(existingEntity)
 
-        val foundEntity = service.find(id, UNASSIGNED_ACCOUNT)
+        val foundEntity = service.find(id)
 
         foundEntity shouldBe existingEntity
 
@@ -69,7 +71,7 @@ internal class MemberServiceTest {
         every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
         every { squadMemberHistoryService.deleteAllFor(existingEntity) } returns existingEntity
 
-        val removedEntity = service.delete(existingEntity, UNASSIGNED_ACCOUNT)
+        val removedEntity = service.delete(existingEntity)
 
         removedEntity shouldBe existingEntity
 
@@ -82,6 +84,6 @@ internal class MemberServiceTest {
 
         every { repository.findById(id) } returns empty()
 
-        assertThrows(EntityNotFoundException::class.java) { service.find(id, UNASSIGNED_ACCOUNT) }
+        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
     }
 }

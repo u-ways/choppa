@@ -1,6 +1,5 @@
 package app.choppa.integration.domain.tribe
 
-import app.choppa.domain.account.Account
 import app.choppa.domain.account.AccountService
 import app.choppa.domain.rotation.RotationOptions
 import app.choppa.domain.rotation.RotationService
@@ -20,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.*
 import java.util.UUID.randomUUID
@@ -32,21 +32,22 @@ internal class TribeControllerIT @Autowired constructor(
 ) {
     @MockkBean(relaxed = true)
     private lateinit var accountService: AccountService
+
     @MockkBean
     private lateinit var tribeService: TribeService
+
     @MockkBean
     private lateinit var rotationService: RotationService
 
     private lateinit var tribe: Tribe
-    private lateinit var account: Account
 
     @BeforeEach
     internal fun setUp() {
         tribe = Tribe()
-        account = Account()
     }
 
     @Nested
+    @WithMockUser
     inner class HappyPath {
 
         @Test
@@ -54,7 +55,7 @@ internal class TribeControllerIT @Autowired constructor(
             val anotherTribe = Tribe()
             val entities = listOf(tribe, anotherTribe)
 
-            every { tribeService.find(account) } returns entities
+            every { tribeService.find() } returns entities
 
             mvc.get("/api/tribes") {
                 contentType = APPLICATION_JSON
@@ -70,7 +71,7 @@ internal class TribeControllerIT @Autowired constructor(
         fun `GET entity by ID`() {
             val entity = tribe
 
-            every { tribeService.find(entity.id, account) } returns entity
+            every { tribeService.find(entity.id) } returns entity
 
             mvc.get("/api/tribes/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -87,14 +88,13 @@ internal class TribeControllerIT @Autowired constructor(
             val entity = tribe
             val updatedEntity = Tribe(tribe.id, tribe.name)
 
-            every { tribeService.find(entity.id, account) } returns entity
+            every { tribeService.find(entity.id) } returns entity
             every {
                 tribeService.save(
                     Tribe(
                         tribe.id,
                         tribe.name
-                    ),
-                    account
+                    )
                 )
             } returns updatedEntity
 
@@ -112,8 +112,8 @@ internal class TribeControllerIT @Autowired constructor(
         fun `DELETE entity by ID`() {
             val entity = tribe
 
-            every { tribeService.find(entity.id, account) } returns entity
-            every { tribeService.delete(entity, account) } returns entity
+            every { tribeService.find(entity.id) } returns entity
+            every { tribeService.delete(entity) } returns entity
 
             mvc.delete("/api/tribes/{id}", entity.id) {
                 contentType = APPLICATION_JSON
@@ -127,7 +127,7 @@ internal class TribeControllerIT @Autowired constructor(
         fun `POST new entity`() {
             val newEntity = tribe
 
-            every { tribeService.save(Tribe(tribe.id, tribe.name), account) } returns newEntity
+            every { tribeService.save(Tribe(tribe.id, tribe.name)) } returns newEntity
 
             mvc.post("/api/tribes/${newEntity.id}") {
                 contentType = APPLICATION_JSON
@@ -143,8 +143,8 @@ internal class TribeControllerIT @Autowired constructor(
         fun `POST rotation request no payload`() {
             val entity = tribe
 
-            every { rotationService.executeRotation(tribe, RotationOptions.DEFAULT_OPTIONS, account) } returns entity
-            every { tribeService.find(entity.id, account) } returns entity
+            every { rotationService.executeRotation(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
+            every { tribeService.find(entity.id) } returns entity
 
             mvc.post("/api/tribes/${entity.id}:rotate") {
                 contentType = APPLICATION_JSON
@@ -161,8 +161,8 @@ internal class TribeControllerIT @Autowired constructor(
             val entity = tribe
             val rotation = RotationOptions.DEFAULT_OPTIONS
 
-            every { rotationService.executeRotation(tribe, RotationOptions.DEFAULT_OPTIONS, account) } returns entity
-            every { tribeService.find(entity.id, account) } returns entity
+            every { rotationService.executeRotation(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
+            every { tribeService.find(entity.id) } returns entity
 
             mvc.post("/api/tribes/${entity.id}:rotate") {
                 contentType = APPLICATION_JSON
@@ -177,11 +177,12 @@ internal class TribeControllerIT @Autowired constructor(
     }
 
     @Nested
+    @WithMockUser
     inner class SadPath {
 
         @Test
         fun `LIST no content`() {
-            every { tribeService.find(account) } throws EmptyListException("No tribes exist yet")
+            every { tribeService.find() } throws EmptyListException("No tribes exist yet")
 
             mvc.get("/api/tribes") {
                 contentType = APPLICATION_JSON
@@ -195,7 +196,7 @@ internal class TribeControllerIT @Autowired constructor(
         fun `GET UUID doesn't exist`() {
             val randomUUID = randomUUID()
 
-            every { tribeService.find(randomUUID, account) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
+            every { tribeService.find(randomUUID) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
 
             mvc.get("/api/tribes/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
@@ -222,7 +223,7 @@ internal class TribeControllerIT @Autowired constructor(
         fun `DELETE UUID doesn't exist`() {
             val randomUUID = randomUUID()
 
-            every { tribeService.find(randomUUID, account) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
+            every { tribeService.find(randomUUID) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
 
             mvc.delete("/api/tribes/{id}", randomUUID) {
                 contentType = APPLICATION_JSON
@@ -260,7 +261,7 @@ internal class TribeControllerIT @Autowired constructor(
         fun `POST rotation request to invalid tribe`() {
             val randomUUID = randomUUID()
 
-            every { tribeService.find(randomUUID, account) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
+            every { tribeService.find(randomUUID) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
 
             mvc.post("/api/tribes/$randomUUID:rotate") {
                 contentType = APPLICATION_JSON

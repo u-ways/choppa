@@ -17,7 +17,6 @@ class TribeSerializer(
         gen.writeQueryField(CHAPTERS, tribe)
         gen.writeQueryField(MEMBERS, tribe)
         gen.writeQueryField(SQUADS, tribe)
-        gen.writeQueryField(ITERATIONS, tribe)
         gen.writeEndObject()
     }
 }

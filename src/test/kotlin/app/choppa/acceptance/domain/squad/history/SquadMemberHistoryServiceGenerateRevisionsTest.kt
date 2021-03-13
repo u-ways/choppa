@@ -1,5 +1,6 @@
 package app.choppa.acceptance.domain.squad.history
 
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.squad.Squad
@@ -27,13 +28,15 @@ import java.util.stream.Stream
 internal class SquadMemberHistoryServiceGenerateRevisionsTest {
     private lateinit var repository: SquadMemberHistoryRepository
     private lateinit var memberRepository: MemberRepository
+    private lateinit var accountService: AccountService
     private lateinit var service: SquadMemberHistoryService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(SquadMemberHistoryRepository::class)
         memberRepository = mockkClass(MemberRepository::class)
-        service = SquadMemberHistoryService(repository, memberRepository)
+        accountService = mockkClass(AccountService::class)
+        service = SquadMemberHistoryService(repository, memberRepository, accountService)
     }
 
     @Test

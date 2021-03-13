@@ -1,6 +1,7 @@
 package app.choppa.integration.domain.tribe
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
+import app.choppa.domain.rotation.RotationService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeController
 import app.choppa.domain.tribe.TribeService
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.*
 
@@ -29,14 +31,21 @@ internal class TribeControllerCollectionIT @Autowired constructor(
     @MockkBean
     private lateinit var tribeService: TribeService
 
+    @MockkBean
+    private lateinit var rotationService: RotationService
+
+    @MockkBean(relaxed = true)
+    private lateinit var accountService: AccountService
+
     @Nested
+    @WithMockUser
     inner class HappyPath {
 
         @Test
         fun `LIST entities`() {
             val entities = TribeFactory.create(amount = 2)
 
-            every { tribeService.find(UNASSIGNED_ACCOUNT) } returns entities
+            every { tribeService.find() } returns entities
 
             mvc.get("/api/tribes") {
                 contentType = APPLICATION_JSON
@@ -54,8 +63,8 @@ internal class TribeControllerCollectionIT @Autowired constructor(
             val greenColor = "#00FF00".toRGBAInt()
             val updatedCollection = existingCollection.map { Tribe(it.id, it.name, greenColor) }
 
-            every { tribeService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
-            every { tribeService.save(updatedCollection, UNASSIGNED_ACCOUNT) } returns updatedCollection
+            every { tribeService.find(existingCollection.map { it.id }) } returns existingCollection
+            every { tribeService.save(updatedCollection) } returns updatedCollection
 
             mvc.put("/api/tribes") {
                 contentType = APPLICATION_JSON
@@ -71,8 +80,8 @@ internal class TribeControllerCollectionIT @Autowired constructor(
         fun `DELETE collection`() {
             val existingCollection = TribeFactory.create(amount = 3)
 
-            every { tribeService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
-            every { tribeService.delete(existingCollection, UNASSIGNED_ACCOUNT) } returns existingCollection
+            every { tribeService.find(existingCollection.map { it.id }) } returns existingCollection
+            every { tribeService.delete(existingCollection) } returns existingCollection
 
             mvc.delete("/api/tribes") {
                 contentType = APPLICATION_JSON
@@ -87,7 +96,7 @@ internal class TribeControllerCollectionIT @Autowired constructor(
         fun `POST collection`() {
             val newCollection = TribeFactory.create(amount = 3)
 
-            every { tribeService.save(newCollection, UNASSIGNED_ACCOUNT) } returns newCollection
+            every { tribeService.save(newCollection) } returns newCollection
 
             mvc.post("/api/tribes") {
                 contentType = APPLICATION_JSON
@@ -101,11 +110,12 @@ internal class TribeControllerCollectionIT @Autowired constructor(
     }
 
     @Nested
+    @WithMockUser
     inner class SadPath {
 
         @Test
         fun `LIST no content`() {
-            every { tribeService.find(UNASSIGNED_ACCOUNT) } throws EmptyListException("No tribes exist yet")
+            every { tribeService.find() } throws EmptyListException("No tribes exist yet")
 
             mvc.get("/api/tribes") {
                 contentType = APPLICATION_JSON

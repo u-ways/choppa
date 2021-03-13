@@ -1,6 +1,6 @@
 package app.choppa.integration.domain.member
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberController
 import app.choppa.domain.member.MemberService
@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
@@ -29,7 +30,11 @@ internal class MemberControllerRelatedEntitiesIT @Autowired constructor(
     @MockkBean
     private lateinit var memberService: MemberService
 
+    @MockkBean(relaxed = true)
+    private lateinit var accountService: AccountService
+
     @Nested
+    @WithMockUser
     inner class HappyPath {
         @ParameterizedTest
         @ValueSource(strings = ["chapter", "squad", "tribe"])
@@ -51,9 +56,9 @@ internal class MemberControllerRelatedEntitiesIT @Autowired constructor(
 
     private fun findMembersRelatedBy(relatedEntity: String, id: UUID): List<Member> {
         return when (relatedEntity) {
-            "chapter" -> memberService.findRelatedByChapter(id, UNASSIGNED_ACCOUNT)
-            "squad" -> memberService.findRelatedBySquad(id, UNASSIGNED_ACCOUNT)
-            "tribe" -> memberService.findRelatedByTribe(id, UNASSIGNED_ACCOUNT)
+            "chapter" -> memberService.findRelatedByChapter(id)
+            "squad" -> memberService.findRelatedBySquad(id)
+            "tribe" -> memberService.findRelatedByTribe(id)
             else -> throw IllegalArgumentException("invalid related entity [$relatedEntity] for member")
         }
     }

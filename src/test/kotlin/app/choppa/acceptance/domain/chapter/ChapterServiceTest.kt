@@ -1,6 +1,6 @@
 package app.choppa.acceptance.domain.chapter
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterRepository
 import app.choppa.domain.chapter.ChapterService
@@ -20,13 +20,15 @@ import java.util.UUID.randomUUID
 internal class ChapterServiceTest {
     private lateinit var repository: ChapterRepository
     private lateinit var memberService: MemberService
+    private lateinit var accountService: AccountService
     private lateinit var service: ChapterService
 
     @BeforeEach
     internal fun setUp() {
         repository = mockkClass(ChapterRepository::class)
         memberService = mockkClass(MemberService::class)
-        service = ChapterService(repository, memberService)
+        accountService = mockkClass(AccountService::class, relaxed = true)
+        service = ChapterService(repository, memberService, accountService)
     }
 
     @Test
@@ -36,7 +38,7 @@ internal class ChapterServiceTest {
         every { repository.findById(entity.id) } returns empty()
         every { repository.save(entity) } returns entity
 
-        val savedEntity = service.save(entity, UNASSIGNED_ACCOUNT)
+        val savedEntity = service.save(entity)
 
         savedEntity shouldBe entity
 
@@ -50,7 +52,7 @@ internal class ChapterServiceTest {
 
         every { repository.findById(id) } returns of(existingEntity)
 
-        val foundEntity = service.find(id, UNASSIGNED_ACCOUNT)
+        val foundEntity = service.find(id)
 
         foundEntity shouldBe existingEntity
 
@@ -63,9 +65,9 @@ internal class ChapterServiceTest {
 
         every { repository.findById(existingEntity.id) } returns of(existingEntity)
         every { repository.delete(existingEntity) } returns Unit
-        every { memberService.unAssignMembersWithChapter(existingEntity, UNASSIGNED_ACCOUNT) } returns Unit
+        every { memberService.unAssignMembersWithChapter(existingEntity) } returns Unit
 
-        val removedEntity = service.delete(existingEntity, UNASSIGNED_ACCOUNT)
+        val removedEntity = service.delete(existingEntity)
 
         removedEntity shouldBe existingEntity
 
@@ -78,6 +80,6 @@ internal class ChapterServiceTest {
 
         every { repository.findById(id) } returns empty()
 
-        assertThrows(EntityNotFoundException::class.java) { service.find(id, UNASSIGNED_ACCOUNT) }
+        assertThrows(EntityNotFoundException::class.java) { service.find(id) }
     }
 }

@@ -1,6 +1,5 @@
 package app.choppa.domain.squad
 
-import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseController
 import app.choppa.domain.base.BaseController.Companion.API_PREFIX
 import app.choppa.domain.member.Member
@@ -22,41 +21,38 @@ class SquadController(
     fun listSquads(
         @QueryComponent(Member::class) @RequestParam(name = "member", required = false) memberId: UUID?,
         @QueryComponent(Tribe::class) @RequestParam(name = "tribe", required = false) tribeId: UUID?,
-        account: Account,
     ): ResponseEntity<List<Squad>> = ok().body(
         when {
-            memberId is UUID -> squadService.findRelatedByMember(memberId, account)
-            tribeId is UUID -> squadService.findRelatedByTribe(tribeId, account)
-            else -> squadService.find(account)
+            memberId is UUID -> squadService.findRelatedByMember(memberId)
+            tribeId is UUID -> squadService.findRelatedByTribe(tribeId)
+            else -> squadService.find()
         }
     )
 
     @PutMapping
     fun putCollection(
         @RequestBody updatedCollection: List<Squad>,
-        account: Account
     ): ResponseEntity<List<Squad>> = squadService
-        .find(updatedCollection.map { it.id }, account)
-        .also { squadService.save(updatedCollection, account) }
+        .find(updatedCollection.map { it.id })
+        .also { squadService.save(updatedCollection) }
         .run { created(location()).build() }
 
     @DeleteMapping
     fun deleteCollection(
         @RequestBody toDeleteCollection: List<Squad>,
-        account: Account
     ): ResponseEntity<List<Squad>> = squadService
-        .find(toDeleteCollection.map { it.id }, account)
-        .also { squadService.delete(toDeleteCollection, account) }
+        .find(toDeleteCollection.map { it.id })
+        .also { squadService.delete(toDeleteCollection) }
         .run { noContent().build() }
 
     @PostMapping
     fun postCollection(
         @RequestBody newCollection: List<Squad>,
-        account: Account,
     ): ResponseEntity<List<Squad>> = squadService
-        .save(newCollection, account)
+        .save(newCollection)
         .run { created(location()).build() }
 
     @GetMapping("stats")
-    fun getStatistics(account: Account): ResponseEntity<HashMap<String, Serializable>> = ok().body(squadService.statistics(account))
+    fun getStatistics(): ResponseEntity<HashMap<String, Serializable>> =
+        ok().body(squadService.statistics())
 }

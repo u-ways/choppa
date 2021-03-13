@@ -1,6 +1,6 @@
 package app.choppa.domain.tribe
 
-import app.choppa.domain.account.Account
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.base.BaseService
 import app.choppa.domain.squad.SquadService
 import app.choppa.exception.EntityNotFoundException
@@ -15,46 +15,48 @@ import kotlin.collections.HashMap
 class TribeService(
     @Autowired private val tribeRepository: TribeRepository,
     @Autowired private val squadService: SquadService,
-) : BaseService<Tribe> {
-    override fun find(account: Account): List<Tribe> = tribeRepository
+    @Autowired private val accountService: AccountService,
+) : BaseService<Tribe>(accountService) {
+
+    override fun find(): List<Tribe> = tribeRepository
         .findAll()
-        .ownedBy(account)
+        .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No tribes exist for this account yet.") }
 
-    override fun find(ids: List<UUID>, account: Account): List<Tribe> = tribeRepository
+    override fun find(ids: List<UUID>): List<Tribe> = tribeRepository
         .findAllById(ids)
-        .ownedBy(account)
+        .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No tribes found with given ids.") }
 
-    override fun find(id: UUID, account: Account): Tribe = tribeRepository
+    override fun find(id: UUID): Tribe = tribeRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Tribe with id [$id] does not exist.") }
-        .verifyOwnership(account)
+        .verifyAuthenticatedOwnership()
 
-    override fun save(entity: Tribe, account: Account): Tribe = tribeRepository.save(
+    override fun save(entity: Tribe): Tribe = tribeRepository.save(
         tribeRepository
             .findById(entity.id)
-            .verifyOriginalOwnership(entity, account)
+            .verifyOriginalOwnership(entity)
     )
 
-    override fun save(entities: List<Tribe>, account: Account): List<Tribe> = entities
-        .map { this.save(it, account) }
+    override fun save(entities: List<Tribe>): List<Tribe> = entities
+        .map { this.save(it) }
 
     @Transactional
-    override fun delete(entity: Tribe, account: Account): Tribe = tribeRepository.findById(entity.id).run {
+    override fun delete(entity: Tribe): Tribe = tribeRepository.findById(entity.id).run {
         this.orElseGet { throw EntityNotFoundException("Tribe with id [${entity.id}] does not exist.") }
-            .verifyOwnership(account).also {
-                squadService.deleteRelatedByTribe(entity.id, account)
+            .verifyAuthenticatedOwnership().also {
+                squadService.deleteRelatedByTribe(entity.id)
                 tribeRepository.delete(entity)
             }
     }
 
     @Transactional
-    override fun delete(entities: List<Tribe>, account: Account): List<Tribe> = entities
-        .map { this.delete(it, account) }
+    override fun delete(entities: List<Tribe>): List<Tribe> = entities
+        .map { this.delete(it) }
 
-    fun statistics(account: Account): Map<String, Serializable> =
-        tribeRepository.findAll().ownedBy(account).run {
+    fun statistics(): Map<String, Serializable> =
+        tribeRepository.findAll().ownedByAuthenticated().run {
             mapOf(
                 "total" to this.size,
                 "knowledgeSharingPoints" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
@@ -71,7 +73,7 @@ class TribeService(
             )
         }
 
-    private fun Optional<Tribe>.verifyOriginalOwnership(entity: Tribe, account: Account): Tribe =
-        if (this.isPresent) entity.copy(account = this.get().account).verifyOwnership(account)
-        else entity.copy(account = account)
+    private fun Optional<Tribe>.verifyOriginalOwnership(entity: Tribe): Tribe =
+        if (this.isPresent) entity.copy(account = this.get().account).verifyAuthenticatedOwnership()
+        else entity.copy(account = accountService.resolveFromAuth())
 }

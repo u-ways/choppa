@@ -1,6 +1,5 @@
 package app.choppa.integration.domain.chapter
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
 import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterController
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.*
 
@@ -34,13 +34,14 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
     private lateinit var accountService: AccountService
 
     @Nested
+    @WithMockUser
     inner class HappyPath {
 
         @Test
         fun `LIST entities`() {
             val entities = ChapterFactory.create(amount = 2)
 
-            every { chapterService.find(UNASSIGNED_ACCOUNT) } returns entities
+            every { chapterService.find() } returns entities
 
             mvc.get("/api/chapters") {
                 contentType = APPLICATION_JSON
@@ -58,8 +59,8 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
             val greenColor = "#00FF00".toRGBAInt()
             val updatedCollection = existingCollection.map { Chapter(it.id, it.name, greenColor) }
 
-            every { chapterService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
-            every { chapterService.save(updatedCollection, UNASSIGNED_ACCOUNT) } returns updatedCollection
+            every { chapterService.find(existingCollection.map { it.id }) } returns existingCollection
+            every { chapterService.save(updatedCollection) } returns updatedCollection
 
             mvc.put("/api/chapters") {
                 contentType = APPLICATION_JSON
@@ -75,8 +76,8 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
         fun `DELETE collection`() {
             val existingCollection = ChapterFactory.create(amount = 3)
 
-            every { chapterService.find(existingCollection.map { it.id }, UNASSIGNED_ACCOUNT) } returns existingCollection
-            every { chapterService.delete(existingCollection, UNASSIGNED_ACCOUNT) } returns existingCollection
+            every { chapterService.find(existingCollection.map { it.id }) } returns existingCollection
+            every { chapterService.delete(existingCollection) } returns existingCollection
 
             mvc.delete("/api/chapters") {
                 contentType = APPLICATION_JSON
@@ -91,7 +92,7 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
         fun `POST collection`() {
             val newCollection = ChapterFactory.create(amount = 3)
 
-            every { chapterService.save(newCollection, UNASSIGNED_ACCOUNT) } returns newCollection
+            every { chapterService.save(newCollection) } returns newCollection
 
             mvc.post("/api/chapters") {
                 contentType = APPLICATION_JSON
@@ -105,11 +106,12 @@ internal class ChapterControllerCollectionIT @Autowired constructor(
     }
 
     @Nested
+    @WithMockUser
     inner class SadPath {
 
         @Test
         fun `LIST no content`() {
-            every { chapterService.find(UNASSIGNED_ACCOUNT) } throws EmptyListException("No chapters exist yet")
+            every { chapterService.find() } throws EmptyListException("No chapters exist yet")
 
             mvc.get("/api/chapters") {
                 contentType = APPLICATION_JSON

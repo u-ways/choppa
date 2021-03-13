@@ -1,6 +1,7 @@
 package app.choppa.integration.domain.squad
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.Account
+import app.choppa.domain.account.AccountService
 import app.choppa.domain.member.MemberService
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadService
@@ -12,6 +13,9 @@ import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.matchers.containsInAnyOrder
 import app.choppa.support.testcontainers.TestDBContainer
 import com.natpryce.hamkrest.assertion.assertThat
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -33,15 +37,23 @@ internal class SquadServiceRelatedEntitiesIT @Autowired constructor(
     @Container
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
+    @MockkBean(relaxed = true)
+    private lateinit var accountService: AccountService
+
+    @BeforeEach
+    internal fun setUp() {
+        every { accountService.resolveFromAuth() } returns Account.UNASSIGNED_ACCOUNT
+    }
+
     @Test
     @Transactional
     fun `Given tribe with squads, when service find squads by related tribe, then service should return related squads`() {
-        squadService.save(SquadFactory.create(amount = 2), UNASSIGNED_ACCOUNT) // random squads
+        squadService.save(SquadFactory.create(amount = 2)) // random squads
 
-        val relatedTribe = tribeService.save(Tribe(), UNASSIGNED_ACCOUNT)
-        val expectedRelatedTribeSquads = squadService.save(SquadFactory.create(amount = 2, sharedTribe = relatedTribe), UNASSIGNED_ACCOUNT)
+        val relatedTribe = tribeService.save(Tribe())
+        val expectedRelatedTribeSquads = squadService.save(SquadFactory.create(amount = 2, sharedTribe = relatedTribe))
 
-        val actualRelatedTribeSquads = squadService.findRelatedByTribe(relatedTribe.id, UNASSIGNED_ACCOUNT)
+        val actualRelatedTribeSquads = squadService.findRelatedByTribe(relatedTribe.id)
 
         assertThat(actualRelatedTribeSquads, List<Squad>::containsInAnyOrder, expectedRelatedTribeSquads)
     }
@@ -49,19 +61,18 @@ internal class SquadServiceRelatedEntitiesIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given member in squads, when service find squads by related member, then service should return related squads`() {
-        squadService.save(SquadFactory.create(amount = 2), UNASSIGNED_ACCOUNT) // random squads
+        squadService.save(SquadFactory.create(amount = 2)) // random squads
 
-        val members = memberService.save(MemberFactory.create(2), UNASSIGNED_ACCOUNT)
+        val members = memberService.save(MemberFactory.create(2))
         val expectedRelatedMemberSquads = squadService.save(
             listOf(
                 Squad(members = members.toMutableList()),
                 Squad(members = members.toMutableList()),
                 Squad(members = members.toMutableList())
-            ),
-            UNASSIGNED_ACCOUNT
+            )
         )
 
-        val actualRelatedMemberSquads = squadService.findRelatedByMember(members.first().id, UNASSIGNED_ACCOUNT)
+        val actualRelatedMemberSquads = squadService.findRelatedByMember(members.first().id)
 
         assertThat(actualRelatedMemberSquads, List<Squad>::containsInAnyOrder, expectedRelatedMemberSquads)
     }

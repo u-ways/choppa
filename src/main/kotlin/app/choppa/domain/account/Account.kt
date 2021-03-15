@@ -2,8 +2,8 @@ package app.choppa.domain.account
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
+import java.time.Instant
 import java.util.*
-import java.util.UUID.fromString
 import java.util.UUID.randomUUID
 import javax.persistence.*
 
@@ -17,45 +17,26 @@ data class Account(
     val id: UUID = randomUUID(),
 
     @Column(name = "provider", columnDefinition = "VARCHAR(100)")
-    val provider: String = "PRO-$id".substring(0, 5),
+    val provider: String,
 
     @Column(name = "provider_id", columnDefinition = "VARCHAR(4096)")
-    val providerId: String = randomUUID().toString(),
+    val providerId: String,
 
     @Column(name = "organisation_name", columnDefinition = "VARCHAR(100)")
-    val organisationName: String = "ORG-$id".substring(0, 15),
+    val organisationName: String,
+
+    @Column(name = "create_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false)
+    val createDate: Instant = Instant.now(),
 
     @Transient
-    var name: String = "ACC-$id".substring(0, 15),
+    var name: String? = null,
 
     @Transient
-    var profilePicture: String = "",
+    var profilePicture: String? = null,
 
     @Transient
     var firstLogin: Boolean = false,
 ) {
-    companion object {
-        val UNASSIGNED_ACCOUNT = Account(
-            id = fromString("00000000-0000-0000-0000-000000000000"),
-            provider = "Unassigned Provider",
-            providerId = "unassigned-provider-id",
-            organisationName = "Unassigned Org",
-            name = "Unassigned Account",
-            profilePicture = "",
-            firstLogin = false
-        )
-
-        val DEMO_ACCOUNT = Account(
-            id = fromString("00000000-0000-0000-0000-000000000001"),
-            provider = "choppa",
-            providerId = "choppa-demo-account",
-            organisationName = "Choppa Demo Org",
-            name = "Choppa Demo",
-            profilePicture = "",
-            firstLogin = false
-        )
-    }
-
     override fun toString() = "Account(provider=$provider, providerId=$providerId, organisationName=$organisationName)"
 
     override fun hashCode(): Int = id.hashCode()
@@ -66,5 +47,14 @@ data class Account(
         other as Account
         if (id != other.id) return false
         return true
+    }
+
+    companion object {
+        val PLACEHOLDER_ACCOUNT: Account
+            get() = Account(
+                provider = "",
+                providerId = "",
+                organisationName = "",
+            )
     }
 }

@@ -13,6 +13,7 @@ class AccountSerializer(
         gen.writeStringField(account::provider.name, account.provider)
         gen.writeStringField(account::providerId.name, account.providerId)
         gen.writeStringField(account::organisationName.name, account.organisationName)
+        gen.writeNumberField(account::createDate.name, account.createDate.toEpochMilli())
         gen.writeStringField(account::name.name, account.name)
         gen.writeStringField(account::profilePicture.name, account.profilePicture)
         gen.writeBooleanField(account::firstLogin.name, account.firstLogin)

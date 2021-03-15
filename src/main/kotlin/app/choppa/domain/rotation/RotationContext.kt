@@ -2,7 +2,6 @@ package app.choppa.domain.rotation
 
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
-import app.choppa.domain.rotation.RotationOptions.Companion.DEFAULT_OPTIONS
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.tribe.Tribe
 
@@ -10,7 +9,7 @@ class RotationContext {
     companion object {
         fun rotate(
             tribe: Tribe,
-            options: RotationOptions = DEFAULT_OPTIONS,
+            options: RotationOptions,
             revisions: List<Pair<Squad, List<List<Member>?>>> = defaultRevisions(tribe)
         ): Tribe =
             if (tribe.squads.count() < 2) tribe
@@ -23,16 +22,14 @@ class RotationContext {
             }.let {
                 tribe.copy(
                     squads = it.mapIndexed { index, (oldMembers, newMembers) ->
-                        Squad(
-                            tribe.squads[index].id,
-                            tribe.squads[index].name,
-                            tribe.squads[index].color,
-                            tribe.squads[index].tribe,
-                            tribe.squads[index].members
-                                .minus(oldMembers)
-                                .plus(newMembers)
-                                .toMutableList()
-                        )
+                        tribe.squads[index].run {
+                            copy(
+                                members = members
+                                    .minus(oldMembers)
+                                    .plus(newMembers)
+                                    .toMutableList(),
+                            )
+                        }
                     }.toMutableList(),
                 )
             }

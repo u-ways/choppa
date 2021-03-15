@@ -7,4 +7,5 @@ import java.util.*
 @Repository
 interface AccountRepository : JpaRepository<Account, UUID> {
     fun findByProviderAndProviderId(provider: String, providerId: String): Account?
+    fun findByProviderOrderByCreateDate(provider: String): List<Account>
 }

@@ -1,15 +1,12 @@
 package app.choppa.domain.chapter
 
 import app.choppa.domain.account.Account
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.Account.Companion.PLACEHOLDER_ACCOUNT
 import app.choppa.domain.base.BaseModel
-import app.choppa.domain.member.Member
-import app.choppa.utils.Color.Companion.GREY
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
 import java.util.*
-import java.util.UUID.fromString
 import java.util.UUID.randomUUID
 import javax.persistence.*
 
@@ -24,17 +21,14 @@ data class Chapter(
     override val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", unique = true, nullable = false)
-    val name: String = "CH-$id".substring(0, 15),
+    val name: String,
 
     @Column(name = "color", columnDefinition = "INTEGER")
-    val color: Int = GREY,
-
-    @OneToMany(mappedBy = "chapter")
-    val members: MutableList<Member> = mutableListOf(),
+    val color: Int,
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id")
-    override val account: Account = UNASSIGNED_ACCOUNT,
+    override val account: Account,
 ) : BaseModel {
     override fun toString() = "Chapter(id=$id, name=$name)"
 
@@ -49,6 +43,8 @@ data class Chapter(
     }
 
     companion object {
-        val UNASSIGNED_ROLE = Chapter(fromString("00000000-0000-0000-0000-000000000000"), "UNASSIGNED")
+        const val UNASSIGNED_ROLE = "UNASSIGNED"
+        val PLACEHOLDER_CHAPTER: Chapter
+            get() = Chapter(name = "", color = 0, account = PLACEHOLDER_ACCOUNT)
     }
 }

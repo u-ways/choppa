@@ -1,11 +1,10 @@
 package app.choppa.domain.member
 
 import app.choppa.domain.account.Account
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.Account.Companion.PLACEHOLDER_ACCOUNT
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.chapter.Chapter
-import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
-import app.choppa.domain.squad.Squad
+import app.choppa.domain.chapter.Chapter.Companion.PLACEHOLDER_CHAPTER
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
@@ -24,21 +23,18 @@ data class Member(
     override val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
-    val name: String = "ME-$id".substring(0, 15),
+    val name: String,
 
     @ManyToOne
     @JoinColumn(name = "chapter", referencedColumnName = "chapter_id")
-    val chapter: Chapter = UNASSIGNED_ROLE,
+    val chapter: Chapter,
 
     @Column(name = "active", columnDefinition = "BOOLEAN")
     val active: Boolean = true,
 
-    @ManyToMany(mappedBy = "members")
-    val squads: MutableList<Squad> = mutableListOf(),
-
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id")
-    override val account: Account = UNASSIGNED_ACCOUNT,
+    override val account: Account,
 ) : BaseModel {
     override fun toString() = "Member(id=$id, name=$name, chapter=${chapter.name})"
 
@@ -53,6 +49,9 @@ data class Member(
     }
 
     companion object {
-        val NO_MEMBERS get() = mutableListOf<Member>()
+        val NO_MEMBERS: MutableList<Member>
+            get() = mutableListOf()
+        val PLACEHOLDER_MEMBER: Member
+            get() = Member(name = "", chapter = PLACEHOLDER_CHAPTER, account = PLACEHOLDER_ACCOUNT)
     }
 }

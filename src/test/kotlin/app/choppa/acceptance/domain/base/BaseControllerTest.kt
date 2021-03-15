@@ -3,6 +3,7 @@ package app.choppa.acceptance.domain.base
 import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseController
 import app.choppa.domain.base.BaseModel
+import app.choppa.support.factory.AccountFactory
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -16,7 +17,7 @@ class BaseControllerTest {
 
     @BeforeEach
     internal fun setUp() {
-        testAccount = Account()
+        testAccount = AccountFactory.create()
     }
 
     @Test

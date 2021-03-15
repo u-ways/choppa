@@ -1,46 +1,20 @@
 package app.choppa.integration.domain.member
 
-import app.choppa.domain.account.Account
-import app.choppa.domain.account.AccountService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
 import app.choppa.exception.EntityNotFoundException
+import app.choppa.support.base.BaseServiceIT
 import app.choppa.support.factory.MemberFactory
-import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.matchers.containsInAnyOrder
-import app.choppa.support.testcontainers.TestDBContainer
 import com.natpryce.hamkrest.assertion.assertThat
-import com.ninjasquad.springmockk.MockkBean
-import io.mockk.every
 import org.junit.Assert.assertThrows
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.context.ActiveProfiles
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import javax.transaction.Transactional
 
-@SpringBootTest
-@Testcontainers
-@Import(FlywayMigrationConfig::class)
-@ActiveProfiles("test")
 internal class MemberServiceCollectionIT @Autowired constructor(
     private val memberService: MemberService,
-) {
-    @Container
-    private val testDBContainer: TestDBContainer = TestDBContainer.get()
-
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
-
-    @BeforeEach
-    internal fun setUp() {
-        every { accountService.resolveFromAuth() } returns Account.UNASSIGNED_ACCOUNT
-    }
-
+) : BaseServiceIT() {
     @Test
     @Transactional
     fun `Given a new list of members, when service saves said list of members, then service should persist the list of members`() {
@@ -57,7 +31,7 @@ internal class MemberServiceCollectionIT @Autowired constructor(
         val newName = "newName"
 
         val updatedListOfMembers = existingListOfMembers.map {
-            Member(it.id, newName)
+            MemberFactory.create(it.id, newName)
         }
 
         val result = memberService.save(updatedListOfMembers)
@@ -78,7 +52,9 @@ internal class MemberServiceCollectionIT @Autowired constructor(
     @Transactional
     fun `Given an existing list of inactive members, when service finds said list of active members, then service should remove the existing list of members`() {
         memberService.save(MemberFactory.create(amount = 3)) // existingListOfActiveMembers
-        val existingListOfInactiveMembers = memberService.save(listOf(Member(active = false), Member(active = false), Member(active = false)))
+        val existingListOfInactiveMembers = memberService.save(
+            MemberFactory.create(3, sharedActive = false)
+        )
         val result = memberService.findInactive()
 
         assertThat(result, List<Member>::containsInAnyOrder, existingListOfInactiveMembers)

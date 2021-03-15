@@ -9,6 +9,9 @@ import app.choppa.domain.squad.history.RevisionType.REMOVE
 import app.choppa.domain.squad.history.SquadMemberHistory
 import app.choppa.domain.squad.history.SquadMemberHistoryRepository
 import app.choppa.domain.squad.history.SquadMemberHistoryService
+import app.choppa.support.base.Universe
+import app.choppa.support.factory.MemberFactory
+import app.choppa.support.factory.SquadFactory
 import app.choppa.support.factory.SquadMemberHistoryFactory
 import io.mockk.every
 import io.mockk.mockkClass
@@ -25,7 +28,7 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.domain.Sort.by
 import java.util.stream.Stream
 
-internal class SquadMemberHistoryServiceGenerateRevisionsTest {
+internal class SquadMemberHistoryServiceGenerateRevisionsTest : Universe() {
     private lateinit var repository: SquadMemberHistoryRepository
     private lateinit var memberRepository: MemberRepository
     private lateinit var accountService: AccountService
@@ -41,8 +44,8 @@ internal class SquadMemberHistoryServiceGenerateRevisionsTest {
 
     @Test
     fun `Given existing squad with no revised formations before, when service generate next squad revision for newly revised formations, then service should generate first revision of number zero`() {
-        val existingSquad = Squad()
-        val revisedFormation = listOf(Member())
+        val existingSquad = SquadFactory.create()
+        val revisedFormation = listOf(MemberFactory.create())
 
         every {
             repository.findAllBySquad(
@@ -114,12 +117,12 @@ internal class SquadMemberHistoryServiceGenerateRevisionsTest {
         fun generateRevisionsTestArgs(): Stream<Arguments?>? {
             return Stream.of(
                 Triple(
-                    Squad(),
+                    SquadFactory.create(),
                     listOf<Member>(),
                     1
                 ).let { (existingSquad, revisedFormation, nextRevisionNumber) ->
                     arguments(
-                        existingSquad.apply { this.members.add(Member()) },
+                        existingSquad.apply { this.members.add(MemberFactory.create()) },
                         revisedFormation,
                         nextRevisionNumber,
                         listOf(
@@ -129,13 +132,13 @@ internal class SquadMemberHistoryServiceGenerateRevisionsTest {
                 },
 
                 Triple(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<Member>(),
                     2
                 ).let { (existingSquad, revisedFormation, nextRevisionNumber) ->
                     arguments(
                         existingSquad,
-                        revisedFormation.apply { this.add(Member()) },
+                        revisedFormation.apply { this.add(MemberFactory.create()) },
                         nextRevisionNumber,
                         listOf(
                             SquadMemberHistory(existingSquad, revisedFormation[0], nextRevisionNumber, ADD)
@@ -144,15 +147,15 @@ internal class SquadMemberHistoryServiceGenerateRevisionsTest {
                 },
 
                 Triple(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<Member>(),
                     3
                 ).let { (existingSquad, revisedFormation, nextRevisionNumber) ->
                     arguments(
-                        existingSquad.apply { this.members.add(Member()) },
+                        existingSquad.apply { this.members.add(MemberFactory.create()) },
                         revisedFormation.apply {
                             this.add(existingSquad.members[0])
-                            this.add(Member())
+                            this.add(MemberFactory.create())
                         },
                         nextRevisionNumber,
                         listOf(
@@ -162,20 +165,20 @@ internal class SquadMemberHistoryServiceGenerateRevisionsTest {
                 },
 
                 Triple(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<Member>(),
                     4
                 ).let { (existingSquad, revisedFormation, nextRevisionNumber) ->
                     arguments(
                         existingSquad.apply {
-                            this.members.add(Member())
-                            this.members.add(Member())
+                            this.members.add(MemberFactory.create())
+                            this.members.add(MemberFactory.create())
                         },
                         revisedFormation.apply {
                             this.add(existingSquad.members[0])
                             this.add(existingSquad.members[1])
-                            this.add(Member())
-                            this.add(Member())
+                            this.add(MemberFactory.create())
+                            this.add(MemberFactory.create())
                         },
                         nextRevisionNumber,
                         listOf(
@@ -186,16 +189,16 @@ internal class SquadMemberHistoryServiceGenerateRevisionsTest {
                 },
 
                 Triple(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<Member>(),
                     5
                 ).let { (existingSquad, revisedFormation, nextRevisionNumber) ->
                     arguments(
                         existingSquad.apply {
-                            this.members.add(Member())
-                            this.members.add(Member())
-                            this.members.add(Member())
-                            this.members.add(Member())
+                            this.members.add(MemberFactory.create())
+                            this.members.add(MemberFactory.create())
+                            this.members.add(MemberFactory.create())
+                            this.members.add(MemberFactory.create())
                         },
                         revisedFormation.apply {
                             this.add(existingSquad.members[0])
@@ -210,18 +213,18 @@ internal class SquadMemberHistoryServiceGenerateRevisionsTest {
                 },
 
                 Triple(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<Member>(),
                     6
                 ).let { (existingSquad, revisedFormation, nextRevisionNumber) ->
                     arguments(
                         existingSquad.apply {
-                            this.members.add(Member())
-                            this.members.add(Member())
+                            this.members.add(MemberFactory.create())
+                            this.members.add(MemberFactory.create())
                         },
                         revisedFormation.apply {
                             this.add(existingSquad.members[0])
-                            this.add(Member())
+                            this.add(MemberFactory.create())
                         },
                         nextRevisionNumber,
                         listOf(

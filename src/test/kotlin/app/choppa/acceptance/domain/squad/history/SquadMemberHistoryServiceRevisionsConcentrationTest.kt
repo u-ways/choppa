@@ -3,12 +3,13 @@ package app.choppa.acceptance.domain.squad.history
 import app.choppa.domain.account.AccountService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberRepository
-import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.history.RevisionType.ADD
 import app.choppa.domain.squad.history.RevisionType.REMOVE
 import app.choppa.domain.squad.history.SquadMemberHistory
 import app.choppa.domain.squad.history.SquadMemberHistoryRepository
 import app.choppa.domain.squad.history.SquadMemberHistoryService
+import app.choppa.support.factory.MemberFactory
+import app.choppa.support.factory.SquadFactory
 import app.choppa.support.matchers.containsInAnyOrder
 import com.natpryce.hamkrest.assertion.assertThat
 import io.mockk.every
@@ -124,7 +125,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
     @Test
     fun `Given existing entity, when service concentrateLastNSquadRevisions by zero, then service should return emptyList`() {
-        val existingEntity = Squad()
+        val existingEntity = SquadFactory.create()
         val result = service.concentrateLastNSquadRevisions(existingEntity, 0)
         result shouldBeEqualTo emptyList()
     }
@@ -172,14 +173,14 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
     companion object {
         @JvmStatic
         fun concentrateSquadRevisionsToTestArgs(): Stream<Arguments?>? {
-            val existingSquad = Squad()
+            val existingSquad = SquadFactory.create()
             return Stream.of(
                 arguments(
                     -1,
                     listOf(
                         SquadMemberHistory(
                             existingSquad,
-                            Member(),
+                            MemberFactory.create(),
                             0,
                             ADD
                         )
@@ -187,13 +188,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     emptyList<Member>()
                 ),
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         0,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -205,13 +206,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         1,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -232,13 +233,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         0,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -247,7 +248,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                 },
                                 1,
@@ -258,13 +259,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         1,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -273,7 +274,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -285,13 +286,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         1,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -300,7 +301,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -321,13 +322,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         1,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -336,7 +337,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -357,13 +358,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         2,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -372,7 +373,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -394,13 +395,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         2,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -409,7 +410,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -431,13 +432,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         0,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -446,7 +447,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                 },
                                 1,
@@ -462,7 +463,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                 },
                                 3,
@@ -478,13 +479,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
         @JvmStatic
         fun concentrateLastNSquadRevisionsTestArgs(): Stream<Arguments?>? {
             return Stream.of(
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         1,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                 },
                                 0,
@@ -495,13 +496,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         1,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -521,13 +522,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         2,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                 },
                                 0,
@@ -535,7 +536,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                 },
                                 1,
@@ -546,13 +547,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         1,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(this)
                                 },
                                 0,
@@ -560,7 +561,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -578,13 +579,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         2,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                     expectedResult.add(this)
                                 },
@@ -593,7 +594,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                 },
                                 1,
@@ -613,13 +614,13 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                     )
                 },
 
-                Pair(Squad(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
+                Pair(SquadFactory.create(), mutableListOf<Member>()).let { (existingSquad, expectedResult) ->
                     arguments(
                         3,
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                 },
                                 0,
@@ -627,7 +628,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     existingSquad.members.add(this)
                                 },
                                 1,
@@ -654,9 +655,9 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
             return Stream.of(
                 // TEST 1
                 Pair(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf(
-                        mutableListOf(Member()),
+                        mutableListOf(MemberFactory.create()),
                     )
                 ).let { (existingSquad, expectedResult) ->
                     arguments(
@@ -676,14 +677,14 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
                 // TEST 2
                 Pair(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<MutableList<Member>>()
                 ).let { (existingSquad, expectedResult) ->
                     arguments(
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 0,
@@ -691,7 +692,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult[0].add(this)
                                 },
                                 0,
@@ -704,14 +705,14 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
                 // TEST 3
                 Pair(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<MutableList<Member>>()
                 ).let { (existingSquad, expectedResult) ->
                     arguments(
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 0,
@@ -719,7 +720,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(
                                         mutableListOf(
                                             expectedResult[0][0],
@@ -737,14 +738,14 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
                 // TEST 4
                 Pair(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<MutableList<Member>>()
                 ).let { (existingSquad, expectedResult) ->
                     arguments(
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 0,
@@ -765,14 +766,14 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
                 // TEST 5
                 Pair(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<MutableList<Member>>()
                 ).let { (existingSquad, expectedResult) ->
                     arguments(
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 0,
@@ -786,7 +787,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 1,
@@ -799,14 +800,14 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
                 // TEST 6
                 Pair(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<MutableList<Member>>()
                 ).let { (existingSquad, expectedResult) ->
                     arguments(
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 0,
@@ -814,7 +815,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(
                                         mutableListOf(
                                             expectedResult[0][0],
@@ -827,7 +828,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult[1].add(this)
                                 },
                                 1,
@@ -840,14 +841,14 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
                 // TEST 7
                 Pair(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<MutableList<Member>>()
                 ).let { (existingSquad, expectedResult) ->
                     arguments(
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 0,
@@ -855,7 +856,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(
                                         mutableListOf(
                                             expectedResult[0][0],
@@ -868,7 +869,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(
                                         mutableListOf(
                                             expectedResult[1][0],
@@ -887,14 +888,14 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
                 // TEST 8
                 Pair(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<MutableList<Member>>()
                 ).let { (existingSquad, expectedResult) ->
                     arguments(
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 0,
@@ -923,14 +924,14 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
 
                 // TEST 9
                 Pair(
-                    Squad(),
+                    SquadFactory.create(),
                     mutableListOf<MutableList<Member>>()
                 ).let { (existingSquad, expectedResult) ->
                     arguments(
                         listOf(
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 0,
@@ -944,7 +945,7 @@ internal class SquadMemberHistoryServiceRevisionsConcentrationTest {
                             ),
                             SquadMemberHistory(
                                 existingSquad,
-                                Member().apply {
+                                MemberFactory.create().apply {
                                     expectedResult.add(mutableListOf(this))
                                 },
                                 1,

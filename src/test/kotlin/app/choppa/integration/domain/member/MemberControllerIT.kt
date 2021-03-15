@@ -1,36 +1,30 @@
 package app.choppa.integration.domain.member
 
-import app.choppa.domain.account.AccountService
-import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberController
 import app.choppa.domain.member.MemberService
 import app.choppa.exception.EntityNotFoundException
-import com.fasterxml.jackson.databind.ObjectMapper
+import app.choppa.support.base.BaseControllerIT
+import app.choppa.support.factory.ChapterFactory
+import app.choppa.support.factory.MemberFactory
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.hamcrest.core.StringContains
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 import java.util.*
 
 @WebMvcTest(controllers = [MemberController::class])
-@ActiveProfiles("test")
-internal class MemberControllerIT @Autowired constructor(
-    private val mvc: MockMvc,
-    private val mapper: ObjectMapper,
-) {
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
-
+internal class MemberControllerIT : BaseControllerIT() {
     @MockkBean
     private lateinit var memberService: MemberService
 
@@ -38,7 +32,7 @@ internal class MemberControllerIT @Autowired constructor(
 
     @BeforeEach
     internal fun setUp() {
-        member = Member()
+        member = MemberFactory.create()
     }
 
     @Nested
@@ -63,15 +57,15 @@ internal class MemberControllerIT @Autowired constructor(
         @Test
         fun `PUT entity by ID`() {
             val entity = member
-            val updatedEntity = Member(member.id)
+            val updatedEntity = MemberFactory.create(member.id, chapter = ChapterFactory.create())
 
             every { memberService.find(entity.id) } returns entity
             every {
                 memberService.save(
-                    Member(
+                    MemberFactory.create(
                         member.id,
                         member.name,
-                        Chapter(member.chapter.id)
+                        ChapterFactory.create(member.chapter.id)
                     )
                 )
             } returns updatedEntity
@@ -105,7 +99,15 @@ internal class MemberControllerIT @Autowired constructor(
         fun `POST new entity`() {
             val newEntity = member
 
-            every { memberService.save(Member(member.id, member.name, Chapter(member.chapter.id))) } returns newEntity
+            every {
+                memberService.save(
+                    MemberFactory.create(
+                        member.id,
+                        member.name,
+                        ChapterFactory.create(member.chapter.id)
+                    )
+                )
+            } returns newEntity
 
             mvc.post("/api/members/${newEntity.id}") {
                 contentType = APPLICATION_JSON

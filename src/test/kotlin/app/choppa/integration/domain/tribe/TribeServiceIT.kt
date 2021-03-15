@@ -1,16 +1,12 @@
 package app.choppa.integration.domain.tribe
 
-import app.choppa.domain.account.Account
-import app.choppa.domain.account.AccountService
-import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeService
 import app.choppa.exception.EntityNotFoundException
-import app.choppa.support.flyway.FlywayMigrationConfig
-import app.choppa.support.testcontainers.TestDBContainer
-import com.ninjasquad.springmockk.MockkBean
-import io.mockk.every
+import app.choppa.support.base.BaseServiceIT
+import app.choppa.support.factory.SquadFactory
+import app.choppa.support.factory.TribeFactory
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
@@ -18,33 +14,17 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.context.ActiveProfiles
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import javax.transaction.Transactional
 
-@SpringBootTest
-@Testcontainers
-@Import(FlywayMigrationConfig::class)
-@ActiveProfiles("test")
 internal class TribeServiceIT @Autowired constructor(
     private val tribeService: TribeService,
     private val squadService: SquadService,
-) {
-    @Container
-    private val testDBContainer: TestDBContainer = TestDBContainer.get()
-
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
-
+) : BaseServiceIT() {
     private lateinit var entity: Tribe
 
     @BeforeEach
     internal fun setUp() {
-        every { accountService.resolveFromAuth() } returns Account.UNASSIGNED_ACCOUNT
-        entity = tribeService.save(Tribe())
+        entity = tribeService.save(TribeFactory.create())
     }
 
     @Test
@@ -69,7 +49,7 @@ internal class TribeServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
-        val existingEntity = tribeService.save(Tribe())
+        val existingEntity = tribeService.save(TribeFactory.create())
         val removedEntity = tribeService.delete(existingEntity)
 
         assertThrows(EntityNotFoundException::class.java) { tribeService.find(removedEntity.id) }
@@ -78,8 +58,8 @@ internal class TribeServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db with related records, when service deletes entity, then service should removes entity and related records from db`() {
-        val existingEntity = tribeService.save(Tribe())
-        val relatedSquad = squadService.save(Squad(tribe = existingEntity))
+        val existingEntity = tribeService.save(TribeFactory.create())
+        val relatedSquad = squadService.save(SquadFactory.create(tribe = existingEntity))
 
         squadService.findRelatedByTribe(existingEntity.id).first() shouldBeEqualTo relatedSquad
 

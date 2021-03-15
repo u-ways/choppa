@@ -2,6 +2,7 @@ package app.choppa.acceptance.domain.squad
 
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
+import app.choppa.support.factory.MemberFactory
 import app.choppa.support.factory.SquadFactory
 import app.choppa.support.matchers.containsInAnyOrder
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -19,7 +20,7 @@ internal class SquadSerializerTest {
 
     @BeforeEach
     internal fun setUp() {
-        squad = Squad(color = green)
+        squad = SquadFactory.create(color = green)
         mapper = ObjectMapper()
     }
 
@@ -43,8 +44,10 @@ internal class SquadSerializerTest {
     }
 
     @Test
-    internal fun `Given DAO with members, when serialize, then it should return DTO with members`() {
-        val squad = SquadFactory.create(membersAmount = 2)
+    fun `Given DAO with members, when serialize, then it should return DTO with members`() {
+        val squad = SquadFactory.create().apply {
+            members.addAll(MemberFactory.create(2))
+        }
 
         val uniformDto = JsonPath.parse(mapper.writeValueAsString(squad))
         val members = uniformDto?.read<List<Member>>("$.members")

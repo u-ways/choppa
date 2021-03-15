@@ -8,6 +8,8 @@ import app.choppa.domain.squad.SquadRepository
 import app.choppa.domain.squad.SquadService
 import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
+import app.choppa.support.base.Universe
+import app.choppa.support.factory.MemberFactory
 import app.choppa.support.factory.SquadFactory
 import app.choppa.support.matchers.containsInAnyOrder
 import com.natpryce.hamkrest.assertion.assertThat
@@ -22,7 +24,7 @@ import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID.randomUUID
 
-internal class SquadServiceTest {
+internal class SquadServiceTest : Universe() {
     private lateinit var repository: SquadRepository
     private lateinit var memberService: MemberService
     private lateinit var squadMemberHistoryService: SquadMemberHistoryService
@@ -36,11 +38,13 @@ internal class SquadServiceTest {
         accountService = mockkClass(AccountService::class, relaxed = true)
         squadMemberHistoryService = mockkClass(SquadMemberHistoryService::class, relaxed = true)
         service = SquadService(repository, memberService, squadMemberHistoryService, accountService)
+
+        every { accountService.resolveFromAuth() } returns ACCOUNT
     }
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = Squad()
+        val entity = SquadFactory.create()
         val tribe = entity.tribe
         val members = entity.members
 
@@ -48,7 +52,18 @@ internal class SquadServiceTest {
 
         every { repository.findById(entity.id) } returns empty()
 
-        every { repository.save(Squad(entity.id, entity.name, entity.color, tribe, members)) } returns entity
+        every {
+            repository.save(
+                Squad(
+                    entity.id,
+                    entity.name,
+                    entity.color,
+                    tribe,
+                    members,
+                    account = ACCOUNT
+                )
+            )
+        } returns entity
 
         val savedEntity = service.save(entity)
 
@@ -60,7 +75,7 @@ internal class SquadServiceTest {
     @Test
     fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
-        val existingEntity = Squad(id)
+        val existingEntity = SquadFactory.create(id)
 
         every { repository.findById(id) } returns of(existingEntity)
 
@@ -73,7 +88,7 @@ internal class SquadServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val existingEntity = Squad()
+        val existingEntity = SquadFactory.create()
 
         every { repository.findById(existingEntity.id) } returns of(existingEntity)
         every { repository.delete(existingEntity) } returns Unit
@@ -97,7 +112,9 @@ internal class SquadServiceTest {
 
     @Test
     fun `Given existing entity, when service findAllSquadMembersRevisions for existing entity, then service should pair entity with related revisions`() {
-        val existingEntity = SquadFactory.create(membersAmount = 5)
+        val existingEntity = SquadFactory.create().apply {
+            members.addAll(MemberFactory.create(5))
+        }
 
         every { repository.findById(existingEntity.id) } returns of(existingEntity)
         every { repository.deleteAllSquadMemberRecordsFor(existingEntity.id) } returns Unit
@@ -111,7 +128,9 @@ internal class SquadServiceTest {
 
     @Test
     fun `Given existing entity, when service findLastNSquadMembersRevisions for existing entity, then service should pair entity with correct revisions`() {
-        val existingEntity = SquadFactory.create(membersAmount = 5)
+        val existingEntity = SquadFactory.create().apply {
+            members.addAll(MemberFactory.create(5))
+        }
 
         every { repository.findById(existingEntity.id) } returns of(existingEntity)
 

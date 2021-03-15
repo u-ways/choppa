@@ -1,6 +1,5 @@
 package app.choppa.integration.domain.tribe
 
-import app.choppa.domain.account.AccountService
 import app.choppa.domain.rotation.RotationOptions
 import app.choppa.domain.rotation.RotationService
 import app.choppa.domain.tribe.Tribe
@@ -8,31 +7,26 @@ import app.choppa.domain.tribe.TribeController
 import app.choppa.domain.tribe.TribeService
 import app.choppa.exception.EmptyListException
 import app.choppa.exception.EntityNotFoundException
-import com.fasterxml.jackson.databind.ObjectMapper
+import app.choppa.support.base.BaseControllerIT
+import app.choppa.support.factory.TribeFactory
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.hamcrest.core.StringContains
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 import java.util.UUID.randomUUID
 
 @WebMvcTest(controllers = [TribeController::class])
-@ActiveProfiles("test")
-internal class TribeControllerIT @Autowired constructor(
-    private val mvc: MockMvc,
-    private val mapper: ObjectMapper,
-) {
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
-
+internal class TribeControllerIT : BaseControllerIT() {
     @MockkBean
     private lateinit var tribeService: TribeService
 
@@ -43,7 +37,7 @@ internal class TribeControllerIT @Autowired constructor(
 
     @BeforeEach
     internal fun setUp() {
-        tribe = Tribe()
+        tribe = TribeFactory.create()
     }
 
     @Nested
@@ -52,7 +46,7 @@ internal class TribeControllerIT @Autowired constructor(
 
         @Test
         fun `LIST entities`() {
-            val anotherTribe = Tribe()
+            val anotherTribe = TribeFactory.create()
             val entities = listOf(tribe, anotherTribe)
 
             every { tribeService.find() } returns entities
@@ -86,12 +80,12 @@ internal class TribeControllerIT @Autowired constructor(
         @Test
         fun `PUT entity by ID`() {
             val entity = tribe
-            val updatedEntity = Tribe(tribe.id, tribe.name)
+            val updatedEntity = TribeFactory.create(tribe.id, tribe.name)
 
             every { tribeService.find(entity.id) } returns entity
             every {
                 tribeService.save(
-                    Tribe(
+                    TribeFactory.create(
                         tribe.id,
                         tribe.name
                     )
@@ -127,7 +121,7 @@ internal class TribeControllerIT @Autowired constructor(
         fun `POST new entity`() {
             val newEntity = tribe
 
-            every { tribeService.save(Tribe(tribe.id, tribe.name)) } returns newEntity
+            every { tribeService.save(TribeFactory.create(tribe.id, tribe.name)) } returns newEntity
 
             mvc.post("/api/tribes/${newEntity.id}") {
                 contentType = APPLICATION_JSON
@@ -142,32 +136,15 @@ internal class TribeControllerIT @Autowired constructor(
         @Test
         fun `POST rotation request no payload`() {
             val entity = tribe
+            val options = RotationOptions(chapter = CHAPTER)
 
-            every { rotationService.executeRotation(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
+            every { rotationService.executeRotation(tribe, options) } returns entity
             every { tribeService.find(entity.id) } returns entity
 
             mvc.post("/api/tribes/${entity.id}:rotate") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
-            }.andExpect {
-                status { isOk }
-                content { contentType(APPLICATION_JSON) }
-                content { json(mapper.writeValueAsString(entity)) }
-            }
-        }
-
-        @Test
-        fun `POST rotation request with valid payload`() {
-            val entity = tribe
-            val rotation = RotationOptions.DEFAULT_OPTIONS
-
-            every { rotationService.executeRotation(tribe, RotationOptions.DEFAULT_OPTIONS) } returns entity
-            every { tribeService.find(entity.id) } returns entity
-
-            mvc.post("/api/tribes/${entity.id}:rotate") {
-                contentType = APPLICATION_JSON
-                accept = APPLICATION_JSON
-                content = mapper.writeValueAsString(rotation)
+                content = mapper.writeValueAsString(options)
             }.andExpect {
                 status { isOk }
                 content { contentType(APPLICATION_JSON) }
@@ -260,14 +237,28 @@ internal class TribeControllerIT @Autowired constructor(
         @Test
         fun `POST rotation request to invalid tribe`() {
             val randomUUID = randomUUID()
+            val options = RotationOptions(chapter = CHAPTER)
 
             every { tribeService.find(randomUUID) } throws EntityNotFoundException("Tribe with id [$randomUUID] does not exist.")
 
             mvc.post("/api/tribes/$randomUUID:rotate") {
                 contentType = APPLICATION_JSON
                 accept = APPLICATION_JSON
+                content = mapper.writeValueAsString(options)
             }.andExpect {
                 status { isNotFound }
+            }
+        }
+
+        @Test
+        fun `POST rotation request with no rotation options`() {
+            val entity = tribe
+
+            mvc.post("/api/tribes/${entity.id}:rotate") {
+                contentType = APPLICATION_JSON
+                accept = APPLICATION_JSON
+            }.andExpect {
+                status { isUnprocessableEntity }
             }
         }
     }

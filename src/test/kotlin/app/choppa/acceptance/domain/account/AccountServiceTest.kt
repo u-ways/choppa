@@ -1,9 +1,9 @@
 package app.choppa.acceptance.domain.account
 
-import app.choppa.domain.account.Account
 import app.choppa.domain.account.AccountRepository
 import app.choppa.domain.account.AccountService
 import app.choppa.support.builder.OAuth2TokenBuilder
+import app.choppa.support.factory.AccountFactory
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
@@ -29,7 +29,7 @@ internal class AccountServiceTest {
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = Account()
+        val entity = AccountFactory.create()
 
         every { repository.findById(entity.id) } returns Optional.empty()
         every { repository.save(entity) } returns entity
@@ -44,7 +44,7 @@ internal class AccountServiceTest {
     @Test
     fun `Given an existing account, when service tries to createNewAccount, then service should throw IllegalStateException`() {
         val securityContext = mockkClass(SecurityContext::class)
-        val entity = Account(
+        val entity = AccountFactory.create(
             firstLogin = false,
             provider = "provider",
             providerId = UUID.randomUUID().toString()
@@ -71,7 +71,7 @@ internal class AccountServiceTest {
     @Test
     fun `Given new account, when service creates a new account, then service should create the new account and set its first login to false`() {
         val securityContext = mockkClass(SecurityContext::class)
-        val entity = Account(
+        val entity = AccountFactory.create(
             firstLogin = true,
             provider = "provider",
             providerId = UUID.randomUUID().toString()

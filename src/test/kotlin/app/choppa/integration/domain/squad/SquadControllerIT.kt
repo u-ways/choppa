@@ -1,50 +1,42 @@
 package app.choppa.integration.domain.squad
 
-import app.choppa.domain.account.Account
-import app.choppa.domain.account.AccountService
-import app.choppa.domain.member.Member
 import app.choppa.domain.member.Member.Companion.NO_MEMBERS
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadController
 import app.choppa.domain.squad.SquadService
-import app.choppa.domain.tribe.Tribe
-import app.choppa.domain.tribe.Tribe.Companion.UNASSIGNED_TRIBE
 import app.choppa.exception.EmptyListException
 import app.choppa.exception.EntityNotFoundException
+import app.choppa.support.base.BaseControllerIT
+import app.choppa.support.factory.MemberFactory
+import app.choppa.support.factory.SquadFactory
+import app.choppa.support.factory.TribeFactory
 import app.choppa.utils.Color.Companion.GREY
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.hamcrest.core.StringContains
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 import java.util.*
 
 @WebMvcTest(controllers = [SquadController::class])
-@ActiveProfiles("test")
-internal class SquadControllerIT @Autowired constructor(
-    private val mvc: MockMvc,
-    private val mapper: ObjectMapper,
-) {
+internal class SquadControllerIT : BaseControllerIT() {
     @MockkBean
     private lateinit var squadService: SquadService
 
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
     private lateinit var squad: Squad
 
     @BeforeEach
     internal fun setUp() {
-        every { accountService.resolveFromAuth() } returns Account.UNASSIGNED_ACCOUNT
-        squad = Squad()
+        squad = SquadFactory.create()
     }
 
     @Nested
@@ -53,7 +45,7 @@ internal class SquadControllerIT @Autowired constructor(
 
         @Test
         fun `LIST entities`() {
-            val anotherSquad = Squad()
+            val anotherSquad = SquadFactory.create()
             val entities = listOf(squad, anotherSquad)
 
             every { squadService.find() } returns entities
@@ -71,8 +63,8 @@ internal class SquadControllerIT @Autowired constructor(
         @Test
         fun `GET entity by ID`() {
             val entity = squad.apply {
-                this.members.add(Member())
-                this.members.add(Member())
+                this.members.add(MemberFactory.create())
+                this.members.add(MemberFactory.create())
             }
 
             every { squadService.find(entity.id) } returns entity
@@ -90,16 +82,16 @@ internal class SquadControllerIT @Autowired constructor(
         @Test
         fun `PUT entity by ID`() {
             val entity = squad
-            val updatedEntity = Squad(squad.id, squad.name, GREY, UNASSIGNED_TRIBE, NO_MEMBERS)
+            val updatedEntity = SquadFactory.create(squad.id, squad.name, GREY, TRIBE, NO_MEMBERS)
 
             every { squadService.find(entity.id) } returns entity
             every {
                 squadService.save(
-                    Squad(
+                    SquadFactory.create(
                         squad.id,
                         squad.name,
                         squad.color,
-                        Tribe(squad.tribe.id),
+                        TribeFactory.create(squad.tribe.id),
                         squad.members
                     )
                 )
@@ -136,11 +128,11 @@ internal class SquadControllerIT @Autowired constructor(
 
             every {
                 squadService.save(
-                    Squad(
+                    SquadFactory.create(
                         squad.id,
                         squad.name,
                         squad.color,
-                        Tribe(squad.tribe.id)
+                        TribeFactory.create(squad.tribe.id)
                     )
                 )
             } returns newEntity

@@ -1,16 +1,12 @@
 package app.choppa.integration.domain.chapter
 
-import app.choppa.domain.account.Account
-import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterService
-import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
 import app.choppa.exception.EntityNotFoundException
-import app.choppa.support.flyway.FlywayMigrationConfig
-import app.choppa.support.testcontainers.TestDBContainer
-import com.ninjasquad.springmockk.MockkBean
-import io.mockk.every
+import app.choppa.support.base.BaseServiceIT
+import app.choppa.support.factory.ChapterFactory
+import app.choppa.support.factory.MemberFactory
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
@@ -18,32 +14,17 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.context.ActiveProfiles
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import javax.transaction.Transactional
 
-@SpringBootTest
-@Testcontainers
-@Import(FlywayMigrationConfig::class)
-@ActiveProfiles("test")
 internal class ChapterServiceIT @Autowired constructor(
     private val chapterService: ChapterService,
     private val memberService: MemberService,
-) {
-    @Container
-    private val testDBContainer: TestDBContainer = TestDBContainer.get()
-
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
+) : BaseServiceIT() {
     private lateinit var entity: Chapter
 
     @BeforeEach
     internal fun setUp() {
-        every { accountService.resolveFromAuth() } returns Account.UNASSIGNED_ACCOUNT
-        entity = chapterService.save(Chapter())
+        entity = chapterService.save(ChapterFactory.create())
     }
 
     @Test
@@ -67,7 +48,7 @@ internal class ChapterServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
-        val existingEntity = chapterService.save(Chapter())
+        val existingEntity = chapterService.save(ChapterFactory.create())
         val removedEntity = chapterService.delete(existingEntity)
 
         assertThrows(EntityNotFoundException::class.java) { chapterService.find(removedEntity.id) }
@@ -76,8 +57,8 @@ internal class ChapterServiceIT @Autowired constructor(
     @Test
     @Transactional
     fun `Given existing entity in db with related records, when service deletes entity, then service should removes entity and related records from db`() {
-        val existingEntity = chapterService.save(Chapter())
-        val relatedMember = memberService.save(Member(chapter = existingEntity))
+        val existingEntity = chapterService.save(ChapterFactory.create())
+        val relatedMember = memberService.save(MemberFactory.create(chapter = existingEntity))
 
         memberService.findRelatedByChapter(existingEntity.id).first() shouldBeEqualTo relatedMember
 

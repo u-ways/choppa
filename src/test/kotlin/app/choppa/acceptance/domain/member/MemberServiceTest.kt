@@ -1,12 +1,12 @@
 package app.choppa.acceptance.domain.member
 
 import app.choppa.domain.account.AccountService
-import app.choppa.domain.chapter.Chapter
-import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberRepository
 import app.choppa.domain.member.MemberService
 import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
+import app.choppa.support.factory.ChapterFactory
+import app.choppa.support.factory.MemberFactory
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
@@ -34,8 +34,8 @@ internal class MemberServiceTest {
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val relatedEntityChapter = Chapter()
-        val entity = Member(chapter = relatedEntityChapter)
+        val relatedEntityChapter = ChapterFactory.create()
+        val entity = MemberFactory.create(chapter = relatedEntityChapter)
 
         every { repository.save(entity) } returns entity
         every { repository.findById(entity.id) } returns empty()
@@ -50,8 +50,8 @@ internal class MemberServiceTest {
     @Test
     fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
-        val relatedEntityChapter = Chapter()
-        val existingEntity = Member(id, chapter = relatedEntityChapter)
+        val relatedEntityChapter = ChapterFactory.create()
+        val existingEntity = MemberFactory.create(id, chapter = relatedEntityChapter)
 
         every { repository.findById(id) } returns of(existingEntity)
 
@@ -64,7 +64,7 @@ internal class MemberServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val existingEntity = Member()
+        val existingEntity = MemberFactory.create()
 
         every { repository.delete(existingEntity) } returns Unit
         every { repository.findById(existingEntity.id) } returns of(existingEntity)

@@ -2,6 +2,7 @@ package app.choppa.acceptance.utils
 
 import app.choppa.domain.account.Account
 import app.choppa.domain.base.BaseModel
+import app.choppa.support.factory.AccountFactory
 import app.choppa.utils.QueryComponent
 import app.choppa.utils.ReverseRouteCacheElement
 import app.choppa.utils.ReverseRouter
@@ -22,8 +23,8 @@ import java.util.stream.Stream
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
+@Suppress("unused")
 internal class ReverseRouterTest {
-
     private lateinit var reverseRouter: ReverseRouter
 
     @BeforeEach
@@ -107,7 +108,11 @@ internal class ReverseRouterTest {
     @Test
     fun `Given controller with a parameter annotated with QueryComponent but not RequestParam, when query component mapping route reversed, should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            reverseRouter.queryComponent(UnderTest::class, UnderTest::getEndpointWithQueryComponentNoRequestParam, EntityOne())
+            reverseRouter.queryComponent(
+                UnderTest::class,
+                UnderTest::getEndpointWithQueryComponentNoRequestParam,
+                EntityOne()
+            )
         }.message shouldBeEqualTo "Expected to find two function parameters: 1. @QueryComponent with type: [EntityOne] 2. @RequestParam with name [entityOne]"
     }
 
@@ -138,7 +143,11 @@ internal class ReverseRouterTest {
     @Test
     fun `Given controller has not got a RequestParam annotation but the method does and has a valid query param, when query component mapping route reversed, should throw IllegalStateException`() {
         assertThrows<IllegalStateException> {
-            reverseRouter.queryComponent(UnderTestNoRequestMapping::class, UnderTestNoRequestMapping::getEndpointNoParameter, EntityOne())
+            reverseRouter.queryComponent(
+                UnderTestNoRequestMapping::class,
+                UnderTestNoRequestMapping::getEndpointNoParameter,
+                EntityOne()
+            )
         }
     }
 
@@ -170,7 +179,12 @@ internal class ReverseRouterTest {
         reverseRouter = ReverseRouter(cache)
         reverseRouter.route(UnderTest::class, UnderTest::requestEndpointSubMapping)
 
-        cache shouldContain (ReverseRouteCacheElement(UnderTest::class, UnderTest::requestEndpointSubMapping) to "underTest/subMapping")
+        cache shouldContain (
+            ReverseRouteCacheElement(
+                UnderTest::class,
+                UnderTest::requestEndpointSubMapping
+            ) to "underTest/subMapping"
+            )
     }
 
     @Test
@@ -178,12 +192,18 @@ internal class ReverseRouterTest {
         reverseRouter = ReverseRouter(
             ConcurrentHashMap(
                 mapOf(
-                    ReverseRouteCacheElement(UnderTest::class, UnderTest::requestEndpointSubMapping) to "ACachedResultOfAControllerAndFunction"
+                    ReverseRouteCacheElement(
+                        UnderTest::class,
+                        UnderTest::requestEndpointSubMapping
+                    ) to "ACachedResultOfAControllerAndFunction"
                 )
             )
         )
 
-        reverseRouter.route(UnderTest::class, UnderTest::requestEndpointSubMapping) shouldBeEqualTo "ACachedResultOfAControllerAndFunction"
+        reverseRouter.route(
+            UnderTest::class,
+            UnderTest::requestEndpointSubMapping
+        ) shouldBeEqualTo "ACachedResultOfAControllerAndFunction"
     }
 
     @Test
@@ -192,7 +212,13 @@ internal class ReverseRouterTest {
         reverseRouter = ReverseRouter(cache)
         reverseRouter.route(UnderTest::class, UnderTest::putEndpointMultiParameter, EntityOne::class)
 
-        cache shouldContain (ReverseRouteCacheElement(UnderTest::class, UnderTest::putEndpointMultiParameter, EntityOne::class) to "underTest/putEndpointMultiParameter?entityOne")
+        cache shouldContain (
+            ReverseRouteCacheElement(
+                UnderTest::class,
+                UnderTest::putEndpointMultiParameter,
+                EntityOne::class
+            ) to "underTest/putEndpointMultiParameter?entityOne"
+            )
     }
 
     @Test
@@ -200,15 +226,22 @@ internal class ReverseRouterTest {
         reverseRouter = ReverseRouter(
             ConcurrentHashMap(
                 mapOf(
-                    ReverseRouteCacheElement(UnderTest::class, UnderTest::requestEndpointSubMapping, EntityOne::class) to "ACachedResultOfAQueryParam"
+                    ReverseRouteCacheElement(
+                        UnderTest::class,
+                        UnderTest::requestEndpointSubMapping,
+                        EntityOne::class
+                    ) to "ACachedResultOfAQueryParam"
                 )
             )
         )
 
-        reverseRouter.route(UnderTest::class, UnderTest::requestEndpointSubMapping, EntityOne::class) shouldBeEqualTo "ACachedResultOfAQueryParam"
+        reverseRouter.route(
+            UnderTest::class,
+            UnderTest::requestEndpointSubMapping,
+            EntityOne::class
+        ) shouldBeEqualTo "ACachedResultOfAQueryParam"
     }
 
-    @Suppress("unused")
     companion object {
         @JvmStatic
         fun routeClassTests(): Stream<Arguments?>? {
@@ -279,13 +312,26 @@ internal class ReverseRouterTest {
         }
     }
 
-    internal class EntityOne(override val id: UUID = randomUUID(), override val account: Account = Account()) : BaseModel
-    internal class EntityTwo(override val id: UUID = randomUUID(), override val account: Account = Account()) : BaseModel
-    internal class EntityThree(override val id: UUID = randomUUID(), override val account: Account = Account()) : BaseModel
+    internal class EntityOne(
+        override val id: UUID = randomUUID(),
+        override val account: Account = AccountFactory.create()
+    ) : BaseModel
 
+    internal class EntityTwo(
+        override val id: UUID = randomUUID(),
+        override val account: Account = AccountFactory.create()
+    ) : BaseModel
+
+    internal class EntityThree(
+        override val id: UUID = randomUUID(),
+        override val account: Account = AccountFactory.create()
+    ) : BaseModel
+
+    @Suppress("unused")
     @RequestMapping
     internal class UnderTestIndexMapping
 
+    @Suppress("unused")
     @RequestMapping("api/underTest")
     internal class UnderTest {
         @RequestMapping
@@ -306,7 +352,10 @@ internal class ReverseRouterTest {
         fun putEndpointMultiParameter(
             @QueryComponent(EntityOne::class) @RequestParam(name = "entityOne", required = false) entityOne: UUID?,
             @QueryComponent(EntityTwo::class) @RequestParam(name = "entityTwo", required = false) entityTwo: UUID?,
-            @QueryComponent(EntityThree::class) @RequestParam(name = "entityThree", required = false) entityThree: UUID?,
+            @QueryComponent(EntityThree::class) @RequestParam(
+                name = "entityThree",
+                required = false
+            ) entityThree: UUID?,
         ) {
         }
 
@@ -322,7 +371,10 @@ internal class ReverseRouterTest {
         fun deleteEndpointIndexMapping(
             @QueryComponent(EntityOne::class) @RequestParam(name = "entityOne", required = false) entityOne: UUID?,
             @QueryComponent(EntityTwo::class) @RequestParam(name = "entityTwo", required = false) entityTwo: UUID?,
-            @QueryComponent(EntityThree::class) @RequestParam(name = "entityThree", required = false) entityThree: UUID?,
+            @QueryComponent(EntityThree::class) @RequestParam(
+                name = "entityThree",
+                required = false
+            ) entityThree: UUID?,
         ) {
         }
 
@@ -354,6 +406,7 @@ internal class ReverseRouterTest {
         }
     }
 
+    @Suppress("unused")
     internal class UnderTestNoRequestMapping {
         @GetMapping("getEndpointNoParameter")
         fun getEndpointNoParameter() {

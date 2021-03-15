@@ -2,6 +2,7 @@ package app.choppa.acceptance.domain.member
 
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
+import app.choppa.support.factory.MemberFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
@@ -16,7 +17,7 @@ internal class MemberSerializerTest {
 
     @BeforeEach
     internal fun setUp() {
-        member = Member()
+        member = MemberFactory.create()
         mapper = ObjectMapper()
     }
 
@@ -37,7 +38,7 @@ internal class MemberSerializerTest {
 
     @Test
     internal fun `Given DAO with chapter, when serialize, then it should return DTO with chapter`() {
-        val member = Member(chapter = Chapter())
+        val member = MemberFactory.create()
 
         val uniformDto = JsonPath.parse(mapper.writeValueAsString(member))
         val chapter = uniformDto?.read<Chapter>("$.chapter")!!

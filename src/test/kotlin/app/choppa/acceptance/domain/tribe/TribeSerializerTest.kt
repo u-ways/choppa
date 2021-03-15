@@ -1,6 +1,7 @@
 package app.choppa.acceptance.domain.tribe
 
 import app.choppa.domain.tribe.Tribe
+import app.choppa.support.factory.TribeFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
@@ -16,7 +17,7 @@ internal class TribeSerializerTest {
 
     @BeforeEach
     internal fun setUp() {
-        tribe = Tribe(color = red)
+        tribe = TribeFactory.create(color = red)
         mapper = ObjectMapper()
     }
 

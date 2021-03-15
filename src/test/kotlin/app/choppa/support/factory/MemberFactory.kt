@@ -1,29 +1,35 @@
 package app.choppa.support.factory
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.chapter.Chapter
-import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
 import app.choppa.domain.member.Member
+import app.choppa.support.base.Universe
+import java.util.*
+import java.util.UUID.randomUUID
 
 class MemberFactory {
-    @Suppress("MemberVisibilityCanBePrivate")
-    companion object {
+    companion object : Universe() {
         /**
-         * Create a random member.
-         *
-         * @param chapter Chapter the member's role. (default = UNASSIGNED_ROLE)
-         * @return Member
+         * Creates a random member.
          */
-        fun create(chapter: Chapter = UNASSIGNED_ROLE): Member = Member(chapter = chapter)
+        fun create(
+            id: UUID = randomUUID(),
+            name: String = "ME-$id".substring(0, 15),
+            chapter: Chapter = CHAPTER,
+            active: Boolean = true,
+            account: Account = ACCOUNT,
+        ): Member = Member(id, name, chapter, active, account)
 
         /**
-         * Create X amount of members that can have a mutual or non-mutual roles
-         *
-         * @param amount Int the number of members to create.
-         * @param sharedChapter Chapter the members shared role. (default = UNASSIGNED_ROLE)
-         * @return MutableList<Member>
+         * Create X amount of members with mutual attributes
          */
-        fun create(amount: Int, sharedChapter: Chapter = UNASSIGNED_ROLE): MutableList<Member> {
-            return (0 until amount).map { this.create(sharedChapter) }.toMutableList()
-        }
+        fun create(
+            amount: Int,
+            sharedChapter: Chapter = CHAPTER,
+            sharedAccount: Account = ACCOUNT,
+            sharedActive: Boolean = true
+        ): MutableList<Member> = (0 until amount).map {
+            create(chapter = sharedChapter, account = sharedAccount, active = sharedActive)
+        }.toMutableList()
     }
 }

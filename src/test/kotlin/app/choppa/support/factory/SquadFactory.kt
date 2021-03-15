@@ -1,38 +1,38 @@
 package app.choppa.support.factory
 
+import app.choppa.domain.account.Account
+import app.choppa.domain.member.Member
+import app.choppa.domain.member.Member.Companion.NO_MEMBERS
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.tribe.Tribe
-import app.choppa.domain.tribe.Tribe.Companion.UNASSIGNED_TRIBE
+import app.choppa.support.base.Universe
+import app.choppa.utils.Color.Companion.GREY
+import java.util.*
+import java.util.UUID.randomUUID
 
 class SquadFactory {
-    @Suppress("MemberVisibilityCanBePrivate")
-    companion object {
+    companion object : Universe() {
         /**
-         * Creates a random Squad with X amount of members.
-         *
-         * @param tribe Tribe the squad's tribe. (default = UNASSIGNED_TRIBE)
-         * @param membersAmount Int the number of members to the squad has.
-         * @return Squad
+         * Creates a random Squad.
          */
         fun create(
-            membersAmount: Int = 0,
-            tribe: Tribe = UNASSIGNED_TRIBE
-        ): Squad = Squad(members = MemberFactory.create(membersAmount), tribe = tribe)
+            id: UUID = randomUUID(),
+            name: String = "SQ-$id".substring(0, 15),
+            color: Int = GREY,
+            tribe: Tribe = TRIBE,
+            members: MutableList<Member> = NO_MEMBERS,
+            account: Account = ACCOUNT,
+        ): Squad = Squad(id, name, color, tribe, members, account)
 
         /**
-         * Create X amount of squads with Y amount of members in each.
-         *
-         * @param amount Int the number of squads to create. (default = 1)
-         * @param sharedTribe Tribe the squads shared tribe. (default = UNASSIGNED_TRIBE)
-         * @param membersAmount Int the number of members per squad to create.
-         * @return List<Squad>
+         * Create X amount of squads with mutual attributes.
          */
         fun create(
             amount: Int,
-            membersAmount: Int = 0,
-            sharedTribe: Tribe = UNASSIGNED_TRIBE
-        ): MutableList<Squad> {
-            return (0 until amount).map { this.create(membersAmount, sharedTribe) }.toMutableList()
-        }
+            sharedTribe: Tribe = TRIBE,
+            sharedAccount: Account = ACCOUNT,
+        ): MutableList<Squad> = (0 until amount).map {
+            create(tribe = sharedTribe, account = sharedAccount)
+        }.toMutableList()
     }
 }

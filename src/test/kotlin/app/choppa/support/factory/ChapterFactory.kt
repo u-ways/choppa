@@ -1,24 +1,32 @@
 package app.choppa.support.factory
 
+import app.choppa.domain.account.Account
 import app.choppa.domain.chapter.Chapter
+import app.choppa.support.base.Universe
+import app.choppa.utils.Color.Companion.GREY
+import java.util.*
+import java.util.UUID.randomUUID
 
 class ChapterFactory {
-    @Suppress("MemberVisibilityCanBePrivate")
-    companion object {
+    companion object : Universe() {
         /**
          * Creates a random chapter.
-         *
-         * @return Chapter
          */
-        fun create(): Chapter = Chapter()
+        fun create(
+            id: UUID = randomUUID(),
+            name: String = "CH-$id".substring(0, 15),
+            color: Int = GREY,
+            account: Account = ACCOUNT,
+        ): Chapter = Chapter(id, name, color, account)
 
         /**
-         * Creates X amount of random chapters
-         * @param amount Int the number of chapters to create.
-         * @return MutableList<Chapter>
+         * Creates X amount of chapters with mutual attributes
          */
-        fun create(amount: Int): MutableList<Chapter> {
-            return (0 until amount).map { this.create() }.toMutableList()
-        }
+        fun create(
+            amount: Int,
+            sharedAccount: Account = ACCOUNT,
+        ): MutableList<Chapter> = (0 until amount).map {
+            create(account = sharedAccount)
+        }.toMutableList()
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("api/accounts")
 class AccountController(
     @Autowired private val accountService: AccountService,
-    @Autowired private val accountDemo: AccountDemo,
+    @Autowired private val accountDemoSeed: AccountDemoSeed,
 ) {
     @GetMapping("me")
     fun getLoggedInAccount(): ResponseEntity<Account> = ok()
@@ -19,7 +19,11 @@ class AccountController(
 
     @GetMapping("demo")
     fun createDemoAuthorisation(): ResponseEntity<Account> = ok()
-        .body(accountDemo.createDemoAccount())
+        .body(
+            accountService.createDemoAccount().apply {
+                accountDemoSeed.create(this)
+            }
+        )
 
     @PostMapping
     fun createNewAccount(@RequestBody account: Account): ResponseEntity<Account> =

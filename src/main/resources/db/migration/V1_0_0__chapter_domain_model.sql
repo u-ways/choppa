@@ -4,5 +4,5 @@ CREATE TABLE chapter
     name       VARCHAR(100) NOT NULL,
     color      INTEGER      NOT NULL,
 
-    CONSTRAINT chapter_u1 UNIQUE (name)
+    CONSTRAINT chapter_u1 UNIQUE (chapter_id, name)
 );

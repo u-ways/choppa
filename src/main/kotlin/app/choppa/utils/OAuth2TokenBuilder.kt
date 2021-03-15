@@ -1,7 +1,6 @@
 package app.choppa.utils
 
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.core.user.OAuth2User
 
@@ -22,7 +21,7 @@ data class OAuth2TokenBuilder(
             override fun getAttributes(): MutableMap<String, Any> = this@OAuth2TokenBuilder.attributes
             override fun getAuthorities(): MutableCollection<out GrantedAuthority> = this@OAuth2TokenBuilder.authorities
         },
-        this@OAuth2TokenBuilder.authorities.ifEmpty { listOf(SimpleGrantedAuthority("ROLE_USER")) },
+        this@OAuth2TokenBuilder.authorities,
         this@OAuth2TokenBuilder.registrationId ?: error("authorizedClientRegistrationId cannot be null.")
     )
 }

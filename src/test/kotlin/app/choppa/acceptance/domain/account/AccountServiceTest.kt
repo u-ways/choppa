@@ -1,9 +1,12 @@
 package app.choppa.acceptance.domain.account
 
+import app.choppa.domain.account.AccountDemoSeed.Companion.DEMO_NAME
+import app.choppa.domain.account.AccountDemoSeed.Companion.DEMO_ORGANISATION_NAME
+import app.choppa.domain.account.AccountDemoSeed.Companion.DEMO_PROVIDER
 import app.choppa.domain.account.AccountRepository
 import app.choppa.domain.account.AccountService
-import app.choppa.support.builder.OAuth2TokenBuilder
 import app.choppa.support.factory.AccountFactory
+import app.choppa.utils.OAuth2TokenBuilder
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
@@ -15,14 +18,19 @@ import org.junit.jupiter.api.Test
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.context.SecurityContextHolder.getContext
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import java.util.*
+import java.util.UUID.randomUUID
 
 internal class AccountServiceTest {
+    private lateinit var securityContext: SecurityContext
     private lateinit var repository: AccountRepository
     private lateinit var service: AccountService
 
     @BeforeEach
     internal fun setUp() {
+        securityContext = mockkClass(SecurityContext::class)
         repository = mockkClass(AccountRepository::class)
         service = AccountService(repository)
     }
@@ -43,11 +51,10 @@ internal class AccountServiceTest {
 
     @Test
     fun `Given an existing account, when service tries to createNewAccount, then service should throw IllegalStateException`() {
-        val securityContext = mockkClass(SecurityContext::class)
         val entity = AccountFactory.create(
             firstLogin = false,
             provider = "provider",
-            providerId = UUID.randomUUID().toString()
+            providerId = randomUUID().toString()
         )
 
         every {
@@ -70,11 +77,10 @@ internal class AccountServiceTest {
 
     @Test
     fun `Given new account, when service creates a new account, then service should create the new account and set its first login to false`() {
-        val securityContext = mockkClass(SecurityContext::class)
         val entity = AccountFactory.create(
             firstLogin = true,
             provider = "provider",
-            providerId = UUID.randomUUID().toString()
+            providerId = randomUUID().toString()
         )
 
         every {
@@ -98,6 +104,41 @@ internal class AccountServiceTest {
 
         newAccount.firstLogin shouldBeEqualTo false
         newAccount.organisationName shouldBeEqualTo entity.organisationName
+
+        verify(exactly = 1) { repository.save(any()) }
+    }
+
+    @Test
+    fun `Given a demo request, when service creates a demo account, then service should create a unique demo token and initialise the demo seed`() {
+        val demoAccount = AccountFactory.create(
+            provider = DEMO_PROVIDER,
+            providerId = randomUUID().toString(),
+            organisationName = DEMO_ORGANISATION_NAME,
+            firstLogin = false
+        )
+
+        every { repository.save(any()) } returns demoAccount
+
+        every {
+            repository.findByProviderOrderByCreateDate(DEMO_PROVIDER)
+        } returns emptyList()
+
+        every { securityContext.authentication } returns OAuth2TokenBuilder()
+            .withName("name")
+            .withRegistrationId(DEMO_PROVIDER)
+            .withAttribute("sub", demoAccount.providerId)
+            .withAttribute("name", DEMO_NAME)
+            .withAuthority(SimpleGrantedAuthority("ROLE_USER"))
+            .build()
+
+        service.createDemoAccount()
+
+        with(getContext().authentication as OAuth2AuthenticationToken) {
+            authorizedClientRegistrationId shouldBeEqualTo DEMO_PROVIDER
+            "${principal.attributes["sub"]}" shouldBeEqualTo demoAccount.providerId
+            "${principal.attributes["name"]}" shouldBeEqualTo DEMO_NAME
+            principal.authorities.first() shouldBeEqualTo SimpleGrantedAuthority("ROLE_USER")
+        }
 
         verify(exactly = 1) { repository.save(any()) }
     }

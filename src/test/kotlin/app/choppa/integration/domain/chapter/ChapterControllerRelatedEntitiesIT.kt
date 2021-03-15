@@ -1,35 +1,24 @@
 package app.choppa.integration.domain.chapter
 
-import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterController
 import app.choppa.domain.chapter.ChapterService
+import app.choppa.support.base.BaseControllerIT
 import app.choppa.support.factory.ChapterFactory
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import java.util.*
 import java.util.UUID.randomUUID
 
 @WebMvcTest(controllers = [ChapterController::class])
-@ActiveProfiles("test")
-internal class ChapterControllerRelatedEntitiesIT @Autowired constructor(
-    private val mvc: MockMvc,
-    private val mapper: ObjectMapper,
-) {
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
-
+internal class ChapterControllerRelatedEntitiesIT : BaseControllerIT() {
     @MockkBean
     private lateinit var chapterService: ChapterService
 

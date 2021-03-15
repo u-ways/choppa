@@ -2,6 +2,8 @@ package app.choppa.acceptance.domain.chapter
 
 import app.choppa.domain.chapter.Chapter
 import app.choppa.exception.UnprocessableEntityException
+import app.choppa.support.base.Universe
+import app.choppa.support.factory.ChapterFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
@@ -10,14 +12,14 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-internal class ChapterDeserializerTest {
+internal class ChapterDeserializerTest : Universe() {
     private val white = -1
     private lateinit var chapter: Chapter
     private lateinit var mapper: ObjectMapper
 
     @BeforeEach
     internal fun setUp() {
-        chapter = Chapter(color = white)
+        chapter = ChapterFactory.create(color = white)
         mapper = ObjectMapper()
     }
 

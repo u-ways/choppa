@@ -1,48 +1,33 @@
 package app.choppa.integration.domain.member
 
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
-import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterService
 import app.choppa.domain.member.MemberFactory
 import app.choppa.domain.member.MemberService
-import app.choppa.support.flyway.FlywayMigrationConfig
-import app.choppa.support.testcontainers.TestDBContainer
+import app.choppa.support.base.BaseServiceIT
+import app.choppa.support.factory.ChapterFactory
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldContainAll
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.context.ActiveProfiles
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.UUID.randomUUID
 import javax.transaction.Transactional
 
-@SpringBootTest
-@Testcontainers
-@Import(FlywayMigrationConfig::class)
-@ActiveProfiles("test")
 internal class MemberFactoryIT @Autowired constructor(
     private val memberFactory: MemberFactory,
     private val memberService: MemberService,
     private val chapterService: ChapterService,
-) {
-
-    @Container
-    private val testDBContainer: TestDBContainer = TestDBContainer.get()
-
+) : BaseServiceIT() {
     @Test
     @Transactional
     fun `Given new member details, when factory creates the member, it should store member in database`() {
         val id = randomUUID()
         val name = "Member Test"
-        val chapter = chapterService.save(Chapter(), UNASSIGNED_ACCOUNT)
+        val chapter = chapterService.save(ChapterFactory.create())
         val active = false
 
-        memberFactory.create(id, name, chapter, active, UNASSIGNED_ACCOUNT)
+        memberFactory.create(id, name, chapter, active, ACCOUNT)
 
-        val expectedMember = memberService.find(id, UNASSIGNED_ACCOUNT)
+        val expectedMember = memberService.find(id)
 
         expectedMember.id shouldBe id
         expectedMember.name shouldBe name
@@ -55,14 +40,14 @@ internal class MemberFactoryIT @Autowired constructor(
     @Transactional
     fun `Given several members with a common chapter and account, when factory creates the members, it should store members in database`() {
         val names = listOf("Alfa", "Bravo", "Charlie", "Delta", "Echo")
-        val shoredChapter = chapterService.save(Chapter(), UNASSIGNED_ACCOUNT)
-        val sharedAccount = UNASSIGNED_ACCOUNT
+        val shoredChapter = chapterService.save(ChapterFactory.create())
+        val sharedAccount = ACCOUNT
         val active = true
 
         memberFactory.create(names, shoredChapter, sharedAccount, active)
 
         val expectedMembers = memberService
-            .findRelatedByChapter(shoredChapter.id, sharedAccount)
+            .findRelatedByChapter(shoredChapter.id)
 
         expectedMembers.size shouldBe names.size
         expectedMembers.map { it.name }.shouldContainAll(names)

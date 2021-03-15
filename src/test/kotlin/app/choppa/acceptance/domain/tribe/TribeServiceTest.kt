@@ -2,10 +2,10 @@ package app.choppa.acceptance.domain.tribe
 
 import app.choppa.domain.account.AccountService
 import app.choppa.domain.squad.SquadService
-import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeRepository
 import app.choppa.domain.tribe.TribeService
 import app.choppa.exception.EntityNotFoundException
+import app.choppa.support.factory.TribeFactory
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
@@ -33,7 +33,7 @@ internal class TribeServiceTest {
 
     @Test
     fun `Given new entity, when service saves new entity, then service should save in repository and return the same entity`() {
-        val entity = Tribe()
+        val entity = TribeFactory.create()
 
         every { repository.findById(entity.id) } returns empty()
         every { repository.save(entity) } returns entity
@@ -48,7 +48,7 @@ internal class TribeServiceTest {
     @Test
     fun `Given existing entity, when service looks for existing entity by id, then service should find using repository and return existing entity`() {
         val id = randomUUID()
-        val existingEntity = Tribe(id)
+        val existingEntity = TribeFactory.create(id)
 
         every { repository.findById(id) } returns of(existingEntity)
 
@@ -61,7 +61,7 @@ internal class TribeServiceTest {
 
     @Test
     fun `Given existing entity, when service deletes existing entity, then service should delete using repository`() {
-        val existingEntity = Tribe()
+        val existingEntity = TribeFactory.create()
 
         every { repository.findById(existingEntity.id) } returns of(existingEntity)
         every { repository.delete(existingEntity) } returns Unit

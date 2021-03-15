@@ -1,44 +1,26 @@
 package app.choppa.integration.domain.squad
 
-import app.choppa.domain.account.Account
-import app.choppa.domain.account.AccountService
 import app.choppa.domain.squad.Squad
 import app.choppa.domain.squad.SquadController
 import app.choppa.domain.squad.SquadService
+import app.choppa.support.base.BaseControllerIT
 import app.choppa.support.factory.SquadFactory
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import java.util.*
 import java.util.UUID.randomUUID
 
 @WebMvcTest(controllers = [SquadController::class])
-@ActiveProfiles("test")
-internal class SquadControllerRelatedEntitiesIT @Autowired constructor(
-    private val mvc: MockMvc,
-    private val mapper: ObjectMapper,
-) {
+internal class SquadControllerRelatedEntitiesIT : BaseControllerIT() {
     @MockkBean
     private lateinit var squadService: SquadService
-
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
-
-    @BeforeEach
-    internal fun setUp() {
-        every { accountService.resolveFromAuth() } returns Account.UNASSIGNED_ACCOUNT
-    }
 
     @Nested
     @WithMockUser

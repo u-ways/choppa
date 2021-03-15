@@ -2,6 +2,7 @@ package app.choppa.acceptance.domain.tribe
 
 import app.choppa.domain.tribe.Tribe
 import app.choppa.exception.UnprocessableEntityException
+import app.choppa.support.factory.TribeFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
@@ -17,7 +18,7 @@ internal class TribeDeserializerTest {
 
     @BeforeEach
     internal fun setUp() {
-        tribe = Tribe(color = black)
+        tribe = TribeFactory.create(color = black)
         mapper = ObjectMapper()
     }
 

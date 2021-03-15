@@ -1,6 +1,7 @@
 package app.choppa.acceptance.domain.account
 
 import app.choppa.domain.account.Account
+import app.choppa.support.factory.AccountFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
@@ -15,7 +16,7 @@ internal class AccountSerializerTest {
 
     @BeforeEach
     internal fun setUp() {
-        account = Account()
+        account = AccountFactory.create()
         mapper = ObjectMapper()
     }
 
@@ -27,6 +28,7 @@ internal class AccountSerializerTest {
         val provider = uniformDto?.read<String>("$.provider")
         val providerId = uniformDto?.read<String>("$.providerId")
         val organisationName = uniformDto?.read<String>("$.organisationName")
+        val createDate = uniformDto?.read<Long>("$.createDate")
         val name = uniformDto?.read<String>("$.name")
         val profilePicture = uniformDto?.read<String>("$.profilePicture")
         val firstLogin = uniformDto?.read<String>("$.firstLogin")
@@ -36,6 +38,7 @@ internal class AccountSerializerTest {
         assertThat(providerId, equalTo(account.providerId))
         assertThat(organisationName, equalTo(account.organisationName))
         assertThat(name, equalTo(account.name))
+        assertThat(createDate, equalTo(account.createDate.toEpochMilli()))
         assertThat(profilePicture, equalTo(account.profilePicture))
         assertThat(firstLogin, equalTo(account.firstLogin.toString()))
     }

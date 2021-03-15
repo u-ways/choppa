@@ -1,34 +1,30 @@
 package app.choppa.integration.domain.chapter
 
-import app.choppa.domain.account.AccountService
 import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.chapter.ChapterController
 import app.choppa.domain.chapter.ChapterService
 import app.choppa.exception.EntityNotFoundException
-import com.fasterxml.jackson.databind.ObjectMapper
+import app.choppa.support.base.BaseControllerIT
+import app.choppa.support.factory.ChapterFactory
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.hamcrest.core.StringContains
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 import java.util.UUID.randomUUID
 
 @WebMvcTest(controllers = [ChapterController::class])
-@ActiveProfiles("test")
-internal class ChapterControllerIT @Autowired constructor(
-    private val mvc: MockMvc,
-    private val mapper: ObjectMapper,
-) {
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
+internal class ChapterControllerIT : BaseControllerIT() {
+
     @MockkBean
     private lateinit var chapterService: ChapterService
 
@@ -36,7 +32,7 @@ internal class ChapterControllerIT @Autowired constructor(
 
     @BeforeEach
     internal fun setUp() {
-        chapter = Chapter()
+        chapter = ChapterFactory.create()
     }
 
     @Nested
@@ -61,7 +57,7 @@ internal class ChapterControllerIT @Autowired constructor(
         @Test
         fun `PUT entity by ID`() {
             val entity = chapter
-            val updatedEntity = Chapter(chapter.id)
+            val updatedEntity = ChapterFactory.create(entity.id)
 
             every { chapterService.find(entity.id) } returns entity
             every { chapterService.save(updatedEntity) } returns updatedEntity

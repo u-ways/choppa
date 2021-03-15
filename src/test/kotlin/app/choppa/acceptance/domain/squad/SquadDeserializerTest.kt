@@ -2,6 +2,7 @@ package app.choppa.acceptance.domain.squad
 
 import app.choppa.domain.squad.Squad
 import app.choppa.exception.UnprocessableEntityException
+import app.choppa.support.factory.SquadFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
@@ -18,7 +19,7 @@ internal class SquadDeserializerTest {
 
     @BeforeEach
     internal fun setUp() {
-        squad = Squad(color = white)
+        squad = SquadFactory.create(color = white)
         mapper = ObjectMapper()
     }
 
@@ -38,12 +39,20 @@ internal class SquadDeserializerTest {
                     {
                         "id": "members/${randomUUID()}",
                         "name": "MEM-1",
-                        "chapter": "chapters/${randomUUID()}"
+                        "chapter": {
+                            "id": "chapters/${randomUUID()}",
+                            "name": "CH-1",
+                            "members": "members?chapter=${randomUUID()}"
+                        }
                     },
                     {
                         "id": "members/${randomUUID()}",
                         "name": "MEM-2",
-                        "chapter": "chapters/${randomUUID()}"
+                        "chapter": {
+                            "id": "chapters/${randomUUID()}",
+                            "name": "CH-2",
+                            "members": "members?chapter=${randomUUID()}"
+                        }
                     }
                 ],
                 "iterations": "iterations?squad=${squad.id}",

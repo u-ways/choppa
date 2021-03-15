@@ -1,6 +1,7 @@
 package app.choppa.acceptance.domain.chapter
 
 import app.choppa.domain.chapter.Chapter
+import app.choppa.support.factory.ChapterFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
@@ -16,7 +17,7 @@ internal class ChapterSerializerTest {
 
     @BeforeEach
     internal fun setUp() {
-        chapter = Chapter(color = blue)
+        chapter = ChapterFactory.create(color = blue)
         mapper = ObjectMapper()
     }
 

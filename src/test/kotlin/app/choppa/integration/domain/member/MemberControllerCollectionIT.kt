@@ -1,36 +1,29 @@
 package app.choppa.integration.domain.member
 
-import app.choppa.domain.account.AccountService
-import app.choppa.domain.chapter.Chapter
-import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberController
 import app.choppa.domain.member.MemberService
 import app.choppa.exception.EmptyListException
+import app.choppa.support.base.BaseControllerIT
+import app.choppa.support.factory.ChapterFactory
 import app.choppa.support.factory.MemberFactory
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.hamcrest.core.StringContains
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpHeaders.LOCATION
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 
 @WebMvcTest(controllers = [MemberController::class])
-@ActiveProfiles("test")
-internal class MemberControllerCollectionIT @Autowired constructor(
-    private val mvc: MockMvc,
-    private val mapper: ObjectMapper,
-) {
+internal class MemberControllerCollectionIT : BaseControllerIT() {
     @MockkBean
     private lateinit var memberService: MemberService
-    @MockkBean(relaxed = true)
-    private lateinit var accountService: AccountService
 
     @Nested
     @WithMockUser
@@ -54,7 +47,7 @@ internal class MemberControllerCollectionIT @Autowired constructor(
 
         @Test
         fun `LIST inactive entities`() {
-            val entities = listOf(Member(active = false))
+            val entities = listOf(MemberFactory.create(active = false))
 
             every { memberService.findInactive() } returns entities
 
@@ -71,7 +64,8 @@ internal class MemberControllerCollectionIT @Autowired constructor(
         @Test
         fun `PUT collection`() {
             val existingCollection = MemberFactory.create(amount = 3)
-            val updatedCollection = existingCollection.map { Member(it.id, it.name, Chapter()) }
+            val updatedCollection =
+                existingCollection.map { MemberFactory.create(it.id, it.name, ChapterFactory.create()) }
 
             every { memberService.find(existingCollection.map { it.id }) } returns existingCollection
             every { memberService.save(updatedCollection) } returns updatedCollection

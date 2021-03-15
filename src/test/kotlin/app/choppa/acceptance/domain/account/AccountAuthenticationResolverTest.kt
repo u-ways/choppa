@@ -1,7 +1,6 @@
 package app.choppa.acceptance.domain.account
 
 import app.choppa.domain.account.Account
-import app.choppa.domain.account.Account.Companion.DEMO_ACCOUNT
 import app.choppa.domain.account.AccountRepository
 import app.choppa.domain.account.AccountService
 import app.choppa.exception.UnsupportedProviderException
@@ -96,23 +95,6 @@ internal class AccountAuthenticationResolverTest {
         @JvmStatic
         fun authenticationProvidersArgs() = Stream.of(
             Account(
-                provider = DEMO_ACCOUNT.provider,
-                providerId = DEMO_ACCOUNT.providerId,
-                organisationName = DEMO_ACCOUNT.organisationName,
-                profilePicture = DEMO_ACCOUNT.profilePicture,
-                name = DEMO_ACCOUNT.name,
-            ).run {
-                of(
-                    this,
-                    OAuth2TokenBuilder()
-                        .withRegistrationId(provider)
-                        .withAttribute("sub", providerId)
-                        .withAttribute("picture", DEMO_ACCOUNT.profilePicture)
-                        .withAttribute("name", DEMO_ACCOUNT.name)
-                        .build()
-                )
-            },
-            Account(
                 provider = "github",
                 providerId = "github_providerId",
                 organisationName = "github_organisationName",
@@ -133,6 +115,7 @@ internal class AccountAuthenticationResolverTest {
                 provider = "microsoft",
                 providerId = "microsoft_providerId",
                 organisationName = "microsoft_organisationName",
+                profilePicture = "",
                 name = "microsoft_name",
             ).run {
                 of(

@@ -1,6 +1,5 @@
 package app.choppa.acceptance.domain.rotation
 
-import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
 import app.choppa.domain.member.Member
 import app.choppa.domain.rotation.RotationContext.Companion.rotate
 import app.choppa.domain.rotation.RotationOptions
@@ -10,7 +9,8 @@ import app.choppa.domain.rotation.filter.Filter.OLDEST
 import app.choppa.domain.rotation.strategy.Strategy
 import app.choppa.domain.rotation.strategy.Strategy.*
 import app.choppa.domain.squad.Squad
-import app.choppa.domain.tribe.Tribe
+import app.choppa.support.base.Universe
+import app.choppa.support.factory.MemberFactory
 import app.choppa.support.factory.SquadFactory
 import app.choppa.support.factory.TribeFactory
 import org.amshove.kluent.shouldBeEqualTo
@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-class FlexibleRotationStrategyTest {
+class FlexibleRotationStrategyTest : Universe() {
     @Test
     fun `Given Tribe with 2 squads with older members, when tribe rotates by oldest, then only older members should rotate`() {
         /**
@@ -34,21 +34,22 @@ class FlexibleRotationStrategyTest {
          * - index 3 => Revision 3 [Member 2, Member 3] (member 3 added)
          * - index 4 => Revision 4 [Member 2, Member 1] (member 3 removed, member 1 added again, making member 2 the oldest member)
          */
-        val revisions: List<Pair<Squad, List<List<Member>>>> = SquadFactory.create(2, 2).map {
-            it to listOf(
-                listOf(it.members.first()),
-                listOf(it.members.first(), it.members.last()),
-                listOf(it.members.last()),
-                listOf(it.members.last(), Member()),
-                listOf(it.members.last(), it.members.first())
-            ).apply {
-                // make squad current members list have the same order as latest revision.
-                it.members.reverse()
+        val revisions: List<Pair<Squad, List<List<Member>>>> = SquadFactory.create(2)
+            .onEach { it.members.addAll(MemberFactory.create(2)) }.map {
+                it to listOf(
+                    listOf(it.members.first()),
+                    listOf(it.members.first(), it.members.last()),
+                    listOf(it.members.last()),
+                    listOf(it.members.last(), MemberFactory.create()),
+                    listOf(it.members.last(), it.members.first())
+                ).apply {
+                    // make squad current members list have the same order as latest revision.
+                    it.members.reverse()
+                }
             }
-        }
 
-        val tribe = Tribe(squads = revisions.map { it.first }.toMutableList())
-        val result = rotate(tribe, RotationOptions(amount = 2, UNASSIGNED_ROLE, OLDEST, CLOCKWISE), revisions)
+        val tribe = TribeFactory.create(squads = revisions.map { it.first }.toMutableList())
+        val result = rotate(tribe, RotationOptions(amount = 2, CHAPTER, OLDEST, CLOCKWISE), revisions)
 
         result.squads.forEachIndexed { index, squad ->
             squad.members.first() shouldBeEqualTo tribe.squads[index].members.last()
@@ -58,13 +59,16 @@ class FlexibleRotationStrategyTest {
 
     @Test
     fun `Given Tribe with 3 squads with 2 members each, when filtering oldest and rotating three members counter-clockwise, longest held members should swap squads`() {
-        val testTribe = TribeFactory.create(3, 2)
+        val testTribe = TribeFactory.create(
+            squads = SquadFactory.create(3)
+                .onEach { it.members.addAll(MemberFactory.create(2)) }
+        )
 
         val oldestMemberOne = testTribe.squads[0].members[0]
         val oldestMemberTwo = testTribe.squads[1].members[0]
         val oldestMemberThree = testTribe.squads[2].members[0]
 
-        val rotatedTribe = rotate(testTribe, RotationOptions(3, UNASSIGNED_ROLE, OLDEST, ANTI_CLOCKWISE))
+        val rotatedTribe = rotate(testTribe, RotationOptions(3, CHAPTER, OLDEST, ANTI_CLOCKWISE))
 
         rotatedTribe.squads[0].members[1] shouldBeEqualTo oldestMemberTwo
         rotatedTribe.squads[1].members[1] shouldBeEqualTo oldestMemberThree
@@ -73,25 +77,26 @@ class FlexibleRotationStrategyTest {
 
     @Test
     fun `Given Tribe with 3 squads with older members, when tribe rotates by oldest and anti-clockwise, then only older members should rotate`() {
-        val revisions = SquadFactory.create(2, 2).map {
-            it to listOf(
-                listOf(it.members.first()),
-                listOf(it.members.first(), it.members.last()),
-                listOf(it.members.last()),
-                listOf(it.members.last(), Member()),
-                listOf(it.members.last(), it.members.first())
-            ).apply {
-                // make squad current members list have the same order as latest revision.
-                it.members.reverse()
-            }
-        }.plus(
-            SquadFactory.create(1, 1).map {
-                it to listOf(listOf(it.members.first()))
-            }
-        )
+        val revisions = SquadFactory.create(2)
+            .onEach { it.members.addAll(MemberFactory.create(2)) }.map {
+                it to listOf(
+                    listOf(it.members.first()),
+                    listOf(it.members.first(), it.members.last()),
+                    listOf(it.members.last()),
+                    listOf(it.members.last(), MemberFactory.create()),
+                    listOf(it.members.last(), it.members.first())
+                ).apply {
+                    // make squad current members list have the same order as latest revision.
+                    it.members.reverse()
+                }
+            }.plus(
+                SquadFactory.create()
+                    .apply { members.add(MemberFactory.create()) }
+                    .run { this to listOf(listOf(this.members.first())) }
+            )
 
-        val tribe = Tribe(squads = revisions.map { it.first }.toMutableList())
-        val result = rotate(tribe, RotationOptions(amount = 3, UNASSIGNED_ROLE, OLDEST, CLOCKWISE), revisions)
+        val tribe = TribeFactory.create(squads = revisions.map { it.first }.toMutableList())
+        val result = rotate(tribe, RotationOptions(amount = 3, CHAPTER, OLDEST, CLOCKWISE), revisions)
 
         result.squads.forEachIndexed { index, squad ->
             squad.members.size shouldBeEqualTo tribe.squads[index].members.size
@@ -108,19 +113,27 @@ class FlexibleRotationStrategyTest {
         filter: Filter,
         strategy: Strategy
     ) {
-        val testTribe = TribeFactory.create(2, 1)
-        val rotatedTribe = rotate(testTribe, RotationOptions(2, UNASSIGNED_ROLE, filter, strategy))
+        val testTribe = TribeFactory.create(
+            squads = SquadFactory.create(2)
+                .onEach { it.members.addAll(MemberFactory.create(1)) }
+        )
+
+        val rotatedTribe = rotate(testTribe, RotationOptions(2, CHAPTER, filter, strategy))
         assert(testTribe.squads[0].members[0] === rotatedTribe.squads[1].members[0])
         assert(testTribe.squads[1].members[0] === rotatedTribe.squads[0].members[0])
     }
 
     @Test
     fun `Given Tribe with 3 squads with 2 members each, when filtering distributed and rotating three members clockwise, the top member from each squad should swap squads`() {
-        val testTribe = TribeFactory.create(3, 2)
+        val testTribe = TribeFactory.create(
+            squads = SquadFactory.create(3)
+                .onEach { it.members.addAll(MemberFactory.create(2)) }
+        )
+
         val topMemberOne = testTribe.squads[0].members[0]
         val topMemberTwo = testTribe.squads[1].members[0]
         val topMemberThree = testTribe.squads[2].members[0]
-        val rotatedTribe = rotate(testTribe, RotationOptions(3, UNASSIGNED_ROLE, DISTRIBUTED, CLOCKWISE))
+        val rotatedTribe = rotate(testTribe, RotationOptions(3, CHAPTER, DISTRIBUTED, CLOCKWISE))
 
         assert(rotatedTribe.squads[0].members.contains(topMemberThree))
         assert(rotatedTribe.squads[1].members.contains(topMemberOne))
@@ -134,9 +147,13 @@ class FlexibleRotationStrategyTest {
         squadMemberAmount: Int,
         squadRotationAmount: Int
     ) {
-        val testTribe = TribeFactory.create(squadAmount, squadMemberAmount)
+        val testTribe = TribeFactory.create(
+            squads = SquadFactory.create(squadAmount)
+                .onEach { it.members.addAll(MemberFactory.create(squadMemberAmount)) }
+        )
+
         val rotatedTribe =
-            rotate(testTribe, RotationOptions(squadRotationAmount, UNASSIGNED_ROLE, Filter.RANDOM, RANDOM))
+            rotate(testTribe, RotationOptions(squadRotationAmount, CHAPTER, Filter.RANDOM, RANDOM))
 
         val rotatedMemberCounts = testTribe.squads.mapIndexed { index, squad ->
             squad.members.filter { !rotatedTribe.squads[index].members.contains(it) }.count()

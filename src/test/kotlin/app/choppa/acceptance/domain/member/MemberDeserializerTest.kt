@@ -2,6 +2,7 @@ package app.choppa.acceptance.domain.member
 
 import app.choppa.domain.member.Member
 import app.choppa.exception.UnprocessableEntityException
+import app.choppa.support.factory.MemberFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
@@ -16,7 +17,7 @@ internal class MemberDeserializerTest {
 
     @BeforeEach
     internal fun setUp() {
-        member = Member()
+        member = MemberFactory.create()
         mapper = ObjectMapper()
     }
 

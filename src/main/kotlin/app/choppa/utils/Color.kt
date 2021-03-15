@@ -4,7 +4,13 @@ import java.lang.Integer.toHexString
 
 class Color {
     companion object {
+        const val RED = -1407643649
+        const val GREEN = 1655133951
+        const val BLUE = 5476863
+        const val YELLOW = -171882497
+        const val PURPLE = 1733141759
         const val GREY = -858993409
+        const val BROWN = 880111103
 
         /**
          * Convert an Integer to be an expanded RGB hexadecimal color.

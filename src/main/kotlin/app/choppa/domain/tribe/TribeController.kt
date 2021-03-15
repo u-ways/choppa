@@ -3,7 +3,6 @@ package app.choppa.domain.tribe
 import app.choppa.domain.base.BaseController
 import app.choppa.domain.base.BaseController.Companion.API_PREFIX
 import app.choppa.domain.rotation.RotationOptions
-import app.choppa.domain.rotation.RotationOptions.Companion.DEFAULT_OPTIONS
 import app.choppa.domain.rotation.RotationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -49,13 +48,10 @@ class TribeController(
     @PostMapping("$ID_PATH:rotate")
     fun executeRotation(
         @PathVariable id: UUID,
-        @RequestBody(required = false) options: RotationOptions?,
+        @RequestBody options: RotationOptions,
     ): ResponseEntity<Tribe> =
         ok().body(
-            rotationService.executeRotation(
-                tribeService.find(id),
-                options ?: DEFAULT_OPTIONS,
-            )
+            rotationService.executeRotation(tribeService.find(id), options)
         )
 
     @GetMapping("$ID_PATH:undoRotation")

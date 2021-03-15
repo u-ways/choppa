@@ -1,10 +1,10 @@
 package app.choppa.domain.tribe
 
 import app.choppa.domain.account.Account
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.Account.Companion.PLACEHOLDER_ACCOUNT
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.squad.Squad
-import app.choppa.utils.Color.Companion.GREY
+import app.choppa.domain.squad.Squad.Companion.NO_SQUADS
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.BatchSize
@@ -27,19 +27,19 @@ data class Tribe(
     override val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
-    val name: String = "TR-$id".substring(0, 15),
+    val name: String,
 
     @Column(name = "color", columnDefinition = "INTEGER")
-    val color: Int = GREY,
+    val color: Int,
 
     @Fetch(SELECT)
     @BatchSize(size = 10)
     @OneToMany(mappedBy = "tribe", fetch = EAGER)
-    val squads: MutableList<Squad> = mutableListOf(),
+    val squads: MutableList<Squad> = NO_SQUADS,
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id")
-    override val account: Account = UNASSIGNED_ACCOUNT,
+    override val account: Account,
 ) : BaseModel {
     override fun toString() = "Tribe(id=$id, name=$name)"
 
@@ -54,6 +54,7 @@ data class Tribe(
     }
 
     companion object {
-        val UNASSIGNED_TRIBE = Tribe(UUID.fromString("00000000-0000-0000-0000-000000000000"), "Unassigned Squad")
+        val PLACEHOLDER_TRIBE: Tribe
+            get() = Tribe(name = "", color = 0, account = PLACEHOLDER_ACCOUNT)
     }
 }

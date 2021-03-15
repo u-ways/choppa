@@ -1,18 +1,16 @@
 package app.choppa.domain.squad
 
 import app.choppa.domain.account.Account
-import app.choppa.domain.account.Account.Companion.UNASSIGNED_ACCOUNT
+import app.choppa.domain.account.Account.Companion.PLACEHOLDER_ACCOUNT
 import app.choppa.domain.base.BaseModel
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.Member.Companion.NO_MEMBERS
 import app.choppa.domain.tribe.Tribe
-import app.choppa.domain.tribe.Tribe.Companion.UNASSIGNED_TRIBE
-import app.choppa.utils.Color.Companion.GREY
+import app.choppa.domain.tribe.Tribe.Companion.PLACEHOLDER_TRIBE
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.hibernate.annotations.GenericGenerator
 import java.util.*
-import java.util.UUID.fromString
 import java.util.UUID.randomUUID
 import javax.persistence.*
 import javax.persistence.FetchType.EAGER
@@ -28,14 +26,15 @@ data class Squad(
     override val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)
-    val name: String = "SQ-$id".substring(0, 15),
+    val name: String,
 
     @Column(name = "color", columnDefinition = "INTEGER")
-    val color: Int = GREY,
+    val color: Int,
 
+    // TODO(U-ways) we might be able to lazy fetch this (default is eager)
     @ManyToOne
     @JoinColumn(name = "tribe", referencedColumnName = "tribe_id")
-    val tribe: Tribe = UNASSIGNED_TRIBE,
+    val tribe: Tribe,
 
     @ManyToMany(fetch = EAGER)
     @JoinTable(
@@ -47,7 +46,7 @@ data class Squad(
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "account_id")
-    override val account: Account = UNASSIGNED_ACCOUNT,
+    override val account: Account,
 ) : BaseModel {
     override fun toString() = "Squad(id=$id, name=$name, tribe=$tribe)"
 
@@ -62,6 +61,9 @@ data class Squad(
     }
 
     companion object {
-        val UNASSIGNED_SQUAD = Squad(fromString("00000000-0000-0000-0000-000000000000"), "Unassigned Members")
+        val NO_SQUADS: MutableList<Squad>
+            get() = mutableListOf()
+        val PLACEHOLDER_SQUAD: Squad
+            get() = Squad(name = "", color = 0, tribe = PLACEHOLDER_TRIBE, account = PLACEHOLDER_ACCOUNT)
     }
 }

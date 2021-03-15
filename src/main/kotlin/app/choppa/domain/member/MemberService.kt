@@ -2,8 +2,6 @@ package app.choppa.domain.member
 
 import app.choppa.domain.account.AccountService
 import app.choppa.domain.base.BaseService
-import app.choppa.domain.chapter.Chapter
-import app.choppa.domain.chapter.Chapter.Companion.UNASSIGNED_ROLE
 import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import app.choppa.utils.Numbers.Companion.round
@@ -76,12 +74,6 @@ class MemberService(
         .findAllByTribeId(tribeId)
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No members joined tribe [$tribeId] yet.") }
-
-    @Transactional
-    fun unAssignMembersWithChapter(chapter: Chapter) = memberRepository
-        .findAllByChapterId(chapter.id)
-        .ownedByAuthenticated()
-        .forEach { save(it.copy(chapter = UNASSIGNED_ROLE)) }
 
     fun statistics(): HashMap<String, Any> = memberRepository.findAll().ownedByAuthenticated().run {
         hashMapOf(

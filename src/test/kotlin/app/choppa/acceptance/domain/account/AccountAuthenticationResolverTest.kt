@@ -4,7 +4,7 @@ import app.choppa.domain.account.Account
 import app.choppa.domain.account.AccountRepository
 import app.choppa.domain.account.AccountService
 import app.choppa.exception.UnsupportedProviderException
-import app.choppa.support.builder.OAuth2TokenBuilder
+import app.choppa.utils.OAuth2TokenBuilder
 import io.mockk.every
 import io.mockk.mockkClass
 import org.amshove.kluent.shouldBeEqualTo
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.of
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -91,9 +92,10 @@ internal class AccountAuthenticationResolverTest {
         account.organisationName shouldBeEqualTo expected.organisationName
     }
 
+    @Suppress("unused")
     companion object {
         @JvmStatic
-        fun authenticationProvidersArgs() = Stream.of(
+        fun authenticationProvidersArgs(): Stream<Arguments> = Stream.of(
             Account(
                 provider = "github",
                 providerId = "github_providerId",
@@ -108,6 +110,7 @@ internal class AccountAuthenticationResolverTest {
                         .withAttribute("id", providerId)
                         .withAttribute("avatar_url", "github_avatar_url")
                         .withAttribute("name", "github_name")
+                        .withAuthority(SimpleGrantedAuthority("ROLE_USER"))
                         .build()
                 )
             },
@@ -124,6 +127,7 @@ internal class AccountAuthenticationResolverTest {
                         .withRegistrationId(provider)
                         .withAttribute("sub", providerId)
                         .withAttribute("name", "microsoft_name")
+                        .withAuthority(SimpleGrantedAuthority("ROLE_USER"))
                         .build()
                 )
             },
@@ -141,6 +145,7 @@ internal class AccountAuthenticationResolverTest {
                         .withAttribute("sub", providerId)
                         .withAttribute("picture", "google_picture")
                         .withAttribute("name", "google_name")
+                        .withAuthority(SimpleGrantedAuthority("ROLE_USER"))
                         .build()
                 )
             },
@@ -158,6 +163,7 @@ internal class AccountAuthenticationResolverTest {
                         .withAttribute("sub", providerId)
                         .withAttribute("profile", "okta_profile")
                         .withAttribute("name", "okta_name")
+                        .withAuthority(SimpleGrantedAuthority("ROLE_USER"))
                         .build()
                 )
             },

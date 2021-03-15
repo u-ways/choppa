@@ -1,7 +1,7 @@
 CREATE TYPE REVISION_TYPE AS ENUM (
     'ADD',
     'REMOVE'
-);
+    );
 
 -- Create an implicit conversion from varchar to the enum in the database
 -- to address JPA and Postgres enums limitations.
@@ -16,6 +16,6 @@ CREATE TABLE squad_member_history
     create_date     TIMESTAMP WITH TIME ZONE NOT NULL,
 
     PRIMARY KEY (squad_id, member_id, create_date),
-    CONSTRAINT squad_member_history_fk1 FOREIGN KEY (squad_id) REFERENCES squad (squad_id),
-    CONSTRAINT squad_member_history_fk2 FOREIGN KEY (member_id) REFERENCES member (member_id)
+    CONSTRAINT squad_member_history_fk1 FOREIGN KEY (squad_id) REFERENCES squad (squad_id) ON DELETE CASCADE,
+    CONSTRAINT squad_member_history_fk2 FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE
 );

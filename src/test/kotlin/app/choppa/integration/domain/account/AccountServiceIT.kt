@@ -1,11 +1,11 @@
 package app.choppa.integration.domain.account
 
 import app.choppa.domain.account.AccountService
-import app.choppa.support.builder.OAuth2TokenBuilder
 import app.choppa.support.builder.SecurityContextBuilder
 import app.choppa.support.factory.AccountFactory
 import app.choppa.support.flyway.FlywayMigrationConfig
 import app.choppa.support.testcontainers.TestDBContainer
+import app.choppa.utils.OAuth2TokenBuilder
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldContain
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -32,7 +31,6 @@ internal class AccountServiceIT @Autowired constructor(
     private val testDBContainer: TestDBContainer = TestDBContainer.get()
 
     @Test
-    @WithMockUser
     fun `Given an existing account, when service tries to createNewAccount, then service should throw IllegalStateException`() {
         val entity = accountService.save(
             AccountFactory.create(

@@ -88,8 +88,19 @@ class SquadMemberHistoryService(
             }
         }
 
+    @Transactional(isolation = REPEATABLE_READ)
+    fun concentrateSquadRevisionsTo(squad: Squad, revisionNumber: Int): List<Member> = squadHistoryRepository
+        .findAllBySquadAndRevisionNumberAfter(squad, revisionNumber)
+        .backtrack(squad.members)
+
+    @Transactional(isolation = REPEATABLE_READ)
+    fun concentrateLastNSquadRevisions(squad: Squad, revisionAmount: Int): List<Member> = squadHistoryRepository
+        .takeIf { revisionAmount > 0 }
+        ?.findAllBySquad(squad, of(ZERO, revisionAmount))
+        ?.backtrack(squad.members) ?: emptyList()
+
     @Transactional
-    fun getSquadHistoriesAndDurations(squads: List<Squad>): List<Pair<Squad, List<Pair<Int, List<Member>>>>> {
+    fun findSquadsRevisionsAndMemberDurations(squads: List<Squad>): List<Pair<Squad, List<Pair<Int, List<Member>>>>> {
         val squadHistoriesList: List<List<SquadMemberHistory>> = squads.map {
             squadHistoryRepository.findAllBySquad(it, by(Sort.Direction.ASC, SquadMemberHistory::createDate.name))
         }
@@ -147,87 +158,10 @@ class SquadMemberHistoryService(
         return squads.mapIndexed { index, squad -> Pair(squad, squadsAndDurations[index]) }
     }
 
-    private fun calculateMemberPairingPoints(squadsAndDurations: List<Pair<Int, List<Member>>>): HashMap<Pair<Member, Member>, Int> {
-        val mppMap = HashMap<Pair<Member, Member>, Int>()
-
-        squadsAndDurations.map {
-            it.second
-        }.flatten().distinct().apply {
-            this.forEachIndexed { index, member ->
-                if (index + 1 < this.size) {
-                    this.subList(index + 1, this.size).forEach { subMember ->
-                        mppMap[Pair(member, subMember)] = 0
-                        mppMap[Pair(subMember, member)] = 0
-                    }
-                }
-            }
-        }
-
-        squadsAndDurations.forEach {
-            val time = it.first
-            val members = it.second
-
-            members.forEachIndexed { index, member ->
-                if (index + 1 < members.size) {
-                    members.subList(index + 1, members.size).forEach { subMember ->
-                        mppMap[Pair(member, subMember)]?.plus(time)!!
-                        mppMap[Pair(subMember, member)]?.plus(time)!!
-                    }
-                }
-            }
-        }
-        return mppMap
-    }
-
-    private fun calculateSquadPairingPoints(squadConfigurationsAndDurations: List<Pair<Squad, List<Pair<Int, List<Member>>>>>): HashMap<Pair<Squad, Member>, Int> {
-        val sppMap = HashMap<Pair<Squad, Member>, Int>()
-        val squads = squadConfigurationsAndDurations.map { it.first }
-        val members =
-            squadConfigurationsAndDurations.asSequence().map { it.second }.flatten().map { it.second }.flatten().distinct()
-                .toList()
-
-        squads.forEach { squad ->
-            members.forEach { member ->
-                sppMap[Pair(squad, member)] = 0
-            }
-        }
-
-        squadConfigurationsAndDurations.forEach { configurations ->
-            val squad = configurations.first
-            val configurationInstance = configurations.second
-            configurationInstance.forEach { configuration ->
-                val duration = configuration.first
-                configuration.second.forEach { member ->
-                    sppMap[Pair(squad, member)]?.plus(duration)
-                }
-            }
-        }
-
-        return sppMap
-    }
-
     private fun timestampDifferenceInDays(start: Instant, end: Instant): Int {
         val millisToDays = 1000 * 60 * 60 * 24
         return (start.minusMillis(end.toEpochMilli()).toEpochMilli() / millisToDays).toInt()
     }
-
-    fun getMPPAndSPP(squads: List<Squad>): Pair<HashMap<Pair<Member, Member>, Int>, HashMap<Pair<Squad, Member>, Int>> {
-        val squadConfigurationsAndDurations = getSquadHistoriesAndDurations(squads)
-        val sppMap = calculateSquadPairingPoints(squadConfigurationsAndDurations)
-        val mppMap = calculateMemberPairingPoints(squadConfigurationsAndDurations.map { it.second }.flatten())
-        return Pair(mppMap, sppMap)
-    }
-
-    @Transactional(isolation = REPEATABLE_READ)
-    fun concentrateSquadRevisionsTo(squad: Squad, revisionNumber: Int): List<Member> = squadHistoryRepository
-        .findAllBySquadAndRevisionNumberAfter(squad, revisionNumber)
-        .backtrack(squad.members)
-
-    @Transactional(isolation = REPEATABLE_READ)
-    fun concentrateLastNSquadRevisions(squad: Squad, revisionAmount: Int): List<Member> = squadHistoryRepository
-        .takeIf { revisionAmount > 0 }
-        ?.findAllBySquad(squad, of(ZERO, revisionAmount))
-        ?.backtrack(squad.members) ?: emptyList()
 
     private fun nextRevisionNumber(squad: Squad) = squadHistoryRepository
         .findAllBySquad(

@@ -4,104 +4,122 @@ import app.choppa.domain.chapter.Chapter
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
 
-class SmartMemberRotation {
-    companion object {
-        var mppScalar = 0.1f
-        var sppScalar = 1.0f
+class SmartMemberRotation(
+    private val squads: List<Squad>,
+    private val amount: Int,
+    private val chapter: Chapter,
+    private val squadsRevisionsAndMemberDuration: List<Pair<Squad, List<Pair<Int, List<Member>>>>>,
+    private val mppScalar: Float = 0.1f,
+    private val sppScalar: Float = 1.0f,
+) {
+    private val mpp = calculateMemberPairingPoints(squadsRevisionsAndMemberDuration.map { it.second }.flatten())
+    private val spp = calculateSquadPairingPoints(squadsRevisionsAndMemberDuration)
+    private val memberToCurrentSquadMap = squadsRevisionsAndMemberDuration.mapToMemberCurrentSquad()
+    private val tempSquadCandidatesToRotate = squads.findCandidatesToRotate(chapter)
+    private val candidatesToRotate = tempSquadCandidatesToRotate.map { it.members }.flatten().toMutableList()
+    private val proposedMoves = mutableListOf<MoveToSquad>()
 
-        fun invoke(
-            squads: List<Squad>,
-            amount: Int,
-            chapter: Chapter,
-            squadsRevisionsAndMemberDuration: List<Pair<Squad, List<Pair<Int, List<Member>>>>>,
-        ): List<MoveToSquad> {
-            if (amount < 1) return listOf()
+    fun invoke(): List<MoveToSquad> {
+        if (amount < 1) return listOf()
 
-            val memberToCurrentSquadMap = HashMap<Member, Squad>().apply {
-                squadsRevisionsAndMemberDuration.map { (squad, durations) ->
-                    durations[0].second.forEach { this[it] = squad }
+        (0 until amount).forEach { _ ->
+            val primaryOptimalMove = candidatesToRotate.map { member ->
+                val optimalMove = calculateOptimalMove(member, tempSquadCandidatesToRotate)
+                optimalMove.toOptimalMoveSummary(member, tempSquadCandidatesToRotate, optimalMove.first)
+            }.minusCandidatesMovingToTheirOriginalSquad(memberToCurrentSquadMap)
+                .run {
+                    if (isEmpty()) return proposedMoves
+                    else handleMove(maxByOrNull { move -> move.ksp })
                 }
+
+            val secondaryOptimalMove = primaryOptimalMove.minusAlreadyRotatedCandidates(candidatesToRotate).map { member ->
+                val optimalMove = calculateOptimalMove(member, listOf(primaryOptimalMove.squadToMoveTo))
+                optimalMove.toOptimalMoveSummary(member, tempSquadCandidatesToRotate, getSquad(primaryOptimalMove.member))
+            }.run {
+                if (isEmpty()) return proposedMoves
+                else handleMove(maxByOrNull { move -> move.ksp })
             }
 
-            val currentMemberSquads = squads.map {
-                Pair(it, it.members.toList().filter { x -> x.chapter == chapter }) // && x.squads.size > 1
-            }.filter { it.second.count() > 0 }
-
-            val tempMemberSquads = currentMemberSquads.map { Pair(it.first, it.second.toMutableList()) }.toMutableList()
-            val activeMemberList = currentMemberSquads.map { it.second }.flatten().toMutableList()
-            val mpp = calculateMemberPairingPoints(squadsRevisionsAndMemberDuration.map { it.second }.flatten())
-            val spp = calculateSquadPairingPoints(squadsRevisionsAndMemberDuration)
-
-            val proposedMoves = mutableListOf<MoveToSquad>()
-
-            fun averageMpp(x: Member): Double =
-                activeMemberList.filter { y -> y != x }.map { y -> mpp[MemberPairing(x, y)]!! }.average()
-
-            fun averageMppByTeam(
-                x: Member,
-                teams: List<Pair<Squad, List<Member>>>,
-                averageMpp: Double
-            ): List<Pair<Squad, Double>> =
-                teams.map {
-                    Pair(
-                        it.first,
-                        it.second.filter { m -> m != x }.map { y -> mpp[MemberPairing(x, y)]!! - averageMpp }.average()
-                    )
-                }
-
-            fun memberSppAndMppByTeam(
-                x: Member,
-                averageMppByTeam: List<Pair<Squad, Double>>
-            ): List<Triple<Squad, Int, Double>> =
-                averageMppByTeam.map { y ->
-                    Triple(
-                        y.first,
-                        spp[SquadPairing(memberToCurrentSquadMap[x]!!, x)]!! - spp[SquadPairing(y.first, x)]!!,
-                        y.second
-                    )
-                }
-
-            fun optimalMove(conditions: List<Triple<Squad, Int, Double>>): Pair<Squad, Double> =
-                conditions.map { x -> Pair(x.first, (x.second * sppScalar) + (-x.third * mppScalar)) }
-                    .maxByOrNull { it.second }!!
-
-            fun handleMove(move: Triple<Member, Pair<Squad, List<Member>>, Double>) {
-                proposedMoves.add(MoveToSquad(move.first, memberToCurrentSquadMap[move.first]!!, move.second.first))
-                activeMemberList.remove(move.first)
-                tempMemberSquads.find { it.first == memberToCurrentSquadMap[move.first]!! }!!.second.remove(move.first)
-            }
-
-            (0 until amount).forEach { _ ->
-                val ksps: List<Triple<Member, Pair<Squad, List<Member>>, Double>> = activeMemberList
-                    .map { x ->
-                        val memberSppAndMppByTeam =
-                            memberSppAndMppByTeam(x, averageMppByTeam(x, tempMemberSquads, averageMpp(x)))
-                        val optimalMove: Pair<Squad, Double> = optimalMove(memberSppAndMppByTeam)
-                        Triple(x, tempMemberSquads.find { it.first == optimalMove.first }!!, optimalMove.second)
-                    }.filter { x -> x.second.first != memberToCurrentSquadMap[x.first]!! }
-
-                if (ksps.isEmpty()) return proposedMoves
-                val best = ksps.maxByOrNull { x -> x.third }!!
-                handleMove(best)
-
-                val secondaryKSPs = best.second.second.filter { activeMemberList.contains(it) }.map { x ->
-                    val memberSppAndMppByTeam =
-                        memberSppAndMppByTeam(x, averageMppByTeam(x, listOf(best.second), averageMpp(x)))
-                    val optimalMove: Pair<Squad, Double> = optimalMove(memberSppAndMppByTeam)
-                    Triple(x, tempMemberSquads.find { it.first == memberToCurrentSquadMap[best.first]!! }!!, optimalMove.second)
-                }
-
-                if (secondaryKSPs.isEmpty()) return proposedMoves
-                val bestSecondary = secondaryKSPs.maxByOrNull { x -> x.third }!!
-                handleMove(bestSecondary)
-
-                tempMemberSquads.find { it.first == memberToCurrentSquadMap[best.first]!! }!!.second.add(bestSecondary.first)
-                tempMemberSquads.find { it.first == memberToCurrentSquadMap[bestSecondary.first]!! }!!.second.add(best.first)
-
-                tempMemberSquads.removeIf { it.second.none { x -> activeMemberList.contains(x) } }
-            }
-
-            return proposedMoves
+            swapMembers(primaryOptimalMove.member, secondaryOptimalMove.member)
+            tempSquadCandidatesToRotate.removeIf { it.members.none { x -> candidatesToRotate.contains(x) } }
         }
+
+        return proposedMoves
     }
+
+    fun List<Pair<Squad, List<Pair<Int, List<Member>>>>>.mapToMemberCurrentSquad(): HashMap<Member, Squad> =
+        HashMap<Member, Squad>().also {
+            map { (squad, durations) ->
+                durations[0].second.forEach { member -> it[member] = squad }
+            }
+        }
+
+    fun List<Squad>.findCandidatesToRotate(chapter: Chapter): MutableList<SquadDefinition> = map {
+        Pair(it, it.members.toList().filter { x -> x.chapter == chapter }) // && x.squads.size > 1
+    }.filter { it.second.count() > 0 }.map { SquadDefinition(it.first, it.second.toMutableList()) }
+        .toMutableList()
+
+    private fun averageMpp(x: Member, candidatesToRotate: MutableList<Member>): Double =
+        candidatesToRotate.filter { y -> y != x }.map { y -> mpp[MemberPairing(x, y)]!! }.average()
+
+    private fun averageMppByTeam(
+        x: Member,
+        teams: List<SquadDefinition>,
+        averageMpp: Double
+    ): List<Pair<Squad, Double>> =
+        teams.map {
+            Pair(
+                it.squad,
+                it.members
+                    .filter { m -> m != x }
+                    .map { y -> mpp[MemberPairing(x, y)]!! - averageMpp }.average()
+            )
+        }
+
+    private fun memberSppAndMppByTeam(
+        x: Member,
+        averageMppByTeam: List<Pair<Squad, Double>>
+    ): List<Triple<Squad, Int, Double>> =
+        averageMppByTeam.map { y ->
+            Triple(
+                y.first,
+                spp[SquadPairing(getSquad(x), x)]!! - spp[SquadPairing(y.first, x)]!!,
+                y.second
+            )
+        }
+
+    fun calculateOptimalMove(member: Member, tempSquadCandidatesToRotate: List<SquadDefinition>): Pair<Squad, Double> {
+        val averageMpp = averageMpp(member, candidatesToRotate)
+        val averageMppByTeam = averageMppByTeam(member, tempSquadCandidatesToRotate, averageMpp)
+        val memberSppAndMppByTeam = memberSppAndMppByTeam(member, averageMppByTeam)
+        return memberSppAndMppByTeam.map { x ->
+            Pair(x.first, calculateKSP(x.second.toDouble(), x.third))
+        }.maxByOrNull { it.second } ?: error("Could not find optimal move for member [${member.id}].")
+    }
+
+    fun calculateKSP(spp: Double, mpp: Double): Double = (spp * sppScalar) + (-mpp * mppScalar)
+
+    fun handleMove(move: OptimalMoveSummary?): OptimalMoveSummary {
+        check(move != null) { "Expected to find OptimalMoveSummary to handle a move" }
+        val member = move.member
+        val squad = move.squadToMoveTo.squad
+        proposedMoves.add(MoveToSquad(member, getSquad(member), squad))
+        candidatesToRotate.remove(member)
+        findSquadDefinition(getSquad(member)).members.remove(member)
+        return move
+    }
+
+    fun swapMembers(member1: Member, member2: Member) {
+        findSquadDefinition(getSquad(member1)).members.add(member2)
+        findSquadDefinition(getSquad(member2)).members.add(member1)
+    }
+
+    fun findSquadDefinition (squad: Squad): SquadDefinition =
+        tempSquadCandidatesToRotate.find { it.squad == squad }
+            ?: error("Expected to find squad [${squad.id}] within squad candidate list.")
+
+    fun getSquad(member: Member): Squad =
+        memberToCurrentSquadMap[member] ?: error("Expected to find squad that member [${member.id}] belongs to.")
 }
+
+

@@ -47,12 +47,12 @@ class SmartMemberRotationTest : Universe() {
         expected[0].add(expected[1].removeAt(0))
         expected[0].add(expected[1].removeAt(0))
 
-        SmartMemberRotation.invoke(
+        SmartMemberRotation(
             squads = tribe.squads,
             amount = developersToRotateAmount,
             chapter = developerChapter,
             squadsRevisionsAndMemberDuration = squadsRevisionsAndMemberDuration
-        ).onEach {
+        ).invoke().onEach {
             tribe.apply {
                 squads.apply {
                     find { squad -> squad == it.from }.apply { this?.members?.remove(it.member) }
@@ -95,12 +95,12 @@ class SmartMemberRotationTest : Universe() {
 
         debug(tribe)
 
-        SmartMemberRotation.invoke(
+        SmartMemberRotation(
             squads = tribe.squads,
             amount = developersToRotateAmount,
             chapter = developerChapter,
             squadsRevisionsAndMemberDuration = squadsRevisionsAndMemberDuration
-        ).onEach {
+        ).invoke().onEach {
             tribe.apply {
                 squads.apply {
                     find { squad -> squad == it.from }.apply { this?.members?.remove(it.member) }
@@ -131,12 +131,12 @@ class SmartMemberRotationTest : Universe() {
             }
         )
 
-        SmartMemberRotation.invoke(
+        SmartMemberRotation(
             squads = tribe.squads,
             amount = developersToRotateAmount,
             chapter = developerChapter,
             squadsRevisionsAndMemberDuration = emptyList()
-        ).onEach {
+        ).invoke().onEach {
             tribe.apply {
                 squads.apply {
                     find { squad -> squad == it.from }.apply { this?.members?.remove(it.member) }
@@ -167,12 +167,12 @@ class SmartMemberRotationTest : Universe() {
             }
         )
 
-        SmartMemberRotation.invoke(
+        SmartMemberRotation(
             squads = tribe.squads,
             amount = developersToRotateAmount,
             chapter = developerChapter,
             squadsRevisionsAndMemberDuration = squadsRevisionsAndMemberDuration
-        ).onEach {
+        ).invoke().onEach {
             tribe.apply {
                 squads.apply {
                     find { squad -> squad == it.from }.apply { this?.members?.remove(it.member) }

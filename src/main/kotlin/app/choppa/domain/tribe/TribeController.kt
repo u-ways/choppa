@@ -49,10 +49,17 @@ class TribeController(
     fun executeRotation(
         @PathVariable id: UUID,
         @RequestBody options: RotationOptions,
-    ): ResponseEntity<Tribe> =
-        ok().body(
-            rotationService.executeRotation(tribeService.find(id), options)
-        )
+    ): ResponseEntity<Unit> = ok().apply {
+        rotationService.executeRotation(tribeService.find(id), options)
+    }.build()
+
+    @PostMapping("$ID_PATH:smr")
+    fun executeSmartRotation(
+        @PathVariable id: UUID,
+        @RequestBody options: RotationOptions,
+    ): ResponseEntity<Unit> = ok().apply {
+        rotationService.executeSmartRotation(tribeService.find(id), options)
+    }.build()
 
     @GetMapping("$ID_PATH:undoRotation")
     fun undoRotation(

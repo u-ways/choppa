@@ -1,6 +1,7 @@
 package app.choppa.domain.rotation
 
 import app.choppa.domain.rotation.RotationContext.Companion.rotate
+import app.choppa.domain.rotation.smr.SmartMemberRotation.Companion.invoke
 import app.choppa.domain.squad.SquadService
 import app.choppa.domain.tribe.Tribe
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,6 +19,28 @@ class RotationService(
         options,
         tribe.squads.map { squadService.findAllSquadMembersRevisions(it.id) }
     ).apply { squadService.save(this.squads) }
+
+    @Transactional(isolation = REPEATABLE_READ)
+    fun executeSmartRotation(tribe: Tribe, options: RotationOptions) = invoke(
+        tribe.squads,
+        options.amount,
+        options.chapter,
+        squadService.findSquadsRevisionsAndMemberDurations(tribe.squads)
+    ).forEach {
+        tribe.apply {
+            val squadNotFound = "Expected to find a squad that belongs to tribe."
+            squads.apply {
+                find { squad -> squad == it.from }.apply {
+                    this?.members?.remove(it.member)
+                    squadService.save(this?: error(squadNotFound))
+                }
+                find { squad -> squad == it.to }.apply {
+                    this?.members?.add(it.member)
+                    squadService.save(this?: error(squadNotFound))
+                }
+            }
+        }
+    }
 
     @Transactional(isolation = REPEATABLE_READ)
     fun undoRotation(tribe: Tribe): Tribe = tribe.copy(

@@ -32,11 +32,11 @@ class RotationService(
             squads.apply {
                 find { squad -> squad == it.from }.apply {
                     this?.members?.remove(it.member)
-                    squadService.save(this?: error(squadNotFound))
+                    squadService.save(this ?: error(squadNotFound))
                 }
                 find { squad -> squad == it.to }.apply {
                     this?.members?.add(it.member)
-                    squadService.save(this?: error(squadNotFound))
+                    squadService.save(this ?: error(squadNotFound))
                 }
             }
         }

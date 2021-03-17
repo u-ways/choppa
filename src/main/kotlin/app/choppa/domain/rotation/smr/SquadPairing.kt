@@ -3,15 +3,15 @@ package app.choppa.domain.rotation.smr
 import app.choppa.domain.member.Member
 import app.choppa.domain.squad.Squad
 
-typealias SquadParingPoints = HashMap<SquadParing, Int>
+typealias SquadPairingPoints = HashMap<SquadPairing, Int>
 
-data class SquadParing(
+data class SquadPairing(
     val squad: Squad,
     val member: Member,
 )
 
-fun calculateSquadPairingPoints(squadConfigurationsAndDurations: List<Pair<Squad, List<Pair<Int, List<Member>>>>>): SquadParingPoints {
-    val squadParingPoints = SquadParingPoints()
+fun calculateSquadPairingPoints(squadConfigurationsAndDurations: List<Pair<Squad, List<Pair<Int, List<Member>>>>>): SquadPairingPoints {
+    val squadParingPoints = SquadPairingPoints()
     val squads = squadConfigurationsAndDurations.map { it.first }
     val members = squadConfigurationsAndDurations
         .asSequence().map { it.second }
@@ -20,7 +20,7 @@ fun calculateSquadPairingPoints(squadConfigurationsAndDurations: List<Pair<Squad
 
     squads.forEach { squad ->
         members.forEach { member ->
-            squadParingPoints[SquadParing(squad, member)] = 0
+            squadParingPoints[SquadPairing(squad, member)] = 0
         }
     }
 
@@ -31,7 +31,7 @@ fun calculateSquadPairingPoints(squadConfigurationsAndDurations: List<Pair<Squad
         configurationInstance.forEach { configuration ->
             val duration = configuration.first
             configuration.second.forEach { member ->
-                squadParingPoints[SquadParing(squad, member)]?.plus(duration)
+                squadParingPoints[SquadPairing(squad, member)] = + duration
             }
         }
     }

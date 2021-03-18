@@ -41,4 +41,14 @@ export default class Squad {
   get path() {
     return this._id.replace("squads/", "");
   }
+
+  addMember(member) {
+    if (this.members.includes(member) === false) {
+      this.members.push(member);
+    }
+  }
+
+  removeMember(member) {
+    this._members = this.members.filter((m) => m.id !== member.id);
+  }
 }

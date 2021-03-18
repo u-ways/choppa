@@ -7,6 +7,7 @@ export function serializeMember(member) {
     id: member.id,
     name: member.name,
     chapter: member.chapter ? member.chapter.id : "",
+    active: member.active,
   };
 }
 

@@ -63,6 +63,13 @@ export async function saveSquad(config) {
   await httpClient.put(config.squad.id, serializeSquad(config.squad));
 }
 
+export async function saveSquads(config) {
+  await httpClient.put(
+    "squads",
+    config.squads.map((squad) => serializeSquad(squad)),
+  );
+}
+
 export async function createSquad(config) {
   await httpClient.post("squads", [serializeSquad(config.squad)]);
 }

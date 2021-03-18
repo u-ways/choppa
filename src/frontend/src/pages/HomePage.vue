@@ -86,7 +86,7 @@
           </InformationBlock>
           <div class="pt-12 w-full lg:w-1/2">
             <StyledButton class ="text-center" type="link"
-                          :link="{ name: 'view-tribe', params: { id: '00000000-0000-0000-0000-000000000001' } }"
+                          :link="{ name: 'dashboard' }"
                           variant="primary">I'm Ready!</StyledButton>
           </div>
         </div>

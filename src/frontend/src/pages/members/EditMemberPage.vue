@@ -21,7 +21,7 @@
         </section>
       </div>
     </template>
-    <template v-slot:fixed-width v-else-if="member && chapters && chapters.length > 0">
+    <template v-slot:fixed-width v-else-if="member && chapters && chapters.length > 0 && loadedSelectedSquads === true">
       <div class="px-3 py-5">
         <section>
           <FormHeader variant="primary">
@@ -49,6 +49,20 @@
               </div>
               <ErrorPrompt label-text="Member Chapter" :validator="$v.member.chapter"/>
             </div>
+            <section class="mt-5" v-if="squads">
+              <FormHeader variant="primary">
+                <template v-slot:heading>Squads</template>
+                <template v-slot:subheading>Change what Squads {{member.name}} belongs to.</template>
+              </FormHeader>
+              <div class="pt-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <SquadsCheckbox :squad="squad"
+                                  v-for="squad in squads" v-bind:key="squad.id"
+                                  :default-selected="selectedSquads.includes(squad.id)"
+                                  @onChange="onSquadSelectedChanged" />
+                </div>
+              </div>
+            </section>
             <div class="self-end flex flex-row gap-1">
               <StyledButton type="button" variant="secondary" css="px-2 pr-5 pl-4" @click="$router.go(-1)">
                 <font-awesome-icon icon="times"/>
@@ -59,15 +73,6 @@
                 Save
               </StyledButton>
             </div>
-          </div>
-        </section>
-        <section class="mt-5" v-if="!creatingMember && squads">
-          <FormHeader variant="primary">
-            <template v-slot:heading>Squads</template>
-            <template v-slot:subheading>{{member.name}} belongs to the following Squads.</template>
-          </FormHeader>
-          <div class="pt-3">
-            <SquadsOverview :squads="squads"/>
           </div>
         </section>
         <div class="py-5" v-if="!creatingMember">
@@ -102,23 +107,23 @@ import StyledButton from "@/components/atoms/buttons/StyledButton";
 import ToastData from "@/models/toastData";
 import { toastVariants } from "@/enums/toastVariants";
 import StandardLabel from "@/components/forms/inputs/StandardLabel";
-import SquadsOverview from "@/components/squads/SquadsOverview";
 import { getAllChapters } from "@/config/api/chapter.api";
-import { getSquad, getSquadsByQuery, saveSquad } from "@/config/api/squad.api";
+import { getAllSquads, getSquadsByQuery, saveSquads } from "@/config/api/squad.api";
 import ChapterRadioButton from "@/components/chapters/ChapterRadioButton";
 import Member from "@/models/domain/member";
 import ErrorPrompt from "@/components/forms/ErrorPrompt";
 import DoubleConfirmationButton from "@/components/atoms/buttons/DoubleConfirmationButton";
 import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
+import SquadsCheckbox from "@/components/squads/SquadCheckbox";
 import Tribe from "@/models/domain/tribe";
 
 export default {
   name: "EditMemberPage",
   components: {
+    SquadsCheckbox,
     NoChaptersToShowAlert,
     ErrorPrompt,
     ChapterRadioButton,
-    SquadsOverview,
     StandardLabel,
     StyledButton,
     StandardInputWithLabel,
@@ -140,9 +145,11 @@ export default {
       member: undefined,
       chapters: undefined,
       squads: undefined,
-      selectedSquad: undefined,
       deleteConfirmation: false,
       tribeOnlyWithId: undefined,
+      selectedSquads: [],
+      modifiedSquads: [],
+      loadedSelectedSquads: false,
     };
   },
   validations: {
@@ -161,17 +168,26 @@ export default {
     try {
       if (this.$route.query.squad) {
         this.creatingMember = true;
-        this.member = new Member({});
+        this.member = new Member({ active: false });
         this.chapters = await getAllChapters();
-        this.selectedSquad = await getSquad({ id: this.$route.query.squad });
+        this.squads = await getAllSquads();
+        this.selectedSquads = [`squads/${this.$route.query.squad}`];
+        this.modifiedSquads = [`squads/${this.$route.query.squad}`];
+
+        const selectedSquad = this.squads.filter((squad) => squad.id === `squads/${this.$route.query.squad}`)[0];
+        selectedSquad.addMember(this.member);
         this.tribeOnlyWithId = new Tribe({
-          id: this.selectedSquad.relations.tribe,
+          id: selectedSquad.relations.tribe,
         });
+        this.loadedSelectedSquads = true;
       } else if (this.$route.params.id) {
         this.creatingMember = false;
         this.member = await getMember({ id: this.$route.params.id });
         this.chapters = await getAllChapters();
-        this.squads = await getSquadsByQuery({ url: this.member.relations.squads });
+        this.squads = await getAllSquads();
+        const withinSquads = await getSquadsByQuery({ url: this.member.relations.squads });
+        this.selectedSquads = withinSquads.map((squad) => squad.id);
+        this.loadedSelectedSquads = true;
       }
     } catch (error) {
       await this.$router.replace("/not-found");
@@ -191,12 +207,11 @@ export default {
       try {
         if (this.creatingMember) {
           await createMember({ member: this.member });
-          this.selectedSquad.members.push(this.member);
-          await saveSquad({ squad: this.selectedSquad });
         } else {
           await saveMember({ member: this.member });
         }
 
+        await this.updateSquads();
         await this.$router.go(-1);
         this.newToast(new ToastData({
           variant: toastVariants.SUCCESS,
@@ -209,6 +224,22 @@ export default {
         }));
 
         throw error;
+      }
+    },
+    async updateSquads() {
+      if (this.modifiedSquads.length === 0) {
+        return;
+      }
+
+      try {
+        await saveSquads({
+          squads: this.squads.filter((squad) => this.modifiedSquads.includes(squad.id)),
+        });
+      } catch (error) {
+        this.newToast(new ToastData({
+          variant: toastVariants.ERROR,
+          message: `Updating Squads failed, please try again later.`,
+        }));
       }
     },
     async deleteMember() {
@@ -226,6 +257,18 @@ export default {
         }));
 
         throw error;
+      }
+    },
+    onSquadSelectedChanged(event) {
+      if (this.modifiedSquads.includes(event.squad.id) === false) {
+        this.modifiedSquads.push(event.squad.id);
+      }
+
+      const squadToModify = this.squads.filter((squad) => squad.id === event.squad.id)[0];
+      if (event.selected === true) {
+        squadToModify.addMember(this.member);
+      } else {
+        squadToModify.removeMember(this.member);
       }
     },
   },

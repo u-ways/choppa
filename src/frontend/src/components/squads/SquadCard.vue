@@ -80,10 +80,6 @@ export default {
     limitedMembersAvatars(members) {
       return members.slice(0, this.memberShowCount);
     },
-    addMemberUrl(squad) {
-      // TO:DO maybe add member here should be a popup? What about mobile?
-      return `/${squad.id}`;
-    },
   },
 };
 </script>

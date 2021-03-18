@@ -147,8 +147,6 @@ internal class TribeControllerIT : BaseControllerIT() {
                 content = mapper.writeValueAsString(options)
             }.andExpect {
                 status { isOk }
-                content { contentType(APPLICATION_JSON) }
-                content { json(mapper.writeValueAsString(entity)) }
             }
         }
     }

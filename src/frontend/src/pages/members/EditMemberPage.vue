@@ -115,6 +115,7 @@ import ErrorPrompt from "@/components/forms/ErrorPrompt";
 import DoubleConfirmationButton from "@/components/atoms/buttons/DoubleConfirmationButton";
 import NoChaptersToShowAlert from "@/components/chapters/NoChaptersToShowAlert";
 import SquadsCheckbox from "@/components/squads/SquadCheckbox";
+import Tribe from "@/models/domain/tribe";
 
 export default {
   name: "EditMemberPage",
@@ -172,7 +173,12 @@ export default {
         this.squads = await getAllSquads();
         this.selectedSquads = [`squads/${this.$route.query.squad}`];
         this.modifiedSquads = [`squads/${this.$route.query.squad}`];
-        (this.squads.filter((squad) => squad.id === `squads/${this.$route.query.squad}`)[0]).addMember(this.member);
+
+        const selectedSquad = this.squads.filter((squad) => squad.id === `squads/${this.$route.query.squad}`)[0];
+        selectedSquad.addMember(this.member);
+        this.tribeOnlyWithId = new Tribe({
+          id: selectedSquad.relations.tribe,
+        });
         this.loadedSelectedSquads = true;
       } else if (this.$route.params.id) {
         this.creatingMember = false;

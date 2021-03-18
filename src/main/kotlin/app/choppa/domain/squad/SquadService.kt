@@ -45,6 +45,7 @@ class SquadService(
     @Transactional(isolation = REPEATABLE_READ)
     override fun save(entity: Squad): Squad = squadRepository.findById(entity.id)
         .getMembersIfPresent()
+        .setRemovedMembersToInactive(entity.members)
         .run {
             memberService.save(entity.members)
             squadRepository.save(
@@ -106,8 +107,8 @@ class SquadService(
         this to (1..revisionAmount).map {
             squadMemberHistoryService.concentrateLastNSquadRevisions(this, it)
         }
-
     }
+
     @Transactional
     fun findSquadsRevisionsAndMemberDurations(squads: List<Squad>): List<Pair<Squad, List<Pair<Int, List<Member>>>>> =
         squadMemberHistoryService.findSquadsRevisionsAndMemberDurations(squads)
@@ -143,6 +144,15 @@ class SquadService(
     private fun Optional<Squad>.getMembersIfPresent() = when {
         this.isPresent -> this.get().members.toMutableList()
         else -> emptyList()
+    }
+
+    private fun List<Member>.setRemovedMembersToInactive(updatedMember: List<Member>) = apply {
+        minus(intersect(updatedMember)).forEach { member ->
+            // Only update members with 0 squad assignment to inactive.
+            if (findRelatedByMember(member.id).size == 1) {
+                memberService.save(member.copy(active = false))
+            }
+        }
     }
 
     private fun Squad.createSquadMembersRevision(olderFormation: List<Member>) = this.apply {

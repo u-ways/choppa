@@ -50,6 +50,19 @@ internal class SquadServiceIT @Autowired constructor(
 
     @Test
     @Transactional
+    fun `Given existing entity in db with existing member that doesn't belong to any other squad, when service updates entity by removing member, then service should remove form squad and set member to inactive`() {
+        val relatedMember = memberService.save(MemberFactory.create(active = true))
+        val existingEntity = squadService.save(SquadFactory.create(members = mutableListOf(relatedMember)))
+
+        val updatedEntity = squadService.save(existingEntity.copy(members = existingEntity.members.minus(relatedMember).toMutableList()))
+        val removedMember = memberService.find(relatedMember.id)
+
+        updatedEntity.members.isEmpty().shouldBe(true)
+        removedMember.active.shouldBe(false)
+    }
+
+    @Test
+    @Transactional
     fun `Given existing entity in db, when service deletes entity, then service should removes entity from db`() {
         val existingEntity = squadService.save(SquadFactory.create())
         val removedEntity = squadService.delete(existingEntity)

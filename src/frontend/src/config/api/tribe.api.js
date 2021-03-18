@@ -52,6 +52,15 @@ export async function saveTribe(config) {
   await httpClient.put(config.tribe.id, serializeTribe(config.tribe));
 }
 
+export async function rotateTribeSmart(config) {
+  await httpClient.post(`${config.tribe.id}:smr`, {
+    amount: config.amount,
+    chapter: config.chapter.id,
+    filter: config.filter,
+    strategy: config.strategy,
+  });
+}
+
 export async function rotateTribe(config) {
   await httpClient.post(`${config.tribe.id}:rotate`, {
     amount: config.amount,

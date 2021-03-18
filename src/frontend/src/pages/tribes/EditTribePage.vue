@@ -126,31 +126,14 @@
                 </div>
               </div>
               <div>
-                <StandardLabel for-id="rotation-filter" label-text="Filter"/>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <StandardRadio inputName="rotation-filter"
-                                 id="rotation-filter-distributed"
-                                 label="Distributed"
-                                 :value="filters.distributed"
-                                 :checked="rotation.filter === filters.distributed"
-                                 @onChanged="(event) => rotation.filter = event.target.value"/>
-                  <StandardRadio inputName="rotation-filter"
-                                 id="rotation-filter-oldest"
-                                 label="Oldest"
-                                 :value="filters.oldest"
-                                 :checked="rotation.filter === filters.oldest"
-                                 @onChanged="(event) => rotation.filter = event.target.value"/>
-                  <StandardRadio inputName="rotation-filter"
-                                 id="rotation-filter-random"
-                                 label="Random"
-                                 :value="filters.random"
-                                 :checked="rotation.filter === filters.random"
-                                 @onChanged="(event) => rotation.filter = event.target.value"/>
-                </div>
-              </div>
-              <div>
                 <StandardLabel for-id="rotation-strategy" label-text="Strategy"/>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                  <StandardRadio inputName="rotation-strategy"
+                                 id="rotation-strategy-smart"
+                                 label="Smart"
+                                 :value="strategies.smart"
+                                 :checked="rotation.strategy === strategies.smart"
+                                 @onChanged="(event) => rotation.strategy = event.target.value"/>
                   <StandardRadio inputName="rotation-strategy"
                                  id="rotation-strategy-clockwise"
                                  label="Clockwise"
@@ -169,6 +152,45 @@
                                  :value="strategies.random"
                                  :checked="rotation.strategy === strategies.random"
                                  @onChanged="(event) => rotation.strategy = event.target.value"/>
+                </div>
+              </div>
+              <div v-show="rotation.strategy === strategies.smart" class="pt-1">
+                <FormHeader variant="primary">
+                  <template v-slot:subheading>
+                    <span class="font-bold">Smart</span> is Choppa's signature rotation strategy.
+                    Taking the history of each Member and calculating their
+                    <span class="font-bold">Knowledge Sharing Points</span> to form Squads that will
+                    maximise knowledge sharing. Choppa advises you use this strategy.
+                  </template>
+                </FormHeader>
+              </div>
+              <div v-show="rotation.strategy !== strategies.smart">
+                <StandardLabel for-id="rotation-filter" label-text="Filter"/>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                  <StandardRadio inputName="rotation-filter"
+                                 id="rotation-filter-none"
+                                 label="None"
+                                 :value="filters.none"
+                                 :checked="rotation.filter === filters.none"
+                                 @onChanged="(event) => rotation.filter = event.target.value"/>
+                  <StandardRadio inputName="rotation-filter"
+                                 id="rotation-filter-distributed"
+                                 label="Distributed"
+                                 :value="filters.distributed"
+                                 :checked="rotation.filter === filters.distributed"
+                                 @onChanged="(event) => rotation.filter = event.target.value"/>
+                  <StandardRadio inputName="rotation-filter"
+                                 id="rotation-filter-oldest"
+                                 label="Oldest"
+                                 :value="filters.oldest"
+                                 :checked="rotation.filter === filters.oldest"
+                                 @onChanged="(event) => rotation.filter = event.target.value"/>
+                  <StandardRadio inputName="rotation-filter"
+                                 id="rotation-filter-random"
+                                 label="Random"
+                                 :value="filters.random"
+                                 :checked="rotation.filter === filters.random"
+                                 @onChanged="(event) => rotation.filter = event.target.value"/>
                 </div>
               </div>
               <div class="self-end">
@@ -206,7 +228,7 @@ import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import StyledButton from "@/components/atoms/buttons/StyledButton";
 import FormHeader from "@/components/forms/FormHeader";
 import StandardInputWithLabel from "@/components/forms/groups/StandardInputWithLabel";
-import { getTribe, rotateTribe, saveTribe, deleteTribe, createTribe } from "@/config/api/tribe.api";
+import { getTribe, rotateTribe, saveTribe, deleteTribe, createTribe, rotateTribeSmart } from "@/config/api/tribe.api";
 import NoSquadsToShowAlert from "@/components/squads/NoSquadsToShowAlert";
 import { required, minLength, maxLength, minValue, maxValue } from "vuelidate/lib/validators";
 import { mapActions } from "vuex";
@@ -259,10 +281,11 @@ export default {
       rotation: {
         amount: 1,
         chapter: undefined,
-        filter: rotationFilter.DISTRIBUTED,
-        strategy: rotationStrategy.CLOCKWISE,
+        filter: rotationFilter.NONE,
+        strategy: rotationStrategy.SMART,
       },
       filters: {
+        none: rotationFilter.NONE,
         distributed: rotationFilter.DISTRIBUTED,
         random: rotationFilter.RANDOM,
         oldest: rotationFilter.OLDEST,
@@ -271,6 +294,7 @@ export default {
         clockwise: rotationStrategy.CLOCKWISE,
         antiClockwise: rotationStrategy.ANTI_CLOCKWISE,
         random: rotationStrategy.RANDOM,
+        smart: rotationStrategy.SMART,
       },
     };
   },
@@ -338,7 +362,18 @@ export default {
     },
     async rotate() {
       try {
-        await rotateTribe({ tribe: this.tribe, ...this.rotation });
+        if (this.rotation.strategy === rotationStrategy.SMART) {
+          await rotateTribeSmart({
+            tribe: this.tribe,
+            amount: this.rotation.amount,
+            chapter: this.rotation.chapter,
+            strategy: rotationStrategy.CLOCKWISE,
+            filter: rotationFilter.NONE,
+          });
+        } else {
+          await rotateTribe({ tribe: this.tribe, ...this.rotation });
+        }
+
         this.$router.go(-1);
         this.newToast(new ToastData({
           variant: toastVariants.SUCCESS,

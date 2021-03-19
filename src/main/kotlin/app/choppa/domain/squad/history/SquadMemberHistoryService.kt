@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort.by
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 
 @Service
 class SquadMemberHistoryService(
@@ -98,6 +99,74 @@ class SquadMemberHistoryService(
         ?.findAllBySquad(squad, of(ZERO, revisionAmount))
         ?.backtrack(squad.members) ?: emptyList()
 
+    @Transactional
+    fun findSquadsRevisionsAndMemberDurations(squads: List<Squad>): List<Pair<Squad, List<Pair<Int, List<Member>>>>> {
+        val squadHistoriesList: List<List<SquadMemberHistory>> = squads.map {
+            squadHistoryRepository.findAllBySquad(it, by(Sort.Direction.ASC, SquadMemberHistory::createDate.name))
+        }
+
+        val durations = squadHistoriesList.map {
+            it.foldRight(listOf()) { record: SquadMemberHistory, accumulator: List<Pair<Instant, List<Member>>> ->
+                when (accumulator.size) {
+                    0 ->
+                        accumulator
+                            .plusElement(
+                                Pair(
+                                    record.createDate,
+                                    listOf(memberRepository.findById(record.member.id).get())
+                                )
+                            )
+                    else ->
+                        accumulator
+                            .plusElement(
+                                Pair(
+                                    record.createDate,
+                                    when (record.revisionType) {
+                                        ADD -> accumulator.last().second.plus(
+                                            listOf(
+                                                memberRepository.findById(record.member.id).get()
+                                            )
+                                        )
+                                        REMOVE -> accumulator.last().second.minus(record.member)
+                                    }
+                                )
+                            )
+                }
+            }
+        }
+
+        val squadsAndDurations = durations.map {
+            var lastRecord = it[0]
+            it.foldRight(listOf()) { current: Pair<Instant, List<Member>>, accumulator: List<Pair<Int, List<Member>>> ->
+                when {
+                    lastRecord != current -> accumulator.run {
+                        plusElement(
+                            Pair(
+                                timestampDifferenceInDays(lastRecord.first, current.first),
+                                lastRecord.second
+                            )
+                        ).apply { lastRecord = current }
+                    }
+                    accumulator.size == it.size - 1 -> accumulator.run {
+                        plusElement(
+                            Pair(
+                                timestampDifferenceInDays(current.first, Instant.now()),
+                                current.second
+                            )
+                        ).apply { lastRecord = current }
+                    }
+                    else -> accumulator
+                }
+            }
+        }
+        return squads.mapIndexed { index, squad -> Pair(squad, squadsAndDurations[index]) }
+    }
+
+    private fun timestampDifferenceInDays(start: Instant, end: Instant): Int {
+        val millisToDays = 1000 * 60 * 60 * 24
+        return (start.minusMillis(end.toEpochMilli()).toEpochMilli() / millisToDays).toInt()
+    }
+
     private fun nextRevisionNumber(squad: Squad) = squadHistoryRepository
         .findAllBySquad(
             squad,
@@ -126,7 +195,7 @@ class SquadMemberHistoryService(
             }
         }.toMutableList()
 
-    private fun List<List<Member>>.dropLastIf(predicate: Boolean): List<List<Member>> =
+    private fun <T> List<T>.dropLastIf(predicate: Boolean): List<T> =
         if (predicate) this.dropLast(1) else this
 
     private fun <T> Page<T>.orElseThrow(exception: () -> Nothing): Page<T> = when {

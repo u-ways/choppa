@@ -113,6 +113,10 @@ class SquadService(
         }
     }
 
+    @Transactional
+    fun findSquadsRevisionsAndMemberDurations(squads: List<Squad>): List<Pair<Squad, List<Pair<Int, List<Member>>>>> =
+        squadMemberHistoryService.findSquadsRevisionsAndMemberDurations(squads)
+
     fun calculateKspForLastNRevisionsFor(id: UUID, amount: Int): HashMap<String, Any> =
         (1..amount).fold(HashMap<String, Any>(amount)) { acc, i ->
             acc.also {

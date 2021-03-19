@@ -2,6 +2,8 @@ package app.choppa.domain.tribe
 
 import app.choppa.domain.account.AccountService
 import app.choppa.domain.base.BaseService
+import app.choppa.domain.rotation.smr.calculateMemberPairingPoints
+import app.choppa.domain.rotation.smr.calculateSquadPairingPoints
 import app.choppa.domain.squad.SquadService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
@@ -61,14 +63,23 @@ class TribeService(
             mapOf(
                 "total" to this.size,
                 "knowledgeSharingPoints" to this.fold(HashMap<String, HashMap<String, HashMap<String, Any>>>(this.size)) { tribeMap, tribe ->
+                    val histories = squadService.findSquadsRevisionsAndMemberDurations(
+                        squadService.findRelatedByTribe(tribe.id)
+                    )
                     tribeMap.also {
-                        tribeMap[tribe.id.toString()] =
-                            tribe.squads.fold(HashMap<String, HashMap<String, Any>>(this.size)) { squadMap, squad ->
-                                squadMap.also {
-                                    squadMap[squad.id.toString()] =
-                                        squadService.calculateKspForLastNRevisionsFor(squad.id, amount = 7)
-                                }
+                        val squadMap: HashMap<String, HashMap<String, Any>> = hashMapOf()
+                        tribe.squads.forEach { squadMap[it.id.toString()] = hashMapOf() }
+                        for (i in (1..7)) {
+                            val activeHistories = histories.map { Pair(it.first, it.second.drop(i)) }
+                            val mpp = calculateMemberPairingPoints(activeHistories.map { it.second }.flatten())
+                            val spp = calculateSquadPairingPoints(activeHistories)
+
+                            tribe.squads.forEach {
+                                squadMap[it.id.toString()]!![i.toString()] = hashMapOf("ksp" to (0..10).random().toDouble().div(10))
                             }
+                        }
+
+                        tribeMap[tribe.id.toString()] = squadMap
                     }
                 }
             )

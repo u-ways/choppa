@@ -8,6 +8,7 @@ import app.choppa.exception.EntityNotFoundException
 import app.choppa.utils.Color.Companion.GREY
 import app.choppa.utils.Numbers.Companion.round
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.Serializable
@@ -20,17 +21,17 @@ class ChapterService(
     @Autowired private val memberService: MemberService,
     @Autowired private val accountService: AccountService,
 ) : BaseService<Chapter>(accountService) {
-    override fun find(): List<Chapter> = chapterRepository
+    override fun find(sort: Sort): List<Chapter> = chapterRepository
         .findAll()
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No chapters exist yet.") }
 
-    override fun find(id: UUID): Chapter = chapterRepository
+    override fun find(id: UUID, sort: Sort): Chapter = chapterRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Chapter with id [$id] does not exist.") }
         .verifyAuthenticatedOwnership()
 
-    override fun find(ids: List<UUID>): List<Chapter> = chapterRepository
+    override fun find(ids: List<UUID>, sort: Sort): List<Chapter> = chapterRepository
         .findAllById(ids)
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No chapters found with given ids.") }

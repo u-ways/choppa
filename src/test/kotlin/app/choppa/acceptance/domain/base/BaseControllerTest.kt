@@ -29,6 +29,7 @@ class BaseControllerTest {
                 randomUUID(),
                 object : BaseModel {
                     override val id: UUID = randomUUID()
+                    override val name: String = "name"
                     override val account: Account = testAccount
                 }
             )
@@ -43,6 +44,7 @@ class BaseControllerTest {
                 randomUUID(),
                 object : BaseModel {
                     override val id: UUID = randomUUID()
+                    override val name: String = "name"
                     override val account: Account = testAccount
                 }
             )

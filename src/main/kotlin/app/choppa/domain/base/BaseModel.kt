@@ -5,5 +5,6 @@ import java.util.*
 
 interface BaseModel {
     val id: UUID
+    val name: String
     val account: Account
 }

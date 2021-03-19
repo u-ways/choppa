@@ -2,14 +2,17 @@ package app.choppa.domain.base
 
 import app.choppa.domain.account.AccountService
 import app.choppa.exception.AuthorizationException
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Direction.ASC
+import org.springframework.data.domain.Sort.by
 import java.util.*
 
 abstract class BaseService<T : BaseModel> (
     private val accountService: AccountService
 ) {
-    abstract fun find(): List<T>
-    abstract fun find(id: UUID): T
-    abstract fun find(ids: List<UUID>): List<T>
+    abstract fun find(sort: Sort = by(ASC, BaseModel::name.name)): List<T>
+    abstract fun find(id: UUID, sort: Sort = by(ASC, BaseModel::name.name)): T
+    abstract fun find(ids: List<UUID>, sort: Sort = by(ASC, BaseModel::name.name)): List<T>
     abstract fun save(entity: T): T
     abstract fun save(entities: List<T>): List<T>
     abstract fun delete(entity: T): T

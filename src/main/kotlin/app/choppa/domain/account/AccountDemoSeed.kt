@@ -35,12 +35,12 @@ class AccountDemoSeed(
     fun create(account: Account) {
         val tfl = tribeService.save(Tribe(name = "TFL", color = BLUE, account = account))
 
-        val teamLead = chapterService.save(Chapter(name = "LEAD", color = RED, account = account))
-        val businessAnalyst = chapterService.save(Chapter(name = "BA", color = YELLOW, account = account))
-        val tester = chapterService.save(Chapter(name = "TESTER", color = GREEN, account = account))
-        val float = chapterService.save(Chapter(name = "FLOAT", color = BROWN, account = account))
-        val developer = chapterService.save(Chapter(name = "DEV", color = BLUE, account = account))
-        val intern = chapterService.save(Chapter(name = "INTERN", color = PURPLE, account = account))
+        val teamLead = chapterService.save(Chapter(name = "1. LEAD", color = RED, account = account))
+        val businessAnalyst = chapterService.save(Chapter(name = "2. BA", color = YELLOW, account = account))
+        val tester = chapterService.save(Chapter(name = "3. TESTER", color = GREEN, account = account))
+        val float = chapterService.save(Chapter(name = "4. FLOAT", color = BROWN, account = account))
+        val developer = chapterService.save(Chapter(name = "5. DEV", color = BLUE, account = account))
+        val intern = chapterService.save(Chapter(name = "6. INTERN", color = PURPLE, account = account))
 
         squadFactory.create(
             squads = listOf(
@@ -48,58 +48,45 @@ class AccountDemoSeed(
                     "Metropolitan",
                     RED,
                     mutableListOf(
-                        Member(name = "Ezra B.", chapter = intern, account = account),
+                        Member(name = "Stefan M.", chapter = teamLead, account = account),
+                        Member(name = "Abraham C.", chapter = businessAnalyst, account = account),
+                        Member(name = "Maryam P.", chapter = tester, account = account),
+                        Member(name = "Jess C.", chapter = tester, account = account),
                         Member(name = "Lamar C.", chapter = developer, account = account),
                         Member(name = "Maxine C.", chapter = developer, account = account),
                         Member(name = "Ethel A.", chapter = developer, account = account),
                         Member(name = "Hattie P.", chapter = developer, account = account),
-                        Member(name = "Maryam P.", chapter = tester, account = account),
-                        Member(name = "Jess C.", chapter = tester, account = account),
-                        Member(name = "Abraham C.", chapter = businessAnalyst, account = account),
-                        Member(name = "Stefan M.", chapter = teamLead, account = account),
+                        Member(name = "Ezra B.", chapter = intern, account = account),
                     )
-                )
-            ),
-            sharedTribe = tfl,
-            sharedAccount = account,
-        )
-
-        squadFactory.create(
-            squads = listOf(
+                ),
                 Triple(
                     "Circle",
                     YELLOW,
                     mutableListOf(
+                        Member(name = "Eidde K.", chapter = teamLead, account = account),
+                        Member(name = "Rose B.", chapter = businessAnalyst, account = account),
+                        Member(name = "Gerald M.", chapter = float, account = account),
+                        Member(name = "Monty H.", chapter = tester, account = account),
                         Member(name = "Zahraa L.", chapter = developer, account = account),
                         Member(name = "Shantelle S.", chapter = developer, account = account),
                         Member(name = "Bob M.", chapter = developer, account = account),
                         Member(name = "Logan E.", chapter = developer, account = account),
                         Member(name = "Pat P.", chapter = developer, account = account),
-                        Member(name = "Gerald M.", chapter = float, account = account),
-                        Member(name = "Monty H.", chapter = tester, account = account),
-                        Member(name = "Rose B.", chapter = businessAnalyst, account = account),
-                        Member(name = "Eidde K.", chapter = teamLead, account = account),
                     )
-                )
-            ),
-            sharedTribe = tfl,
-            sharedAccount = account,
-        )
-
-        squadFactory.create(
-            squads = listOf(
+                ),
                 Triple(
                     "District",
                     GREEN,
                     mutableListOf(
-                        Member(name = "Romany R.", chapter = intern, account = account),
-                        Member(name = "Uzumaki N.", chapter = intern, account = account),
+                        Member(name = "Sohieb S.", chapter = teamLead, account = account),
+                        Member(name = "Liam X.", chapter = businessAnalyst, account = account),
+                        Member(name = "Jack J.", chapter = tester, account = account),
                         Member(name = "Sleem G.", chapter = developer, account = account),
                         Member(name = "Aida A.", chapter = developer, account = account),
+                        Member(name = "Nikita R.", chapter = developer, account = account),
                         Member(name = "Dominic Q.", chapter = developer, account = account),
-                        Member(name = "Jack J.", chapter = tester, account = account),
-                        Member(name = "Liam X.", chapter = businessAnalyst, account = account),
-                        Member(name = "Sohieb S.", chapter = teamLead, account = account),
+                        Member(name = "Romany R.", chapter = intern, account = account),
+                        Member(name = "Uzumaki N.", chapter = intern, account = account),
                     )
                 )
             ),

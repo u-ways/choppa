@@ -5,6 +5,7 @@ import app.choppa.domain.base.BaseService
 import app.choppa.domain.squad.SquadService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.Serializable
@@ -18,17 +19,17 @@ class TribeService(
     @Autowired private val accountService: AccountService,
 ) : BaseService<Tribe>(accountService) {
 
-    override fun find(): List<Tribe> = tribeRepository
+    override fun find(sort: Sort): List<Tribe> = tribeRepository
         .findAll()
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No tribes exist for this account yet.") }
 
-    override fun find(ids: List<UUID>): List<Tribe> = tribeRepository
+    override fun find(ids: List<UUID>, sort: Sort): List<Tribe> = tribeRepository
         .findAllById(ids)
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No tribes found with given ids.") }
 
-    override fun find(id: UUID): Tribe = tribeRepository
+    override fun find(id: UUID, sort: Sort): Tribe = tribeRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Tribe with id [$id] does not exist.") }
         .verifyAuthenticatedOwnership()

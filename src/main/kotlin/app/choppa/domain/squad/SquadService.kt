@@ -9,6 +9,7 @@ import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest.of
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
@@ -25,28 +26,31 @@ class SquadService(
     @Autowired private val accountService: AccountService
 ) : BaseService<Squad>(accountService) {
 
-    override fun find(): List<Squad> = squadRepository
+    override fun find(sort: Sort): List<Squad> = squadRepository
         .findAll()
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No squads exist yet.") }
 
-    override fun find(id: UUID): Squad = squadRepository
+    override fun find(id: UUID, sort: Sort): Squad = squadRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Squad with id [$id] does not exist.") }
         .verifyAuthenticatedOwnership()
+        .sortByMembersChapterThenMembersName()
 
-    override fun find(ids: List<UUID>): List<Squad> = squadRepository
+    override fun find(ids: List<UUID>, sort: Sort): List<Squad> = squadRepository
         .findAllById(ids)
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No squads found with given ids.") }
+        .map { it.sortByMembersChapterThenMembersName() }
 
     // NOTE(u-ways) #149 Squad also allows the persistence of non-existent members on top of
     //                   persisting existing members from/to the squad's current members table.
     @Transactional(isolation = REPEATABLE_READ)
     override fun save(entity: Squad): Squad = squadRepository.findById(entity.id)
         .getMembersIfPresent()
+        .setRemovedMembersToInactive(entity.members)
         .run {
-            memberService.save(entity.members)
+            memberService.save(entity.members.setAllToActive())
             squadRepository.save(
                 squadRepository
                     .findById(entity.id)
@@ -95,6 +99,7 @@ class SquadService(
         .findAllByTribeId(tribeId)
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No squads found belonging to tribe [$tribeId] yet.") }
+        .map { it.sortByMembersChapterThenMembersName() }
 
     @Transactional
     fun findAllSquadMembersRevisions(id: UUID) = find(id).run {
@@ -141,9 +146,25 @@ class SquadService(
         else -> emptyList()
     }
 
+    private fun List<Member>.setRemovedMembersToInactive(updatedMember: List<Member>) = apply {
+        minus(intersect(updatedMember)).forEach { member ->
+            // Only update members with 0 squad assignment to inactive.
+            if (findRelatedByMember(member.id).size == 1) {
+                memberService.save(member.copy(active = false))
+            }
+        }
+    }
+
     private fun Squad.createSquadMembersRevision(olderFormation: List<Member>) = this.apply {
         squadMemberHistoryService.save(
             squadMemberHistoryService.generateRevisions(this, olderFormation)
         )
+    }
+
+    private fun MutableList<Member>.setAllToActive(): MutableList<Member> =
+        map { it.copy(active = true) }.toMutableList()
+
+    private fun Squad.sortByMembersChapterThenMembersName(): Squad = run {
+        copy(members = members.sortedWith(compareBy({ it.chapter.name }, { it.name })).toMutableList())
     }
 }

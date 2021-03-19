@@ -16,7 +16,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import io.mockk.every
 import io.mockk.mockkClass
 import io.mockk.verify
-import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -67,7 +67,7 @@ internal class SquadServiceTest : Universe() {
 
         val savedEntity = service.save(entity)
 
-        savedEntity shouldBe entity
+        savedEntity shouldBeEqualTo entity
 
         verify(exactly = 1) { repository.save(entity) }
     }
@@ -81,7 +81,7 @@ internal class SquadServiceTest : Universe() {
 
         val foundEntity = service.find(id)
 
-        foundEntity shouldBe existingEntity
+        foundEntity shouldBeEqualTo existingEntity
 
         verify(exactly = 1) { repository.findById(id) }
     }
@@ -96,7 +96,7 @@ internal class SquadServiceTest : Universe() {
 
         val removedEntity = service.delete(existingEntity)
 
-        removedEntity shouldBe existingEntity
+        removedEntity shouldBeEqualTo existingEntity
 
         verify(exactly = 1) { repository.delete(existingEntity) }
     }
@@ -122,8 +122,8 @@ internal class SquadServiceTest : Universe() {
 
         val squadMembersRevisions = service.findAllSquadMembersRevisions(existingEntity.id)
 
-        squadMembersRevisions.first shouldBe existingEntity
-        squadMembersRevisions.second.first() shouldBe existingEntity.members
+        squadMembersRevisions.first shouldBeEqualTo existingEntity
+        squadMembersRevisions.second.first() shouldBeEqualTo existingEntity.members
     }
 
     @Test
@@ -144,7 +144,7 @@ internal class SquadServiceTest : Universe() {
 
         val squadMembersRevisions = service.findLastNSquadMembersRevisions(existingEntity.id, 2)
 
-        squadMembersRevisions.first shouldBe existingEntity
+        squadMembersRevisions.first shouldBeEqualTo existingEntity
 
         assertThat(
             squadMembersRevisions.second.first(),

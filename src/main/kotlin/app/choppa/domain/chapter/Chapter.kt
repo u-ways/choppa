@@ -21,7 +21,7 @@ data class Chapter(
     override val id: UUID = randomUUID(),
 
     @Column(name = "name", columnDefinition = "VARCHAR(100)", unique = true, nullable = false)
-    val name: String,
+    override val name: String,
 
     @Column(name = "color", columnDefinition = "INTEGER")
     val color: Int,

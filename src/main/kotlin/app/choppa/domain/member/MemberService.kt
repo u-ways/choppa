@@ -6,6 +6,7 @@ import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
 import app.choppa.utils.Numbers.Companion.round
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -17,17 +18,17 @@ class MemberService(
     @Autowired private val accountService: AccountService
 ) : BaseService<Member>(accountService) {
 
-    override fun find(): List<Member> = memberRepository
+    override fun find(sort: Sort): List<Member> = memberRepository
         .findAll()
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No members exist yet.") }
 
-    override fun find(id: UUID): Member = memberRepository
+    override fun find(id: UUID, sort: Sort): Member = memberRepository
         .findById(id)
         .orElseThrow { throw EntityNotFoundException("Member with id [$id] does not exist.") }
         .verifyAuthenticatedOwnership()
 
-    override fun find(ids: List<UUID>): List<Member> = memberRepository
+    override fun find(ids: List<UUID>, sort: Sort): List<Member> = memberRepository
         .findAllById(ids)
         .ownedByAuthenticated()
         .orElseThrow { throw EntityNotFoundException("No members found.") }

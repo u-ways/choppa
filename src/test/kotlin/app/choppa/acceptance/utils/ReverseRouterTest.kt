@@ -314,17 +314,20 @@ internal class ReverseRouterTest {
 
     internal class EntityOne(
         override val id: UUID = randomUUID(),
-        override val account: Account = AccountFactory.create()
+        override val account: Account = AccountFactory.create(),
+        override val name: String = ""
     ) : BaseModel
 
     internal class EntityTwo(
         override val id: UUID = randomUUID(),
-        override val account: Account = AccountFactory.create()
+        override val account: Account = AccountFactory.create(),
+        override val name: String = ""
     ) : BaseModel
 
     internal class EntityThree(
         override val id: UUID = randomUUID(),
-        override val account: Account = AccountFactory.create()
+        override val account: Account = AccountFactory.create(),
+        override val name: String = ""
     ) : BaseModel
 
     @Suppress("unused")

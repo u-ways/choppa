@@ -25,7 +25,7 @@
             </DashboardCard>
           </div>
           <div class="pt-2 px-3 grid grid-cols-1 gap-2">
-            <DashboardCard title="KSP Balance - Not Real KSP values"
+            <DashboardCard title="Knowledge Sharing Points (KSP) Balance"
                            :is-loaded="tribeKSPStatsLoaded"
                            :no-data="tribeKSPStats.length === 0"
                            class="min-h-72">

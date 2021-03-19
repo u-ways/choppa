@@ -69,13 +69,13 @@ class TribeService(
                     tribeMap.also {
                         val squadMap: HashMap<String, HashMap<String, Any>> = hashMapOf()
                         tribe.squads.forEach { squadMap[it.id.toString()] = hashMapOf() }
-                        for (i in (1..7)) {
+                        for (i in (1..4)) {
                             val activeHistories = histories.map { Pair(it.first, it.second.drop(i)) }
                             val mpp = calculateMemberPairingPoints(activeHistories.map { it.second }.flatten())
                             val spp = calculateSquadPairingPoints(activeHistories)
 
                             tribe.squads.forEach {
-                                squadMap[it.id.toString()]!![i.toString()] = hashMapOf("ksp" to (0..10).random().toDouble().div(10))
+                                squadMap[it.id.toString()]!![i.toString()] = hashMapOf("ksp" to squadService.calculateKspForLastNRevisionsFor(it.id, mpp, spp).times(1000))
                             }
                         }
 

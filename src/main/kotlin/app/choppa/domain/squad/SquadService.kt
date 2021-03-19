@@ -4,6 +4,8 @@ import app.choppa.domain.account.AccountService
 import app.choppa.domain.base.BaseService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberService
+import app.choppa.domain.rotation.smr.MemberPairingPoints
+import app.choppa.domain.rotation.smr.SquadPairingPoints
 import app.choppa.domain.squad.history.SquadMemberHistory
 import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.exception.EntityNotFoundException
@@ -14,8 +16,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
 import java.io.Serializable
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Service
@@ -117,15 +117,22 @@ class SquadService(
     fun findSquadsRevisionsAndMemberDurations(squads: List<Squad>): List<Pair<Squad, List<Pair<Int, List<Member>>>>> =
         squadMemberHistoryService.findSquadsRevisionsAndMemberDurations(squads)
 
-    fun calculateKspForLastNRevisionsFor(id: UUID, amount: Int): HashMap<String, Any> =
-        (1..amount).fold(HashMap<String, Any>(amount)) { acc, i ->
-            acc.also {
-                acc[i.toString()] = mapOf(
-                    "timestamp" to Instant.now().minus(i * 7L, ChronoUnit.DAYS).toEpochMilli(),
-                    "ksp" to (200 - (i..200).random()),
-                )
-            }
-        }
+    fun calculateKspForLastNRevisionsFor(
+        id: UUID,
+        mpp: MemberPairingPoints,
+        spp: SquadPairingPoints
+    ): Double = find(id).members.map { mem ->
+        val memSpp = spp.filter { x -> x.key.member == mem }
+        val sppScalar = memSpp.entries.minByOrNull { x -> x.value }?.let { it.value / it.key.squad.members.size } ?: 0
+        val maxSPP = memSpp.entries.sumBy { x -> x.key.squad.members.size } * sppScalar
+        val currentSPP = memSpp.entries.sumBy { x -> x.value }
+        val finalSPP = if (maxSPP != 0) (currentSPP.toDouble() / maxSPP.toDouble()) else 0.0
+        val memMpp = mpp.filter { x -> x.key.member_1 == mem || x.key.member_2 == mem }
+        val maxMPP = memMpp.minByOrNull { x -> x.value }?.value?.times(memMpp.entries.count()) ?: 0
+        val currentMPP = memMpp.entries.sumBy { x -> x.value }
+        val finalMPP = if (maxMPP != 0) (currentMPP.toDouble() / maxMPP.toDouble()) else 0.0
+        (finalSPP * 0.9f) + (finalMPP * 0.1f)
+    }.average()
 
     fun statistics(): HashMap<String, Serializable> = squadRepository.findAll().ownedByAuthenticated().run {
         val revisions = squadMemberHistoryService.runCatching {

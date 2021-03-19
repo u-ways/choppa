@@ -5,6 +5,10 @@ import app.choppa.domain.chapter.ChapterService
 import app.choppa.domain.member.Member
 import app.choppa.domain.member.MemberFactory
 import app.choppa.domain.squad.SquadFactory
+import app.choppa.domain.squad.history.RevisionType.ADD
+import app.choppa.domain.squad.history.RevisionType.REMOVE
+import app.choppa.domain.squad.history.SquadMemberHistory
+import app.choppa.domain.squad.history.SquadMemberHistoryService
 import app.choppa.domain.tribe.Tribe
 import app.choppa.domain.tribe.TribeService
 import app.choppa.utils.Color.Companion.BLUE
@@ -16,12 +20,15 @@ import app.choppa.utils.Color.Companion.YELLOW
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant.now
+import java.time.temporal.ChronoUnit.DAYS
 
 @Service
 class AccountDemoSeed(
     @Autowired private val chapterService: ChapterService,
     @Autowired private val memberFactory: MemberFactory,
     @Autowired private val squadFactory: SquadFactory,
+    @Autowired private val SquadMemberHistoryService: SquadMemberHistoryService,
     @Autowired private val tribeService: TribeService,
 ) {
     companion object {
@@ -42,7 +49,7 @@ class AccountDemoSeed(
         val developer = chapterService.save(Chapter(name = "5. DEV", color = BLUE, account = account))
         val intern = chapterService.save(Chapter(name = "6. INTERN", color = PURPLE, account = account))
 
-        squadFactory.create(
+        val squads = squadFactory.create(
             squads = listOf(
                 Triple(
                     "Metropolitan",
@@ -100,5 +107,172 @@ class AccountDemoSeed(
             sharedAccount = account,
             active = false,
         )
+
+        val squadA = squads[0]
+        val squadB = squads[1]
+        val squadC = squads[2]
+
+        // History for squad A
+        SquadMemberHistoryService.apply {
+            save(findBySquad(squadA).map { it.copy(revisionNumber = 3) })
+            save(
+                listOf(
+
+                    SquadMemberHistory(
+                        squadA,
+                        revisionNumber = 2,
+                        member = squadB.members[6],
+                        revisionType = REMOVE,
+                        createDate = now().minus(7L, DAYS)
+                    ),
+                    SquadMemberHistory(
+                        squadA,
+                        revisionNumber = 2,
+                        member = squadC.members[4],
+                        revisionType = REMOVE,
+                        createDate = now().minus(7L, DAYS)
+                    ),
+
+                    SquadMemberHistory(
+                        squadA,
+                        revisionNumber = 1,
+                        member = squadB.members[6],
+                        revisionType = ADD,
+                        createDate = now().minus(14L, DAYS)
+                    ),
+                    SquadMemberHistory(
+                        squadA,
+                        revisionNumber = 1,
+                        member = squadA.members[3],
+                        revisionType = REMOVE,
+                        createDate = now().minus(14L, DAYS)
+                    ),
+                    SquadMemberHistory(
+                        squadA,
+                        revisionNumber = 1,
+                        member = squadC.members[4],
+                        revisionType = ADD,
+                        createDate = now().minus(14L, DAYS)
+                    ),
+
+
+                    SquadMemberHistory(
+                        squadA,
+                        revisionNumber = 0,
+                        member = squadA.members[3],
+                        revisionType = ADD,
+                        createDate = now().minus(21L, DAYS)
+                    ),
+                )
+            )
+        }
+
+        // History for squad B
+        SquadMemberHistoryService.apply {
+            save(findBySquad(squadB).map { it.copy(revisionNumber = 3) })
+            save(
+                listOf(
+                    SquadMemberHistory(
+                        squadB,
+                        revisionNumber = 2,
+                        member = squadA.members[6],
+                        revisionType = REMOVE,
+                        createDate = now().minus(7L, DAYS)
+                    ),
+                    SquadMemberHistory(
+                        squadB,
+                        revisionNumber = 2,
+                        member = squadC.members[4],
+                        revisionType = REMOVE,
+                        createDate = now().minus(7L, DAYS)
+                    ),
+
+                    SquadMemberHistory(
+                        squadB,
+                        revisionNumber = 1,
+                        member = squadA.members[6],
+                        revisionType = ADD,
+                        createDate = now().minus(14L, DAYS)
+                    ),
+                    SquadMemberHistory(
+                        squadB,
+                        revisionNumber = 1,
+                        member = squadB.members[3],
+                        revisionType = REMOVE,
+                        createDate = now().minus(14L, DAYS)
+                    ),
+                    SquadMemberHistory(
+                        squadB,
+                        revisionNumber = 1,
+                        member = squadC.members[4],
+                        revisionType = ADD,
+                        createDate = now().minus(14L, DAYS)
+                    ),
+
+
+                    SquadMemberHistory(
+                        squadB,
+                        revisionNumber = 0,
+                        member = squadB.members[3],
+                        revisionType = ADD,
+                        createDate = now().minus(21L, DAYS)
+                    ),
+                )
+            )
+
+            // History for squad B
+            SquadMemberHistoryService.apply {
+                save(findBySquad(squadC).map { it.copy(revisionNumber = 3) })
+                save(
+                    listOf(
+                        SquadMemberHistory(
+                            squadC,
+                            revisionNumber = 2,
+                            member = squadA.members[6],
+                            revisionType = REMOVE,
+                            createDate = now().minus(7L, DAYS)
+                        ),
+                        SquadMemberHistory(
+                            squadC,
+                            revisionNumber = 2,
+                            member = squadB.members[4],
+                            revisionType = REMOVE,
+                            createDate = now().minus(7L, DAYS)
+                        ),
+
+                        SquadMemberHistory(
+                            squadC,
+                            revisionNumber = 1,
+                            member = squadA.members[6],
+                            revisionType = ADD,
+                            createDate = now().minus(14L, DAYS)
+                        ),
+                        SquadMemberHistory(
+                            squadC,
+                            revisionNumber = 1,
+                            member = squadC.members[3],
+                            revisionType = REMOVE,
+                            createDate = now().minus(14L, DAYS)
+                        ),
+                        SquadMemberHistory(
+                            squadC,
+                            revisionNumber = 1,
+                            member = squadB.members[4],
+                            revisionType = ADD,
+                            createDate = now().minus(14L, DAYS)
+                        ),
+
+
+                        SquadMemberHistory(
+                            squadC,
+                            revisionNumber = 0,
+                            member = squadC.members[3],
+                            revisionType = ADD,
+                            createDate = now().minus(21L, DAYS)
+                        ),
+                    )
+                )
+            }
+        }
     }
 }

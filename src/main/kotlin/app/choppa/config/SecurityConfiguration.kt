@@ -7,19 +7,18 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.core.Authentication
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @EnableWebSecurity
 class SecurityConfiguration(
     @Autowired private val accountService: AccountService,
 ) : WebSecurityConfigurerAdapter() {
+    @Value("\${choppa.auth.success-redirect-location-prefix:}")
+    private var successfulRedirectLocation: String = ""
 
     companion object {
         /**
@@ -38,18 +37,9 @@ class SecurityConfiguration(
         )
     }
 
-    val successHandler = object : AuthenticationSuccessHandler {
-        @Value("\${choppa.auth.success-redirect-location-prefix:}")
-        private var successfulRedirectLocation: String = ""
-
-        override fun onAuthenticationSuccess(
-            request: HttpServletRequest?,
-            response: HttpServletResponse?,
-            authentication: Authentication?,
-        ) {
-            val endpoint = if (accountService.resolveFromAuth().firstLogin) "welcome" else "dashboard"
-            response!!.sendRedirect("$successfulRedirectLocation/$endpoint")
-        }
+    val successHandler = AuthenticationSuccessHandler { _, response, _ ->
+        val endpoint = if (accountService.resolveFromAuth().firstLogin) "welcome" else "dashboard"
+        response!!.sendRedirect("$successfulRedirectLocation/$endpoint")
     }
 
     override fun configure(http: HttpSecurity) {

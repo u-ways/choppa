@@ -116,10 +116,11 @@
               <div>
                 <StandardLabel for-id="rotation-chapter" label-text="Chapter To Rotate"/>
                 <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                  <ChapterRadioButton v-for="chapter in chaptersInUse"
+                  <ChapterRadioButton v-for="(chapter, i) in chaptersInUse"
                                       v-bind:key="chapter.id"
                                       :chapter="chapter"
-                                      :selected-chapter="rotation.chapter"
+                                      :is-checked="(rotation.chapter && rotation.chapter.id === chapter.id)
+                                      || (!rotation.chapter && i === 0)"
                                       input-name="member-chapter"
                                       @onChapterChanged="onChapterChanged"/>
                 </div>

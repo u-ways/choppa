@@ -28,17 +28,8 @@ export default {
       type: Chapter,
       required: true,
     },
-    selectedChapter: {
-      type: Object,
-    },
-  },
-  computed: {
-    isChecked() {
-      if (this.selectedChapter) {
-        return this.selectedChapter.id === this.chapter.id;
-      }
-
-      return false;
+    isChecked: {
+      type: Boolean,
     },
   },
 };

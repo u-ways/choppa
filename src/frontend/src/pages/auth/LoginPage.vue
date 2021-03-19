@@ -8,7 +8,7 @@
           <div class="grid grid-cols-2 gap-2 mb-4">
             <LoginSSOButton name="Github" image-name="github" loginEndpoint="github" />
             <LoginSSOButton name="Google" image-name="google" loginEndpoint="google" />
-            <LoginSSOButton name="Microsoft" image-name="microsoft" loginEndpoint="microsoft" />
+            <LoginSSOButton name="Facebook" image-name="facebook" loginEndpoint="facebook" />
             <LoginSSOButton name="Okta" image-name="okta" loginEndpoint="okta" />
           </div>
           <p class="text-xs text-gray-600 dark:text-gray-300 mb-1">OR</p>

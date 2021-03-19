@@ -17,7 +17,7 @@ import java.util.UUID.randomUUID
 
 @Service
 class AccountService(
-    @Autowired private val accountRepository: AccountRepository
+    @Autowired private val accountRepository: AccountRepository,
 ) {
     fun find(provider: String) = accountRepository.findByProviderOrderByCreateDate(provider)
 
@@ -35,8 +35,11 @@ class AccountService(
         principal.run {
             val provider = authorizedClientRegistrationId
             val providerId = "${attributes["sub"] ?: attributes["id"] ?: throw UnsupportedProviderException(provider)}"
-            val profilePicture = "${attributes["avatar_url"] ?: attributes["picture"] ?: attributes["profile"] ?: ""}"
             val name = "${attributes["name"] ?: ""}"
+            val profilePicture = if (provider == "facebook")
+                ((attributes["picture"] as Map<*, *>)["data"] as Map<*, *>)["url"] as String
+            else
+                "${attributes["avatar_url"] ?: attributes["picture"] ?: attributes["profile"] ?: ""}"
 
             accountRepository.findByProviderAndProviderId(provider, providerId)
                 ?.copy(name = name, profilePicture = profilePicture)

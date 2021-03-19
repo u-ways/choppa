@@ -43,7 +43,7 @@
                 <ChapterRadioButton v-for="chapter in chapters"
                                     v-bind:key="chapter.id"
                                     :chapter="chapter"
-                                    :selected-chapter="member.chapter"
+                                    :is-checked="member.chapter.id === chapter.id"
                                     input-name="member-chapter"
                                     @onChapterChanged="onChapterChanged"/>
               </div>

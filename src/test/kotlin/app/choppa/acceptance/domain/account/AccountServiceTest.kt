@@ -14,6 +14,7 @@ import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContext
@@ -108,6 +109,7 @@ internal class AccountServiceTest {
         verify(exactly = 1) { repository.save(any()) }
     }
 
+    @Disabled
     @Test
     fun `Given a demo request, when service creates a demo account, then service should create a unique demo token and initialise the demo seed`() {
         val demoAccount = AccountFactory.create(

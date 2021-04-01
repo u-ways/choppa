@@ -155,7 +155,6 @@ class AccountDemoSeed(
                         createDate = now().minus(14L, DAYS)
                     ),
 
-
                     SquadMemberHistory(
                         squadA,
                         revisionNumber = 0,
@@ -209,7 +208,6 @@ class AccountDemoSeed(
                         createDate = now().minus(14L, DAYS)
                     ),
 
-
                     SquadMemberHistory(
                         squadB,
                         revisionNumber = 0,
@@ -261,7 +259,6 @@ class AccountDemoSeed(
                             revisionType = ADD,
                             createDate = now().minus(14L, DAYS)
                         ),
-
 
                         SquadMemberHistory(
                             squadC,

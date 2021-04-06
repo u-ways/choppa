@@ -43,7 +43,7 @@
                 <ChapterRadioButton v-for="chapter in chapters"
                                     v-bind:key="chapter.id"
                                     :chapter="chapter"
-                                    :is-checked="member.chapter.id === chapter.id"
+                                    :is-checked="member.chapter != null && member.chapter.id === chapter.id"
                                     input-name="member-chapter"
                                     @onChapterChanged="onChapterChanged"/>
               </div>
@@ -97,6 +97,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import StandardPageTemplate from "@/components/templates/StandardPageTemplate";
 import { mapActions } from "vuex";
 import { createMember, getMember, saveMember, deleteMember } from "@/config/api/member.api";

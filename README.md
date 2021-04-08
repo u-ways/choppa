@@ -41,6 +41,123 @@ Instead of using the traditional Excel spreadsheet, pen and paper, or just relay
 
 We do this by considering the time spent in each squad, the different chapters a member got exposed to, and the various tribe members you have interacted with based on the formation history collected. This eliminates bias when rotating team members based on single user preferences, and saves you time from input and tracking chores automated in this application.
 
+---
+
+## Complete Self-hosting Instructions:
+
+### Prerequisites:
+- Ubuntu 20.04.2 LTS.
+- Basic knowledge of using the terminal and bash.
+- Superuser (sudo) privileges
+
+### Instructions
+
+#### 1. Install required packages, so you can setup the application:
+
+```sh
+sudo apt install git curl default-jre postgresql
+```
+
+#### 2. In a directory of your choice,  clone the choppa project.
+
+```sh
+git clone https://github.com/U-ways/choppa.git
+```
+
+#### 3. Go to project directory and run the gradle wrapper to setup the project environment:
+
+```sh
+cd choppa/
+./gradlew
+```
+
+#### 4. Run the project acceptance tests to make sure the services work as expected.
+
+```sh
+./gradlew acceptance
+```
+
+#### 5. Create PostgreSQL choppa user and a database:
+
+```sh
+sudo -u postgres createuser -P -s choppa # => Enter password to the newly created user.
+sudo -u postgres createdb choppa
+```
+
+#### 6. Setup the environment variables needed:
+
+Since our application relies on OAuth 2.0, you will need to register your hosted version with the providers we support. For each provider, there is a link with the official documentation to generate your own OAuth 2.0 client id and secret. Below, is the command needed to create a file called .choppa.env in your home directory with all the environment variables needed. We have filled the non-sensitive values with the default values you might use, the sensitive values you have to change yourself are clearly UPPERCASED the value CHANGE_ME. When the CHANGE_ME values are replaced, just copy and paste this single command to the terminal.
+
+```sh
+echo """# Choppa Environment Variables:
+# Profile
+export PROFILE=prod
+
+# Server Port
+export PORT=8080
+
+# Database
+export DB_PORT=5432
+export DB_HOST=localhost
+export DB_NAME=choppa
+export DB_USERNAME=choppa
+export DB_PASSWORD=CHANGE_ME
+
+# Database Migration Target
+export FLY_TARGET=8.0.0
+
+# Github OAuth 2.0
+# See: https://docs.github.com/en/developers/apps/authorizing-oauth-apps
+export GITHUB_CLIENT_ID=CHANGE_ME
+export GITHUB_CLIENT_SECRET=CHANGE_ME
+
+# Facebook OAuth 2.0
+# See: https://developers.facebook.com/docs/facebook-login/
+export FACEBOOK_CLIENT_ID=CHANGE_ME
+export FACEBOOK_CLIENT_SECRET=CHANGE_ME
+
+# Google OAuth 2.0
+# See: https://developers.google.com/identity/protocols/oauth2
+export GOOGLE_CLIENT_ID=CHANGE_ME
+export GOOGLE_CLIENT_SECRET=CHANGE_ME
+
+# Okta OAuth 2.0
+# See: https://developer.okta.com/docs/guides/implement-oauth-for-okta
+export OKTA_ISSUER=CHANGE_ME
+export OKTA_CLIENT_ID=CHANGE_ME
+export OKTA_CLIENT_SECRET=CHANGE_ME
+""" > ~/.choppa.env
+```
+
+#### 7. Source the environment variables to the current active terminal session
+```sh
+source ./.choppa.env
+```
+
+#### 8. Install Node.Js v12 if it is not installed.
+```sh
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+#### 9. Build the fontend files.
+```sh
+npm ci --prefix ./src/frontend
+npm run build --prefix ./src/frontend
+```
+
+#### 10. Create an executable jar for the project.
+```sh
+./gradlew bootJar
+```
+
+#### 11. Run the project.
+```sh
+java -jar build/libs/choppa-0.0.1-SNAPSHOT.jar
+```
+
+That’s it! Your application should be hosted at http://localhost:8080/ (if you did not change the default values). If one of these steps is not working as expected, please get in touch with one of the maintainers and we’re more than happy to help.
+
 ___
 
 [1]: https://www.atlassian.com/agile/agile-at-scale/spotify

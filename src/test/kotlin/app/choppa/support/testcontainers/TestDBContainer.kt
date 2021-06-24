@@ -7,9 +7,9 @@ class TestDBContainer private constructor() : PostgreSQLContainer<TestDBContaine
 ) {
     override fun start() {
         super.start()
-        System.setProperty("DB_URL", INSTANCE?.jdbcUrl)
-        System.setProperty("DB_USERNAME", INSTANCE?.username)
-        System.setProperty("DB_PASSWORD", INSTANCE?.password)
+        System.setProperty("DB_URL", INSTANCE?.jdbcUrl!!)
+        System.setProperty("DB_USERNAME", INSTANCE?.username!!)
+        System.setProperty("DB_PASSWORD", INSTANCE?.password!!)
     }
 
     // allow the JVM to handle the container shutdown
